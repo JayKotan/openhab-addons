@@ -13,7 +13,7 @@
 package org.openhab.binding.icomfortwifi.handler;
 
 import java.util.Map;
-
+import org.eclipse.jdt.annotation.NonNull; // Make sure this import is present!
 import org.openhab.binding.icomfortwifi.iComfortWiFiBindingConstants;
 import org.openhab.binding.icomfortwifi.internal.api.models.response.SystemInfo;
 import org.openhab.core.library.types.DecimalType;
@@ -78,7 +78,7 @@ public class iComfortWiFiTemperatureControlSystemHandler extends BaseiComfortWiF
     }
 
     private void setDeviceProperties(SystemInfo systemInfo) {
-        Map<String, String> properties = editProperties();
+        Map<@NonNull String, @NonNull String> properties = (@NonNull Map<@NonNull String, @NonNull String>) editProperties();
         properties.put(iComfortWiFiBindingConstants.TCS_PROPERTY_SYSTEM_NAME, systemInfo.systemName);
         properties.put(iComfortWiFiBindingConstants.TCS_PROPERTY_GATEWAY_SN, systemInfo.gatewaySN);
         properties.put(iComfortWiFiBindingConstants.TCS_PROPERTY_FIRMWARE_VERSION, systemInfo.firmwareVersion);
@@ -86,7 +86,7 @@ public class iComfortWiFiTemperatureControlSystemHandler extends BaseiComfortWiF
     }
 
     @Override
-    public void handleCommand(ChannelUID channelUID, Command command) {
+    public void handleCommand(@NonNull ChannelUID channelUID, @NonNull Command command) {
         logger.debug("Entering TCS Handler for Gateway {}", systemInfo.gatewaySN);
         logger.debug("Executing command {}", command.toString());
         if (command == RefreshType.REFRESH) {

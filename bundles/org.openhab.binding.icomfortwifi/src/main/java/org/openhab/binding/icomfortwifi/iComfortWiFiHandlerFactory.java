@@ -15,7 +15,7 @@ package org.openhab.binding.icomfortwifi;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Map;
-
+import org.eclipse.jdt.annotation.NonNull; // Make sure to import this!
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.icomfortwifi.handler.iComfortWiFiBridgeHandler;
@@ -49,12 +49,12 @@ public class iComfortWiFiHandlerFactory extends BaseThingHandlerFactory {
     private HttpClient httpClient;
 
     @Override
-    public boolean supportsThingType(ThingTypeUID thingTypeUID) {
+    public boolean supportsThingType(@NonNull ThingTypeUID thingTypeUID) {
         return iComfortWiFiBindingConstants.SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID);
     }
 
     @Override
-    protected ThingHandler createHandler(Thing thing) {
+    protected ThingHandler createHandler(@NonNull Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
         if (thingTypeUID.equals(iComfortWiFiBindingConstants.THING_TYPE_ICOMFORT_ACCOUNT)) {
             iComfortWiFiBridgeHandler bridge = new iComfortWiFiBridgeHandler((Bridge) thing, httpClient);
@@ -77,12 +77,12 @@ public class iComfortWiFiHandlerFactory extends BaseThingHandlerFactory {
     }
 
     @Override
-    public ThingHandler registerHandler(Thing thing) {
+    public @NonNull ThingHandler registerHandler(@NonNull Thing thing) {
         return super.registerHandler(thing);
     }
 
     @Override
-    protected void removeHandler(ThingHandler thingHandler) {
+    protected void removeHandler(@NonNull ThingHandler thingHandler) {
         if (thingHandler instanceof iComfortWiFiBridgeHandler) {
             ServiceRegistration<?> serviceReg = this.discoveryServiceRegs.get(thingHandler.getThing().getUID());
             if (serviceReg != null) {

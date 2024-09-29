@@ -16,6 +16,7 @@ import static org.openhab.core.library.unit.Units.PERCENT;
 
 import javax.measure.Unit;
 import javax.measure.quantity.Temperature;
+import org.eclipse.jdt.annotation.NonNull; // Make sure this import is present
 
 import org.openhab.binding.icomfortwifi.iComfortWiFiBindingConstants;
 import org.openhab.binding.icomfortwifi.internal.api.models.response.CustomTypes.AwayStatus;
@@ -112,7 +113,7 @@ public class iComfortWiFiHeatingZoneHandler extends BaseiComfortWiFiHandler {
 
     @SuppressWarnings("unchecked")
     @Override
-    public void handleCommand(ChannelUID channelUID, Command command) {
+    public void handleCommand(@NonNull ChannelUID channelUID, @NonNull Command command) {
         logger.debug("Entering Heating Zone Handler for Gateway {}, zone {}", zoneStatus.gatewaySN,
                 zoneStatus.zoneNumber);
         logger.debug("Executing command {}", command.toString());

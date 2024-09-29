@@ -160,7 +160,6 @@ public final class iComfortWiFiApiCommands {
     private final static class setAwayModeNew {
         private static final String PATH = "/SetAwayModeNew";
 
-        @SuppressWarnings("unused")
         private final class paramsDef {
             private static final String GATEWAY_SN = "gatewaysn";
             private static final String ZONE_NUMBER = "zonenumber";

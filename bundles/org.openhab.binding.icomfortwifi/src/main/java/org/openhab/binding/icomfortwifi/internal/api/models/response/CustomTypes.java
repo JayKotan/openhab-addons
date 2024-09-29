@@ -15,6 +15,7 @@ package org.openhab.binding.icomfortwifi.internal.api.models.response;
 import javax.measure.Unit;
 import javax.measure.quantity.Temperature;
 
+import org.eclipse.jdt.annotation.NonNull;
 import org.openhab.core.library.unit.ImperialUnits;
 import org.openhab.core.library.unit.SIUnits;
 
@@ -54,6 +55,8 @@ public class CustomTypes {
             return this.tempUnitsValue;
         }
 
+        @NonNull
+        @SuppressWarnings("null")
         public Unit<Temperature> getTemperatureUnit() {
             switch (this.tempUnitsValue) {
                 case "0":

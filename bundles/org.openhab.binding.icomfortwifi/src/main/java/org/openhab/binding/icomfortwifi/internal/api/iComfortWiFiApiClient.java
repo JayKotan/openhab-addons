@@ -12,16 +12,15 @@
  */
 package org.openhab.binding.icomfortwifi.internal.api;
 
+import java.util.Base64;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeoutException;
-
+import java.nio.charset.StandardCharsets;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.http.HttpMethod;
-import org.eclipse.jetty.util.B64Code;
-import org.eclipse.jetty.util.StringUtil;
 import org.openhab.binding.icomfortwifi.internal.api.models.request.ReqSetAwayMode;
 import org.openhab.binding.icomfortwifi.internal.api.models.request.ReqSetTStatInfo;
 import org.openhab.binding.icomfortwifi.internal.api.models.response.BuildingsInfo;
@@ -331,30 +330,25 @@ public class iComfortWiFiApiClient {
     private boolean validateUsername() {
         UserValidation validation = null;
         String basicAuthentication = null;
-
         try {
-
             Map<String, String> headers = new HashMap<>();
-
-            basicAuthentication = "Basic " + B64Code.encode(URLEncoder.encode(configuration.userName, "UTF-8") + ":"
-                    + URLEncoder.encode(configuration.password, "UTF-8"), StringUtil.__ISO_8859_1);
-
+            // Use Base64.getEncoder() instead of deprecated B64Code
+            String authString = configuration.userName + ":" + configuration.password;
+            String encodedAuth = Base64.getEncoder().encodeToString(authString.getBytes(StandardCharsets.UTF_8));
+            basicAuthentication = "Basic " + encodedAuth;
             headers.put("Authorization", basicAuthentication);
             headers.put("Accept",
                     "application/json, application/xml, text/json, text/x-json, text/javascript, text/xml");
-
             validation = apiAccess.doRequest(
                     HttpMethod.PUT, iComfortWiFiApiCommands
                             .getCommandValidateUser((URLEncoder.encode(configuration.userName, "UTF-8")), 0),
                     headers, null, "application/x-www-form-urlencoded", UserValidation.class);
-
         } catch (TimeoutException e) {
             // A timeout is not a successful login as well
             logger.error("Request timeout during user validation", e);
         } catch (UnsupportedEncodingException e) {
             logger.error("Credential conversion failed", e);
         }
-
         if (validation != null && validation.msgCode.equals(RequestStatus.SUCCESS)) {
             apiAccess.setUserCredentials(basicAuthentication);
             return true;
