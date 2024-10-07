@@ -18,11 +18,6 @@ import java.util.ArrayList;
 import org.openhab.binding.icomfortwifi.internal.api.models.response.CustomTypes.RequestStatus;
 
 import com.google.gson.annotations.SerializedName;
-// import java.util.ArrayList;
-// import org.openhab.binding.icomfortwifi.internal.api.models.response.CustomTypes.RequestStatus;
-// import com.google.gson.annotations.SerializedName;
-// import org.openhab.binding.icomfortwifi.internal.api.models.response.CustomTypes.RequestStatus;
-// import com.google.gson.annotations.SerializedName;
 
 /**
  * Alias for a list of systems list
@@ -42,19 +37,3 @@ public class SystemsInfo {
     public SystemsInfo() {
     }
 }
-
-// public class SystemsInfo extends ArrayList<SystemInfo> {
-// // No explicit serialVersionUID defined
-
-// // Optionally, you can keep the toString method if you need it
-// @Override
-// public String toString() {
-// return "SystemsInfo []";
-// }
-
-// @SerializedName("ReturnStatus")
-// public RequestStatus returnStatus;
-
-// @SerializedName("Systems")
-// public ArrayList<SystemInfo> systemInfo;
-// }

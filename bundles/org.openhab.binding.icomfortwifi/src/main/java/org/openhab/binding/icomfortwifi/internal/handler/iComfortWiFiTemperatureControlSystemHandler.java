@@ -15,10 +15,7 @@ package org.openhab.binding.icomfortwifi.internal.handler;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNull;
-import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.icomfortwifi.internal.api.models.response.GatewayStatus;
 import org.openhab.binding.icomfortwifi.internal.api.models.response.SystemInfo;
-import org.openhab.binding.icomfortwifi.internal.api.models.response.TemperatureControlSystemStatus;
 import org.openhab.binding.icomfortwifi.internal.iComfortWiFiBindingConstants;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.StringType;
@@ -36,6 +33,7 @@ import org.slf4j.LoggerFactory;
  * Handler for a temperature control system. Gets and sets global system mode.
  *
  * @author Konstantin Panchenko - Initial contribution
+ * @author Jason Kotan - updated imports and added logger to setDeviceProperties
  *
  */
 public class iComfortWiFiTemperatureControlSystemHandler extends BaseiComfortWiFiHandler {
@@ -52,19 +50,6 @@ public class iComfortWiFiTemperatureControlSystemHandler extends BaseiComfortWiF
     @Override
     public void initialize() {
         super.initialize();
-    }
-
-    public void update(@Nullable GatewayStatus gatewayStatus, @Nullable TemperatureControlSystemStatus tcsStatus) {
-        // this.gatewayStatus = gatewayStatus;
-        // this.tcsStatus = tcsStatus;
-        if (tcsStatus == null || gatewayStatus == null) {
-            updateiComfortWiFiThingStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "Status not found, check the display id");
-        } else if (!handleActiveFaultsgate(gatewayStatus)) {
-            updateiComfortWiFiThingStatus(ThingStatus.ONLINE);
-            updateState(iComfortWiFiBindingConstants.DISPLAY_SYSTEM_MODE_CHANNEL,
-                    new StringType(tcsStatus.getMode().getMode()));
-        }
     }
 
     public void update(SystemInfo systemInfo) {
@@ -89,8 +74,8 @@ public class iComfortWiFiTemperatureControlSystemHandler extends BaseiComfortWiF
             updateState(iComfortWiFiBindingConstants.TCS_ALARM_STATUS_CHANNEL,
                     new StringType(systemInfo.getGatewaysAlerts().systemAlert.get(alertNumber).status.toString()));
 
-            // updateState(iComfortWiFiBindingConstants.TCS_ALARM_DATE_TIME_SET_CHANNEL,
-            // getAsDateTimeTypeOrNull(systemInfo.getGatewaysAlerts().systemAlert.get(alertNumber).dateTimeSet));
+            updateState(iComfortWiFiBindingConstants.TCS_ALARM_DATE_TIME_SET_CHANNEL,
+                    getAsDateTimeTypeOrNull(systemInfo.getGatewaysAlerts().systemAlert.get(alertNumber).dateTimeSet));
 
             updateState(iComfortWiFiBindingConstants.TCS_ALARM_ALERT_NUMBER, new DecimalType(alertNumber));
         }
@@ -107,7 +92,6 @@ public class iComfortWiFiTemperatureControlSystemHandler extends BaseiComfortWiF
             properties.put(iComfortWiFiBindingConstants.TCS_PROPERTY_SYSTEM_NAME, systemInfo.systemName);
             properties.put(iComfortWiFiBindingConstants.TCS_PROPERTY_GATEWAY_SN, systemInfo.gatewaySN);
             properties.put(iComfortWiFiBindingConstants.TCS_PROPERTY_FIRMWARE_VERSION, systemInfo.firmwareVersion);
-
             updateProperties(properties);
         } catch (Exception e) {
             logger.error("Error setting device properties", e); // Add error handling if needed
@@ -126,17 +110,6 @@ public class iComfortWiFiTemperatureControlSystemHandler extends BaseiComfortWiF
             alertNumber = ((DecimalType) command).intValue();
             update(systemInfo);
         }
-    }
-
-    public boolean handleActiveFaultsgate(GatewayStatus gatewayStatus) { // Not handling at the moment, don't know
-                                                                         // values for
-        // status
-        if (gatewayStatus.hasActiveFaults()) {
-            updateiComfortWiFiThingStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    gatewayStatus.getActiveFault(0).getFaultType());
-            return true;
-        }
-        return false;
     }
 
     private boolean handleActiveFaults(SystemInfo systemInfo) { // Not handling at the moment, don't know values for

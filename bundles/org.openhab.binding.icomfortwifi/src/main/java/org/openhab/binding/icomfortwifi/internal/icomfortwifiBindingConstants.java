@@ -25,16 +25,15 @@ import org.openhab.core.thing.ThingTypeUID;
  * used across the whole binding.
  *
  * @author Konstantin Panchenko - Initial contribution
+ * @author Jason Kotan - Updated imports
  */
 @NonNullByDefault
 public class iComfortWiFiBindingConstants {
 
-    public static final String BINDING_ID = "icomfortwifi";
+    private static final String BINDING_ID = "icomfortwifi";
 
     /** The JSON content type used when talking to iComfort. */
     public static final String JSON_CONTENT_TYPE = "application/json";
-    // public static final String URL_V2_AUTH = "https://tccna.honeywell.com/Auth/OAuth/Token";
-    // public static final String URL_V2_BASE = "https://tccna.honeywell.com/WebAPI/emea/api/v1/";
 
     public static final String URL_V2_BASE = "https://services.myicomfort.com/DBAcessService.svc";
 

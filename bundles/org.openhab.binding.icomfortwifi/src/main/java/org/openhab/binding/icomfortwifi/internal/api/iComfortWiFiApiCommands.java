@@ -19,6 +19,7 @@ import org.openhab.binding.icomfortwifi.internal.api.models.request.ReqSetAwayMo
  * List of iComfortWiFi API commands
  *
  * @author Konstantin Panchenko - Initial contribution
+ * @author Jason Kota - made this @nullByFault
  *
  */
 @NonNullByDefault

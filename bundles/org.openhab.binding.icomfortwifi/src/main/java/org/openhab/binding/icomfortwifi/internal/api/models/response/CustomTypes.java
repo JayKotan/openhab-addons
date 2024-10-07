@@ -24,7 +24,7 @@ import com.google.gson.annotations.SerializedName;
  * Response model for the zone status
  *
  * @author Konstantin Panchenko - Initial contribution
- *
+ * @author Jason Kotan - Updated Imports
  */
 public class CustomTypes {
 

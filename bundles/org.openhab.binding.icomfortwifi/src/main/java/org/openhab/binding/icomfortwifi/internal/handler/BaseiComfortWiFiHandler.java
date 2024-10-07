@@ -12,25 +12,35 @@
  */
 package org.openhab.binding.icomfortwifi.internal.handler;
 
+import java.time.Instant;
+import java.time.ZonedDateTime;
+import java.util.Date;
+import java.util.TimeZone;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.icomfortwifi.internal.api.models.response.SystemsInfo;
 import org.openhab.binding.icomfortwifi.internal.configuration.iComfortWiFiThingConfiguration;
+import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseThingHandler;
+import org.openhab.core.types.State;
+import org.openhab.core.types.UnDefType;
+
 // import org.openhab.binding.icomfortwifi.handler.iComfortWiFiBridgeHandler;
 
 /**
  * Base class for an iComfortWiFi handler
  *
  * @author Konstantin Panchenko - Initial contribution
+ * @author Jason Kotan - Added @NonNllByDefault
  */
 @NonNullByDefault
 public abstract class BaseiComfortWiFiHandler extends BaseThingHandler {
-    public iComfortWiFiThingConfiguration configuration = new iComfortWiFiThingConfiguration();
+    private iComfortWiFiThingConfiguration configuration = new iComfortWiFiThingConfiguration();
 
     public BaseiComfortWiFiHandler(Thing thing) {
         super(thing);
@@ -91,21 +101,6 @@ public abstract class BaseiComfortWiFiHandler extends BaseThingHandler {
         return null;
     }
 
-    /////////////////////////////////////////////
-    /**
-     * Retrieves the evohome configuration from the bridge
-     *
-     * @return The current evohome configuration
-     */
-    // protected @Nullable Locations getiComfortWiFiConfig() {
-    // iComfortWiFiBridgeHandler bridgeAccountHandler = getiComfortWiFiBridge();
-    // if (bridgeAccountHandler != null) {
-    // return bridgeAccountHandler.getiComfortWiFiConfig();
-    // }
-    // return null;
-    // }
-
-    ////////////////////////////////////////////
     /**
      * Retrieves the iComfortWiFi configuration from the bridge
      *
@@ -142,38 +137,24 @@ public abstract class BaseiComfortWiFiHandler extends BaseThingHandler {
         }
     }
 
-    // /**
-    // * Checks the configuration for validity, result is reflected in the status of the Thing
-    // *
-    // * @param configuration The configuration to check
-    // */
-    // public void checkConfig() {
-    // if (configuration == null) {
-    // updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-    // "Configuration is missing or corrupted");
-    // } else if (configuration.id == null || configuration.id.isEmpty()) {
-    // updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Id not configured");
-    // }
-    // }
-
     /**
      * Checks the configuration for validity, result is reflected in the status of the Thing
      *
      * @param configuration The configuration to check
      */
-    public void checkConfig() {
+    private void checkConfig() {
         if (configuration.id.isEmpty()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Id not configured");
         }
     }
 
-    // protected State getAsDateTimeTypeOrNull(@Nullable Date date) {
-    // if (date == null) {
-    // return UnDefType.NULL;
-    // }
+    protected State getAsDateTimeTypeOrNull(@Nullable Date date) {
+        if (date == null) {
+            return UnDefType.NULL;
+        }
 
-    // long offsetMillis = TimeZone.getDefault().getOffset(date.getTime());
-    // Instant instant = date.toInstant().plusMillis(offsetMillis);
-    // return new DateTimeType(ZonedDateTime.ofInstant(instant, TimeZone.getDefault().toZoneId()));
-    // }
+        long offsetMillis = TimeZone.getDefault().getOffset(date.getTime());
+        Instant instant = date.toInstant().plusMillis(offsetMillis);
+        return new DateTimeType(ZonedDateTime.ofInstant(instant, TimeZone.getDefault().toZoneId()));
+    }
 }

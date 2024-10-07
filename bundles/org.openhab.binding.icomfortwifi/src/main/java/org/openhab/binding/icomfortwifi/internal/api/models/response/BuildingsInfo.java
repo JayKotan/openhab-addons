@@ -22,7 +22,7 @@ import com.google.gson.annotations.SerializedName;
  * Alias for a list of locations
  *
  * @author Konstantin Panchenko - Initial contribution
- *
+ * @author Jason Kotan - Updated Imports
  */
 
 public class BuildingsInfo {

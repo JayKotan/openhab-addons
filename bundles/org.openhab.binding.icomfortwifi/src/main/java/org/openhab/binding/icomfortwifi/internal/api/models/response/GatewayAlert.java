@@ -22,7 +22,7 @@ import com.google.gson.annotations.SerializedName;
  * Response model for the System Alert
  *
  * @author Konstantin Panchenko - Initial contribution
- *
+ * @author Jason Kotan - Added in headers.
  */
 public class GatewayAlert {
 

@@ -13,28 +13,22 @@
 package org.openhab.binding.icomfortwifi.internal.handler;
 
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.icomfortwifi.internal.RunnableWithTimeout;
 import org.openhab.binding.icomfortwifi.internal.api.iComfortWiFiApiClient;
 import org.openhab.binding.icomfortwifi.internal.api.models.response.CustomTypes.TempUnits;
-import org.openhab.binding.icomfortwifi.internal.api.models.response.Gateway;
-import org.openhab.binding.icomfortwifi.internal.api.models.response.Location;
-import org.openhab.binding.icomfortwifi.internal.api.models.response.Locations;
 import org.openhab.binding.icomfortwifi.internal.api.models.response.SystemInfo;
 import org.openhab.binding.icomfortwifi.internal.api.models.response.SystemsInfo;
-import org.openhab.binding.icomfortwifi.internal.api.models.response.TemperatureControlSystem;
-import org.openhab.binding.icomfortwifi.internal.api.models.response.Zone;
 import org.openhab.binding.icomfortwifi.internal.api.models.response.ZoneStatus;
 import org.openhab.binding.icomfortwifi.internal.configuration.iComfortWiFiBridgeConfiguration;
 import org.openhab.core.thing.Bridge;
@@ -58,25 +52,25 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class iComfortWiFiBridgeHandler extends BaseBridgeHandler {
 
-    public final Logger logger = LoggerFactory.getLogger(iComfortWiFiBridgeHandler.class);
-    public final HttpClient httpClient;
-    public iComfortWiFiBridgeConfiguration configuration;
-    public @NonNullByDefault({}) iComfortWiFiApiClient apiClient;
-    public List<iComfortWiFiAccountStatusListener> listeners = new CopyOnWriteArrayList<>();
+    private final Logger logger = LoggerFactory.getLogger(iComfortWiFiBridgeHandler.class);
+    private final HttpClient httpClient;
+    private @NonNullByDefault({}) iComfortWiFiBridgeConfiguration configuration;
+    private @NonNullByDefault({}) iComfortWiFiApiClient apiClient;
+    private List<iComfortWiFiAccountStatusListener> listeners = new CopyOnWriteArrayList<>();
 
     protected @Nullable ScheduledFuture<?> refreshTask;
 
     public iComfortWiFiBridgeHandler(Bridge thing, HttpClient httpClient) {
         super(thing);
         this.httpClient = httpClient;
-        this.configuration = getThing().getConfiguration().as(iComfortWiFiBridgeConfiguration.class);
+        // this.configuration = getThing().getConfiguration().as(iComfortWiFiBridgeConfiguration.class);
     }
 
     @Override
     public void initialize() {
         configuration = getConfigAs(iComfortWiFiBridgeConfiguration.class);
 
-        if (checkConfig(configuration)) {
+        if (checkConfig()) {
             try {
                 apiClient = new iComfortWiFiApiClient(configuration, this.httpClient);
             } catch (Exception e) {
@@ -109,46 +103,6 @@ public class iComfortWiFiBridgeHandler extends BaseBridgeHandler {
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
     }
-
-    //////////////////// Added from EvoHome
-    // public @Nullable Locations getiComfortWiFiConfig() {
-    // iComfortWiFiApiClient localApiCLient = apiClient;
-    // if (localApiCLient != null) {
-    // return localApiCLient.getInstallationInfo();
-    // }
-    // return null;
-    // }
-
-    // public @Nullable LocationsStatus geticomfortwifiStatus() {
-    // iComfortWiFiApiClient localApiCLient = apiClient;
-    // if (localApiCLient != null) {
-    // return localApiCLient.getInstallationStatus();
-    // }
-    // return null;
-    // }
-
-    // public void setTcsMode(String tcsId, String mode) {
-    // iComfortWiFiApiClient localApiCLient = apiClient;
-    // if (localApiCLient != null) {
-    // tryToCall(() -> localApiCLient.setTcsMode(tcsId, mode));
-    // }
-    // }
-
-    // public void setPermanentSetPoint(String zoneId, double doubleValue) {
-    // iComfortWiFiApiClient localApiCLient = apiClient;
-    // if (localApiCLient != null) {
-    // tryToCall(() -> localApiCLient.setHeatingZoneOverride(zoneId, doubleValue));
-    // }
-    // }
-
-    // public void cancelSetPointOverride(String zoneId) {
-    // iComfortWiFiApiClient localApiCLient = apiClient;
-    // if (localApiCLient != null) {
-    // tryToCall(() -> localApiCLient.cancelHeatingZoneOverride(zoneId));
-    // }
-    // }
-
-    ////////////////////////////////////////
 
     public SystemsInfo getiComfortWiFiSystemsInfo() {
         return apiClient.getSystemsInfo();
@@ -185,6 +139,25 @@ public class iComfortWiFiBridgeHandler extends BaseBridgeHandler {
         updateThings();
     }
 
+    // Set zone heat point command
+    public void setZoneHeatingPoint(ZoneStatus zoneStatus, double doubleValue) {
+        // Validate that desired temperature in the range of gateway set points
+        for (SystemInfo systemInfo : apiClient.getSystemsInfo().systemInfo) {
+            if (systemInfo.gatewaySN.equals(zoneStatus.gatewaySN)) {
+                if (doubleValue >= systemInfo.getGatewayInfo().heatSetPointLowLimit
+                        && doubleValue <= systemInfo.getGatewayInfo().heatSetPointHighLimit) {
+                    tryToCall(() -> apiClient.setZoneHeatingPoint(zoneStatus, doubleValue));
+                    break;
+                }
+            }
+        }
+        updateThings();
+    }
+
+    public void setAlternateTemperatureUnit(TempUnits tempUnit) {
+        this.update(tempUnit);
+    }
+
     public void addAccountStatusListener(iComfortWiFiAccountStatusListener listener) {
         listeners.add(listener);
         listener.accountStatusChanged(getThing().getStatus());
@@ -203,32 +176,11 @@ public class iComfortWiFiBridgeHandler extends BaseBridgeHandler {
         }
     }
 
-    public boolean checkInstallationInfoHasDuplicateIds(Locations locations) {
-        boolean result = true;
-
-        // Make sure that there are no duplicate IDs
-        Set<String> ids = new HashSet<>();
-
-        for (Location location : locations) {
-            result &= ids.add(location.getLocationInfo().getLocationId());
-            for (Gateway gateway : location.getGateways()) {
-                result &= ids.add(gateway.getGatewayInfo().getGatewayId());
-                for (TemperatureControlSystem tcs : gateway.getTemperatureControlSystems()) {
-                    result &= ids.add(tcs.getSystemId());
-                    for (Zone zone : tcs.getZones()) {
-                        result &= ids.add(zone.getZoneId());
-                    }
-                }
-            }
-        }
-        return result;
-    }
-
     private void disposeApiClient() {
         iComfortWiFiApiClient localApiClient = apiClient;
         if (localApiClient != null) {
             localApiClient.logout();
-            this.apiClient = null;
+            // this.apiClient = null;
         }
     }
 
@@ -236,16 +188,15 @@ public class iComfortWiFiBridgeHandler extends BaseBridgeHandler {
         ScheduledFuture<?> localRefreshTask = refreshTask;
         if (localRefreshTask != null) {
             localRefreshTask.cancel(true);
-            this.refreshTask = null;
+            // this.refreshTask = null;
         }
     }
 
-    public boolean checkConfig(iComfortWiFiBridgeConfiguration configuration) {
+    private boolean checkConfig() {
         String errorMessage = "";
-
-        if (configuration.userName.isBlank()) {
+        if (StringUtils.isEmpty(configuration.userName)) {
             errorMessage = "Username not configured";
-        } else if (configuration.password.isBlank()) {
+        } else if (StringUtils.isEmpty(configuration.password)) {
             errorMessage = "Password not configured";
         } else {
             return true;
@@ -275,18 +226,6 @@ public class iComfortWiFiBridgeHandler extends BaseBridgeHandler {
             logger.debug("Failed to update installation status", e);
         }
     }
-
-    // Requesting update from the back end in specified unit.
-    // public void update(TempUnits tempUnit) {
-    // try {
-    // apiClient.update(tempUnit);
-    // updateAccountStatus(ThingStatus.ONLINE);
-    // updateThings();
-    // } catch (Exception e) {
-    // updateAccountStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
-    // logger.debug("Failed to update system status", e);
-    // }
-    // }
 
     public void update(TempUnits tempUnit) {
         try {
@@ -318,26 +257,6 @@ public class iComfortWiFiBridgeHandler extends BaseBridgeHandler {
         for (iComfortWiFiAccountStatusListener listener : listeners) {
             listener.accountStatusChanged(status);
         }
-    }
-
-    // Set zone heat point command
-    public void setZoneHeatingPoint(ZoneStatus zoneStatus, double doubleValue) {
-        // Validate that desired temperature in the range of gateway set points
-        for (SystemInfo systemInfo : apiClient.getSystemsInfo().systemInfo) {
-            if (systemInfo.gatewaySN.equals(zoneStatus.gatewaySN)) {
-                if (doubleValue >= systemInfo.getGatewayInfo().heatSetPointLowLimit
-                        && doubleValue <= systemInfo.getGatewayInfo().heatSetPointHighLimit) {
-                    tryToCall(() -> apiClient.setZoneHeatingPoint(zoneStatus, doubleValue));
-                    break;
-                }
-            }
-
-        }
-        updateThings();
-    }
-
-    public void setAlternateTemperatureUnit(TempUnits tempUnit) {
-        this.update(tempUnit);
     }
 
     private void updateThings() {

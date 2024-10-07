@@ -41,19 +41,15 @@ import org.osgi.service.component.annotations.Reference;
  * Provides the thing factory for this binding
  *
  * @author Konstantin Panchenko - Initial contribution
+ * @author Jason Kotan - Added @nonNullByDefault. Change the @Refrence with @Activate iComfortWiFiHandlerFactory code
  *
  */
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.icomfortwifi")
 @NonNullByDefault
 public class iComfortWiFiHandlerFactory extends BaseThingHandlerFactory {
 
-    public final Map<ThingUID, @Nullable ServiceRegistration<?>> discoveryServiceRegs = new HashMap<>();
-    public final HttpClient httpClient;
-
-    @Activate
-    public iComfortWiFiHandlerFactory(@Reference final HttpClientFactory httpClientFactory) {
-        this.httpClient = httpClientFactory.getCommonHttpClient();
-    }
+    private final Map<ThingUID, @Nullable ServiceRegistration<?>> discoveryServiceRegs = new HashMap<>();
+    private HttpClient httpClient;
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -102,6 +98,12 @@ public class iComfortWiFiHandlerFactory extends BaseThingHandlerFactory {
                 discoveryServiceRegs.remove(thingHandler.getThing().getUID());
             }
         }
+    }
+
+    @Activate
+    public iComfortWiFiHandlerFactory(@Reference final HttpClientFactory httpClientFactory) {
+        HttpClient client = httpClientFactory.getCommonHttpClient();
+        this.httpClient = client; // This should now not be null
     }
 
     // @Reference

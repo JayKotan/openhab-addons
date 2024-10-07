@@ -95,9 +95,6 @@ public class ZoneStatus {
     @SerializedName("Zones_Installed")
     public Integer zonesInstalled;
 
-    @SerializedName("zoneId")
-    private String zoneId;
-
     public ZoneStatus() {
     }
 
@@ -107,10 +104,6 @@ public class ZoneStatus {
 
     public String getActiveFault() { // For future implementation System Status must be provided as string message
         return systemStatus.toString();
-    }
-
-    public String getZoneIdTcs() {
-        return zoneId;
     }
 
     public String getZoneID() {

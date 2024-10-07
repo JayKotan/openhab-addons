@@ -38,7 +38,8 @@ import com.google.gson.GsonBuilder;
  * Provides access to (an optionally OAUTH based) API. Makes sure that all the necessary headers are set.
  *
  * @author Konstantin Panchenko - Initial contribution
- *
+ * @author Jason Kotan - Updated Imports and additional Null handeling. Updated API Access, both doRequest,
+ *         doAuthenticatedRequest.
  */
 public class ApiAccess {
     private static final int REQUEST_TIMEOUT_SECONDS = 5; // Timeout for requests in seconds
@@ -154,27 +155,6 @@ public class ApiAccess {
     }
 
     /**
-     * Issues an HTTP PUT request on the API's URL, using an object that is serialized to JSON as input.
-     * Makes sure that the request is correctly formatted.
-     *
-     * @param method The HTTP method to use (POST, GET, ...)
-     * @param url The URL to query
-     * @param headers The optional additional headers to apply, can be null
-     * @param requestContainer The object to use as JSON data for the request
-     * @param outClass The type of the requested result
-     * @return The result of the request or null
-     * @throws TimeoutException Thrown when a request times out
-     */
-    private @Nullable <TOut> TOut doRequest(HttpMethod method, String url, Map<String, String> headers,
-            @Nullable Object requestContainer, String contentType, @Nullable Class<TOut> outClass)
-            throws TimeoutException {
-
-        String json = requestContainer != null ? gson.toJson(requestContainer) : null; // Serialize the request
-                                                                                       // container to JSON
-        return doRequest(method, url, headers, json, contentType, outClass); // Call the main doRequest method
-    }
-
-    /**
      * Issues an HTTP request on the API's URL, using the authentication applied to the type.
      * Makes sure that the request is correctly formatted.
      *
@@ -198,5 +178,26 @@ public class ApiAccess {
 
         return doRequest(method, url, headers.isEmpty() ? null : headers, requestContainer,
                 requestContainer != null ? "application/json" : null, outClass);
+    }
+
+    /**
+     * Issues an HTTP PUT request on the API's URL, using an object that is serialized to JSON as input.
+     * Makes sure that the request is correctly formatted.
+     *
+     * @param method The HTTP method to use (POST, GET, ...)
+     * @param url The URL to query
+     * @param headers The optional additional headers to apply, can be null
+     * @param requestContainer The object to use as JSON data for the request
+     * @param outClass The type of the requested result
+     * @return The result of the request or null
+     * @throws TimeoutException Thrown when a request times out
+     */
+    private @Nullable <TOut> TOut doRequest(HttpMethod method, String url, Map<String, String> headers,
+            @Nullable Object requestContainer, String contentType, @Nullable Class<TOut> outClass)
+            throws TimeoutException {
+
+        String json = requestContainer != null ? gson.toJson(requestContainer) : null; // Serialize the request
+                                                                                       // container to JSON
+        return doRequest(method, url, headers, json, contentType, outClass); // Call the main doRequest method
     }
 }

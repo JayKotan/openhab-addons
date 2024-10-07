@@ -19,7 +19,7 @@ import org.openhab.core.thing.ThingStatus;
  * Interface for a listener of the iComfortWiFi account status
  *
  * @author Konstantin Panchenko - Initial contribution
- *
+ * @author Jason Kotan - Made NonNullByDefault. Updated
  */
 @NonNullByDefault
 public interface iComfortWiFiAccountStatusListener {

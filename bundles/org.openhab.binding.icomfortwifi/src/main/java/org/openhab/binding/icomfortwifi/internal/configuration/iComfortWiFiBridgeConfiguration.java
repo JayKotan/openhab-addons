@@ -19,6 +19,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  * Contains the configuration of the binding.
  *
  * @author Konstantin Panchenko - Initial contribution
+ * @author Jason Kotan - Updated Import section
  */
 @NonNullByDefault
 public class iComfortWiFiBridgeConfiguration {
@@ -27,6 +28,6 @@ public class iComfortWiFiBridgeConfiguration {
 
     public String userName = "";
     public String password = "";
-    // public String applicationId = ""; //Added from EVOHome
+
     public Integer refreshInterval = DEFAULT_REFRESH;
 }

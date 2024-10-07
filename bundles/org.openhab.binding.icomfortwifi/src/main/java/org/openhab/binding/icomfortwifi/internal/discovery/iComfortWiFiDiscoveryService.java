@@ -41,16 +41,17 @@ import org.slf4j.LoggerFactory;
  * The {@link iComfortWiFiDiscoveryService} class is capable of discovering the available data from iComfortWiFi
  *
  * @author Konstantin Panchenko - Initial contribution
+ * @author Jason Kotan - Added @nullByDefault- updated Import section
  *
  */
 @NonNullByDefault
 public class iComfortWiFiDiscoveryService extends AbstractDiscoveryService
         implements iComfortWiFiAccountStatusListener {
-    public final Logger logger = LoggerFactory.getLogger(iComfortWiFiDiscoveryService.class);
-    public static final int TIMEOUT = 5;
+    private final Logger logger = LoggerFactory.getLogger(iComfortWiFiDiscoveryService.class);
+    private static final int TIMEOUT = 5;
 
-    public iComfortWiFiBridgeHandler bridge;
-    public ThingUID bridgeUID;
+    private iComfortWiFiBridgeHandler bridge;
+    private ThingUID bridgeUID;
 
     public iComfortWiFiDiscoveryService(iComfortWiFiBridgeHandler bridge) {
         super(iComfortWiFiBindingConstants.SUPPORTED_THING_TYPES_UIDS, TIMEOUT);
@@ -89,7 +90,6 @@ public class iComfortWiFiDiscoveryService extends AbstractDiscoveryService
         bridge.removeAccountStatusListener(this);
     }
 
-    //
     public void discoverDevices() {
         if (bridge.getThing().getStatus() != ThingStatus.ONLINE) {
             logger.debug("iComfortWiFi Gateway not online, scanning postponed");
