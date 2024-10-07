@@ -3,13 +3,15 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
-
 	<!-- Lennox iComfort WiFi Account -->
 	<bridge-type id="account">
 		<label>iComfort WiFi Account</label>
 		<description>An account for using the Lennox iComfort WiFi API</description>
-
 		<config-description>
+			<parameter-group name="userCred">
+				<label>userCredentials</label>
+				<description>Contains the settings needed to pass user credentials</description>
+			</parameter-group>
 			<parameter name="userName" type="text" required="true">
 				<label>User Name</label>
 				<description>User name for logging in to iComfort system</description>

@@ -12,26 +12,25 @@
  */
 package org.openhab.binding.icomfortwifi.internal.api.models.response;
 
-import java.util.ArrayList;
-
-import org.openhab.binding.icomfortwifi.internal.api.models.response.CustomTypes.RequestStatus;
-
 import com.google.gson.annotations.SerializedName;
 
 /**
- * Response model for the zone status
+ * Response model for the schedule capabilities
  *
- * @author Konstantin Panchenko - Initial contribution
+ * @author Jasper van Zuijlen - Initial contribution
  *
  */
-public class GatewaysAlerts {
+public class ScheduleCapabilities {
 
-    @SerializedName("ReturnStatus")
-    public RequestStatus returnStatus;
+    @SerializedName("maxSwitchpointsPerDay")
+    public int maxSwitchpointsPerDay;
 
-    @SerializedName("Alerts")
-    public ArrayList<GatewayAlert> systemAlert;
+    @SerializedName("minSwitchpointsPerDay")
+    public int minSwitchpointsPerDay;
 
-    public GatewaysAlerts() {
-    }
+    @SerializedName("setpointValueResolution")
+    public double setpointValueResolution;
+
+    @SerializedName("timingResolution")
+    public String timingResolution;
 }

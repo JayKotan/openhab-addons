@@ -15,19 +15,17 @@ package org.openhab.binding.icomfortwifi.internal.api.models.response;
 import javax.measure.Unit;
 import javax.measure.quantity.Temperature;
 
-import org.eclipse.jdt.annotation.NonNull;
 import org.openhab.core.library.unit.ImperialUnits;
 import org.openhab.core.library.unit.SIUnits;
 
 import com.google.gson.annotations.SerializedName;
 
 /**
- *
+ * Response model for the zone status
  *
  * @author Konstantin Panchenko - Initial contribution
- * @author Jason Kotan - Updated for Openhab 4.2.1
+ *
  */
-
 public class CustomTypes {
 
     public enum RequestStatus {
@@ -45,9 +43,10 @@ public class CustomTypes {
         CELSIUS("1"),
         UNKNOWN("unknown");
 
-        private String tempUnitsValue;
+        public String tempUnitsValue;
 
-        private TempUnits(String tempUnitsValue) {
+        // Revert to public constructor
+        TempUnits(String tempUnitsValue) {
             this.tempUnitsValue = tempUnitsValue;
         }
 
@@ -55,7 +54,6 @@ public class CustomTypes {
             return this.tempUnitsValue;
         }
 
-        @NonNull
         @SuppressWarnings("null")
         public Unit<Temperature> getTemperatureUnit() {
             switch (this.tempUnitsValue) {
@@ -90,9 +88,10 @@ public class CustomTypes {
         OFF(0),
         UNKNOWN(-1);
 
-        private Integer operationModeValue;
+        public Integer operationModeValue;
 
-        private OperationMode(Integer operationModeValue) {
+        // Revert to public constructor
+        OperationMode(Integer operationModeValue) {
             this.operationModeValue = operationModeValue;
         }
 
@@ -117,9 +116,10 @@ public class CustomTypes {
 
         UNKNOWN("-1");
 
-        private String unifiedOperationModeValue;
+        public String unifiedOperationModeValue;
 
-        private UnifiedOperationMode(String unifiedOperationModeValue) {
+        // Revert to public constructor
+        UnifiedOperationMode(String unifiedOperationModeValue) {
             this.unifiedOperationModeValue = unifiedOperationModeValue;
         }
 
@@ -146,9 +146,10 @@ public class CustomTypes {
         EMERGENCY_HEAT(4),
         UNKNOWN(-1);
 
-        private Integer systemStatusValue;
+        public Integer systemStatusValue;
 
-        private SystemStatus(Integer systemStatusValue) {
+        // Revert to public constructor
+        SystemStatus(Integer systemStatusValue) {
             this.systemStatusValue = systemStatusValue;
         }
 
@@ -164,9 +165,10 @@ public class CustomTypes {
         AWAY_ON(1),
         UNKNOWN(-1);
 
-        private Integer awayValue;
+        public Integer awayValue;
 
-        private AwayStatus(Integer awayValue) {
+        // Revert to public constructor
+        AwayStatus(Integer awayValue) {
             this.awayValue = awayValue;
         }
 
@@ -184,9 +186,10 @@ public class CustomTypes {
         CIRCULATE(2),
         UNKNOWN(-1);
 
-        private Integer fanModeValue;
+        public Integer fanModeValue;
 
-        private FanMode(Integer fanModeValue) {
+        // Revert to public constructor
+        FanMode(Integer fanModeValue) {
             this.fanModeValue = fanModeValue;
         }
 
@@ -212,9 +215,10 @@ public class CustomTypes {
         SPANISH(2),
         UNKNOWN(-1);
 
-        private Integer prefferedLanguage;
+        public Integer prefferedLanguage;
 
-        private PrefferedLanguage(Integer prefferedLanguage) {
+        // Revert to public constructor
+        PrefferedLanguage(Integer prefferedLanguage) {
             this.prefferedLanguage = prefferedLanguage;
         }
 
@@ -230,9 +234,10 @@ public class CustomTypes {
         ALERT_RAISED(1),
         UNKNOWN(-1);
 
-        private Integer alertValue;
+        public Integer alertValue;
 
-        private AlertStatus(Integer alertValue) {
+        // Revert to public constructor
+        AlertStatus(Integer alertValue) {
             this.alertValue = alertValue;
         }
 

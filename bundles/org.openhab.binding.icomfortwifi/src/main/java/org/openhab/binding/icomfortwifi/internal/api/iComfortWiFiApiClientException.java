@@ -12,15 +12,18 @@
  */
 package org.openhab.binding.icomfortwifi.internal.api;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Exception for errors from the API Client.
  *
  * @author Konstantin Panchenko - Initial contribution
  *
  */
+@NonNullByDefault
 public class iComfortWiFiApiClientException extends Exception {
 
-    private static final long serialVersionUID = 9991L;
+    public static final long serialVersionUID = 9991L;
 
     public iComfortWiFiApiClientException() {
     }

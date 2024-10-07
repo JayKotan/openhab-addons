@@ -10,22 +10,17 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.icomfortwifi.handler;
+package org.openhab.binding.icomfortwifi.internal;
 
-import org.openhab.core.thing.ThingStatus;
+import java.util.concurrent.TimeoutException;
 
 /**
- * Interface for a listener of the iComfortWiFi account status
+ * Provides an interface for a delegate that can throw a timeout
  *
  * @author Konstantin Panchenko - Initial contribution
  *
  */
-public interface iComfortWiFiAccountStatusListener {
+public interface RunnableWithTimeout {
 
-    /**
-     * Notifies the client that the status has changed.
-     *
-     * @param status The new status of the account thing
-     */
-    public void accountStatusChanged(ThingStatus status);
+    public abstract void run() throws TimeoutException;
 }

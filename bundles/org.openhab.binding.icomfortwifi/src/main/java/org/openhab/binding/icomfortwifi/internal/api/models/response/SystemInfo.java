@@ -12,12 +12,18 @@
  */
 package org.openhab.binding.icomfortwifi.internal.api.models.response;
 
+// import java.util.ArrayList;
+
+// import java.util.List;
+
+// import org.openhab.binding.icomfortwifi.internal.api.models.response.CustomTypes.RequestStatus;
+
 import com.google.gson.annotations.SerializedName;
 
 /**
  * Response model for the system information
  *
- * @author Konstantin Panchenko- Initial contribution
+ * @author Konstantin Panchenko - Initial contribution
  *
  */
 

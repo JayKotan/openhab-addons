@@ -10,17 +10,15 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.icomfortwifi;
-
-import java.util.concurrent.TimeoutException;
+package org.openhab.binding.icomfortwifi.internal.api.models.request;
 
 /**
- * Provides an interface for a delegate that can throw a timeout
+ * Builder for API requests
  *
- * @author Konstantin Panchenko - Initial contribution
+ * @author Jasper van Zuijlen - Initial contribution
  *
  */
-public interface RunnableWithTimeout {
+public interface RequestBuilder<T> {
 
-    public abstract void run() throws TimeoutException;
+    T build();
 }

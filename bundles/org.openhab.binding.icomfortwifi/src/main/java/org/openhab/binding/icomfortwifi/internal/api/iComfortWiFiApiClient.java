@@ -12,13 +12,15 @@
  */
 package org.openhab.binding.icomfortwifi.internal.api;
 
-import java.util.Base64;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeoutException;
-import java.nio.charset.StandardCharsets;
+
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.http.HttpMethod;
 import org.openhab.binding.icomfortwifi.internal.api.models.request.ReqSetAwayMode;
@@ -29,7 +31,10 @@ import org.openhab.binding.icomfortwifi.internal.api.models.response.CustomTypes
 import org.openhab.binding.icomfortwifi.internal.api.models.response.CustomTypes.TempUnits;
 import org.openhab.binding.icomfortwifi.internal.api.models.response.GatewayInfo;
 import org.openhab.binding.icomfortwifi.internal.api.models.response.GatewaysAlerts;
+import org.openhab.binding.icomfortwifi.internal.api.models.response.Locations;
+import org.openhab.binding.icomfortwifi.internal.api.models.response.LocationsStatus;
 import org.openhab.binding.icomfortwifi.internal.api.models.response.OwnerProfileInfo;
+import org.openhab.binding.icomfortwifi.internal.api.models.response.SystemInfo;
 import org.openhab.binding.icomfortwifi.internal.api.models.response.SystemsInfo;
 import org.openhab.binding.icomfortwifi.internal.api.models.response.UserValidation;
 import org.openhab.binding.icomfortwifi.internal.api.models.response.ZoneStatus;
@@ -37,6 +42,12 @@ import org.openhab.binding.icomfortwifi.internal.api.models.response.ZonesStatus
 import org.openhab.binding.icomfortwifi.internal.configuration.iComfortWiFiBridgeConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.gson.Gson;
+
+// import antlr.collections.List;
+
+// import org.apache.commons.lang3.StringUtils;
 
 /**
  * Implementation of the iComfortWiFi client api
@@ -46,16 +57,30 @@ import org.slf4j.LoggerFactory;
  */
 public class iComfortWiFiApiClient {
 
-    private final Logger logger = LoggerFactory.getLogger(iComfortWiFiApiClient.class);
-    private final HttpClient httpClient;
-    private final iComfortWiFiBridgeConfiguration configuration;
-    private final ApiAccess apiAccess;
-
+    public final Logger logger = LoggerFactory.getLogger(iComfortWiFiApiClient.class);
+    public final HttpClient httpClient;
+    public final iComfortWiFiBridgeConfiguration configuration;
+    public final ApiAccess apiAccess;
+    private final Gson gson = new Gson();
     private BuildingsInfo buildingsInfo = new BuildingsInfo();
     private OwnerProfileInfo ownerProfileInfo = new OwnerProfileInfo();
     private SystemsInfo systemsInfo = new SystemsInfo();
-
+    private SystemInfo systemInfo = new SystemInfo();
+    private Locations locations = new Locations();
+    private @Nullable LocationsStatus locationsStatus;
     private final Integer alertsCount = 20;
+
+    public SystemInfo getSystemInfo() {
+        return systemInfo;
+    }
+
+    public Locations getLocations() {
+        return locations;
+    }
+
+    public @Nullable LocationsStatus getLocationsStatus() {
+        return locationsStatus;
+    }
 
     /**
      * Creates a new API client based on the V1 API interface
@@ -66,15 +91,8 @@ public class iComfortWiFiApiClient {
     public iComfortWiFiApiClient(iComfortWiFiBridgeConfiguration configuration, HttpClient httpClient)
             throws Exception {
         this.configuration = configuration;
+        // Uncomment this line to initialize httpClient
         this.httpClient = httpClient;
-
-        try {
-            httpClient.start();
-        } catch (Exception e) {
-            logger.error("Could not start http client", e);
-            throw new iComfortWiFiApiClientException("Could not start http client", e);
-        }
-
         apiAccess = new ApiAccess(httpClient);
     }
 
@@ -82,18 +100,10 @@ public class iComfortWiFiApiClient {
      * Closes the current connection to the API
      */
     public void close() {
-        apiAccess.setUserCredentials(null);
+        apiAccess.setUserCredentials("");
         ownerProfileInfo = null;
         buildingsInfo = null;
         systemsInfo = null;
-
-        if (httpClient.isStarted()) {
-            try {
-                httpClient.stop();
-            } catch (Exception e) {
-                logger.debug("Could not stop http client.", e);
-            }
-        }
     }
 
     // Initial talk to iComfortWiFi API service
@@ -114,6 +124,18 @@ public class iComfortWiFiApiClient {
                 success = false;
             }
 
+            if (ownerProfileInfo == null) {
+                logger.debug("Failed to get ownerProfileInfo");
+                success = false;
+            }
+            if (buildingsInfo == null || systemsInfo == null) {
+                logger.debug("Failed to get system buildingsInfo");
+                success = false;
+            }
+            if (systemsInfo == null) {
+                logger.debug("Failed to get systemsInfo");
+                success = false;
+            }
             if (ownerProfileInfo == null || buildingsInfo == null || systemsInfo == null) {
                 logger.debug("Failed to get system basic information");
                 success = false;
@@ -121,13 +143,76 @@ public class iComfortWiFiApiClient {
         } else {
             logger.debug("Authorization failed");
         }
-
         return success;
     }
 
     public void logout() {
         close();
     }
+
+    ///////// Added from EVOhome may not use
+    // public Locations getInstallationInfo() {
+    // return locations;
+    // }
+
+    // public @Nullable LocationsStatus getInstallationStatus() {
+    // return locationsStatus;
+    // }
+
+    // public void setTcsMode(String tcsId, String mode) throws TimeoutException {
+    // String url = String.format(
+    // iComfortWiFiBindingConstants.URL_V2_BASE + iComfortWiFiBindingConstants.ZONE_OPERATION_MODE_CHANNEL,
+    // tcsId);
+    // Mode modeCommand = new ModeBuilder().setMode(mode).build();
+    // apiAccess.doAuthenticatedPut(url, modeCommand);
+    // }
+
+    // public void setHeatingZoneOverride(String zoneId, double setPoint) throws TimeoutException {
+    // HeatSetPoint setPointCommand = new HeatSetPointBuilder().setSetPoint(setPoint).build();
+    // setHeatingZoneOverride(zoneId, setPointCommand);
+    // }
+
+    // public void cancelHeatingZoneOverride(String zoneId) throws TimeoutException {
+    // HeatSetPoint setPointCommand = new HeatSetPointBuilder().setCancelSetPoint().build();
+    // setHeatingZoneOverride(zoneId, setPointCommand);
+    // }
+
+    // public void setHeatingZoneOverride(String zoneId, HeatSetPoint heatSetPoint) throws TimeoutException {
+    // String url = iComfortWiFiBindingConstants.URL_V2_BASE + iComfortWiFiBindingConstants.URL_V2_HEAT_SETPOINT;
+    // url = String.format(url, zoneId);
+    // apiAccess.doAuthenticatedPut(url, heatSetPoint);
+    // }
+
+    // public @Nullable UserAccount requestUserAccount() throws TimeoutException {
+    // String url = iComfortWiFiBindingConstants.URL_V2_BASE + iComfortWiFiBindingConstants.URL_V2_ACCOUNT;
+    // return apiAccess.doAuthenticatedGet(url, UserAccount.class);
+    // }
+
+    // public Locations requestLocations() throws TimeoutException {
+    // Locations locations = null;
+    // UserAccount localAccount = useraccount;
+    // if (localAccount != null) {
+    // String url = iComfortWiFiBindingConstants.URL_V2_BASE + iComfortWiFiBindingConstants.URL_V2_INSTALLATION_INFO;
+    // url = String.format(url, localAccount.getUserId());
+
+    // locations = apiAccess.doAuthenticatedGet(url, Locations.class);
+    // }
+    // return locations != null ? locations : new Locations();
+    // }
+
+    // public LocationsStatus requestLocationsStatus() throws TimeoutException {
+    // LocationsStatus locationsStatus = new LocationsStatus();
+
+    // for (Location location : locations) {
+    // String url = iComfortWiFiBindingConstants.URL_V2_BASE + iComfortWiFiBindingConstants.URL_V2_LOCATION_STATUS;
+    // url = String.format(url, location.getLocationInfo().getLocationId());
+    // LocationStatus status = apiAccess.doAuthenticatedGet(url, LocationStatus.class);
+    // locationsStatus.add(status);
+    // }
+
+    // return locationsStatus;
+    // }
+    ///////////////////////////////////////
 
     public void update() {
         try {
@@ -240,13 +325,6 @@ public class iComfortWiFiApiClient {
         return systemsInfo;
     }
 
-    // public void setTcsMode(String tcsId, String mode) throws TimeoutException {
-    // String url = String.format(iComfortWiFiApiConstants.URL_V2_BASE + iComfortWiFiApiConstants.URL_V2_MODE, tcsId);
-    // Mode modeCommand = new ModeBuilder().setMode(mode).build();
-    // apiAccess.doAuthenticatedPut(url, modeCommand);
-    // }
-    //
-
     public void setZoneHeatingPoint(ZoneStatus zoneStatus, Double setPoint) throws TimeoutException {
         String url = iComfortWiFiApiCommands.getCommandSetTStatInfo();
         ReqSetTStatInfo requestSetInfo = new ReqSetTStatInfo(zoneStatus);
@@ -267,11 +345,15 @@ public class iComfortWiFiApiClient {
         ReqSetAwayMode requestSetAway = new ReqSetAwayMode(zoneStatus);
         requestSetAway.awayMode = awayMode;
         String url = iComfortWiFiApiCommands.getCommandSetAwayModeNew(requestSetAway);
-        ZonesStatus newZonesStatus = apiAccess.doAuthenticatedPut(url, null, ZonesStatus.class);
+
+        // Assuming the ZonesStatus object should be returned by the API call
+        ZonesStatus newZonesStatus = apiAccess.doAuthenticatedPut(url, requestSetAway, ZonesStatus.class);
+
         // Updating status for changed system
         for (int i = 0; i < systemsInfo.systemInfo.size(); i++) {
             if (systemsInfo.systemInfo.get(i).getZonesStatus().zoneStatus.get(0).gatewaySN
                     .equals(zoneStatus.gatewaySN)) {
+                // Pass the correct ZonesStatus object
                 systemsInfo.systemInfo.get(i).setZonesStatus(newZonesStatus);
                 break;
             }
@@ -304,6 +386,7 @@ public class iComfortWiFiApiClient {
         return apiAccess.doAuthenticatedGet(url, BuildingsInfo.class);
     }
 
+    // @SuppressWarnings("null")
     private SystemsInfo requestSystemsInfo(String userName) throws TimeoutException {
         String url = iComfortWiFiApiCommands.getCommandGetSystemsInfo(userName);
         return apiAccess.doAuthenticatedGet(url, SystemsInfo.class);
@@ -332,28 +415,31 @@ public class iComfortWiFiApiClient {
         String basicAuthentication = null;
         try {
             Map<String, String> headers = new HashMap<>();
-            // Use Base64.getEncoder() instead of deprecated B64Code
-            String authString = configuration.userName + ":" + configuration.password;
-            String encodedAuth = Base64.getEncoder().encodeToString(authString.getBytes(StandardCharsets.UTF_8));
-            basicAuthentication = "Basic " + encodedAuth;
+            // Prepare and encode username (if necessary) and password
+            String authString = (configuration.userName.contains(" ") || configuration.userName.contains(":"))
+                    ? URLEncoder.encode(configuration.userName, "UTF-8")
+                    : configuration.userName;
+            authString += ":" + configuration.password;
+            // Encode to Base64
+            String encodedAuthString = Base64.getEncoder().encodeToString(authString.getBytes(StandardCharsets.UTF_8));
+            basicAuthentication = "Basic " + encodedAuthString; // This is the full auth string
+            // Set headers
             headers.put("Authorization", basicAuthentication);
             headers.put("Accept",
                     "application/json, application/xml, text/json, text/x-json, text/javascript, text/xml");
-            validation = apiAccess.doRequest(
-                    HttpMethod.PUT, iComfortWiFiApiCommands
-                            .getCommandValidateUser((URLEncoder.encode(configuration.userName, "UTF-8")), 0),
-                    headers, null, "application/x-www-form-urlencoded", UserValidation.class);
-        } catch (TimeoutException e) {
-            // A timeout is not a successful login as well
-            logger.error("Request timeout during user validation", e);
-        } catch (UnsupportedEncodingException e) {
-            logger.error("Credential conversion failed", e);
+            // Validate user
+            String encodedUsername = URLEncoder.encode(configuration.userName, "UTF-8");
+            validation = apiAccess.doRequest(HttpMethod.PUT,
+                    iComfortWiFiApiCommands.getCommandValidateUser(encodedUsername, 0), headers, null,
+                    "application/x-www-form-urlencoded", UserValidation.class);
+        } catch (TimeoutException | UnsupportedEncodingException e) {
+            logger.error("Error during user validation", e);
         }
         if (validation != null && validation.msgCode.equals(RequestStatus.SUCCESS)) {
-            apiAccess.setUserCredentials(basicAuthentication);
+            apiAccess.setUserCredentials(basicAuthentication); // Store full credentials
             return true;
         } else {
-            apiAccess.setUserCredentials(null);
+            apiAccess.setUserCredentials("");
             return false;
         }
     }

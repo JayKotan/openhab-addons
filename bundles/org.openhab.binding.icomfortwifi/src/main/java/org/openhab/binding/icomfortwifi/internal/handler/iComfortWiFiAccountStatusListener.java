@@ -10,22 +10,24 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.icomfortwifi.internal;
+package org.openhab.binding.icomfortwifi.internal.handler;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.core.thing.ThingStatus;
 
 /**
- * The {@link icomfortwifiConfiguration} class contains fields mapping thing configuration parameters.
+ * Interface for a listener of the iComfortWiFi account status
  *
- * @author Jason Kotan - Initial contribution
+ * @author Konstantin Panchenko - Initial contribution
+ *
  */
 @NonNullByDefault
-public class icomfortwifiConfiguration {
+public interface iComfortWiFiAccountStatusListener {
 
     /**
-     * Sample configuration parameters. Replace with your own.
+     * Notifies the client that the status has changed.
+     *
+     * @param status The new status of the account thing
      */
-    public String hostname = "";
-    public String password = "";
-    public int refreshInterval = 600;
+    public void accountStatusChanged(ThingStatus status);
 }

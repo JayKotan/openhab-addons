@@ -12,26 +12,25 @@
  */
 package org.openhab.binding.icomfortwifi.internal.api.models.response;
 
-import java.util.ArrayList;
-
-import org.openhab.binding.icomfortwifi.internal.api.models.response.CustomTypes.RequestStatus;
-
 import com.google.gson.annotations.SerializedName;
 
 /**
- * Response model for the zone status
+ * Response model for the location owner
  *
- * @author Konstantin Panchenko - Initial contribution
+ * @author Jasper van Zuijlen - Initial contribution
  *
  */
-public class GatewaysAlerts {
+public class LocationOwner {
 
-    @SerializedName("ReturnStatus")
-    public RequestStatus returnStatus;
+    @SerializedName("userId")
+    public int userId;
 
-    @SerializedName("Alerts")
-    public ArrayList<GatewayAlert> systemAlert;
+    @SerializedName("username")
+    public String username;
 
-    public GatewaysAlerts() {
-    }
+    @SerializedName("firstname")
+    public String firstName;
+
+    @SerializedName("lastname")
+    public String lastName;
 }

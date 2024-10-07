@@ -21,12 +21,11 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonParseException;
 
 /**
- *
+ * Response model for the System Alert
  *
  * @author Konstantin Panchenko - Initial contribution
- * @author Jason Kotan - Updated for Openhab 4.2.1
+ *
  */
-
 public class JsonDateDeserializer implements JsonDeserializer<Date> {
 
     @Override

@@ -14,24 +14,12 @@ package org.openhab.binding.icomfortwifi.internal.api.models.response;
 
 import java.util.ArrayList;
 
-import org.openhab.binding.icomfortwifi.internal.api.models.response.CustomTypes.RequestStatus;
-
-import com.google.gson.annotations.SerializedName;
-
 /**
- * Response model for the zone status
+ * Alias for a list of locations
  *
- * @author Konstantin Panchenko - Initial contribution
+ * @author Jasper van Zuijlen - Initial contribution
  *
  */
-public class GatewaysAlerts {
-
-    @SerializedName("ReturnStatus")
-    public RequestStatus returnStatus;
-
-    @SerializedName("Alerts")
-    public ArrayList<GatewayAlert> systemAlert;
-
-    public GatewaysAlerts() {
-    }
+public class Locations extends ArrayList<Location> {
+    public static final long serialVersionUID = 1L;
 }

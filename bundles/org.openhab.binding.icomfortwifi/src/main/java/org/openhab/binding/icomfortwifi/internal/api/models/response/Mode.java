@@ -12,26 +12,31 @@
  */
 package org.openhab.binding.icomfortwifi.internal.api.models.response;
 
-import java.util.ArrayList;
-
-import org.openhab.binding.icomfortwifi.internal.api.models.response.CustomTypes.RequestStatus;
-
 import com.google.gson.annotations.SerializedName;
 
 /**
- * Response model for the zone status
+ * Response model for the mode
  *
- * @author Konstantin Panchenko - Initial contribution
+ * @author Jasper van Zuijlen - Initial contribution
  *
  */
-public class GatewaysAlerts {
+public class Mode {
 
-    @SerializedName("ReturnStatus")
-    public RequestStatus returnStatus;
+    @SerializedName("systemMode")
+    public String systemMode;
 
-    @SerializedName("Alerts")
-    public ArrayList<GatewayAlert> systemAlert;
+    @SerializedName("canBePermanent")
+    public boolean canBePermanent;
 
-    public GatewaysAlerts() {
-    }
+    @SerializedName("canBeTemporary")
+    public boolean canBeTemporary;
+
+    @SerializedName("timingMode")
+    public String timingMode;
+
+    @SerializedName("maxDuration")
+    public String maxDuration;
+
+    @SerializedName("timingResolution")
+    public String timingResolution;
 }

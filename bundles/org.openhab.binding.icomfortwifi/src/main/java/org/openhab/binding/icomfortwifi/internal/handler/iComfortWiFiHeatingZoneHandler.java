@@ -10,21 +10,22 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.icomfortwifi.handler;
+package org.openhab.binding.icomfortwifi.internal.handler;
 
 import static org.openhab.core.library.unit.Units.PERCENT;
 
 import javax.measure.Unit;
 import javax.measure.quantity.Temperature;
-import org.eclipse.jdt.annotation.NonNull; // Make sure this import is present
 
-import org.openhab.binding.icomfortwifi.iComfortWiFiBindingConstants;
+import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.icomfortwifi.internal.api.models.response.CustomTypes.AwayStatus;
 import org.openhab.binding.icomfortwifi.internal.api.models.response.CustomTypes.FanMode;
 import org.openhab.binding.icomfortwifi.internal.api.models.response.CustomTypes.OperationMode;
 import org.openhab.binding.icomfortwifi.internal.api.models.response.CustomTypes.TempUnits;
 import org.openhab.binding.icomfortwifi.internal.api.models.response.CustomTypes.UnifiedOperationMode;
 import org.openhab.binding.icomfortwifi.internal.api.models.response.ZoneStatus;
+import org.openhab.binding.icomfortwifi.internal.iComfortWiFiBindingConstants;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.ChannelUID;
@@ -44,9 +45,10 @@ import org.slf4j.LoggerFactory;
  */
 public class iComfortWiFiHeatingZoneHandler extends BaseiComfortWiFiHandler {
 
-    private final Logger logger = LoggerFactory.getLogger(iComfortWiFiHeatingZoneHandler.class);
-    private ThingStatus tcsStatus;
-    private ZoneStatus zoneStatus;
+    public final Logger logger = LoggerFactory.getLogger(iComfortWiFiHeatingZoneHandler.class);
+    // public static final int CANCEL_SET_POINT_OVERRIDE = 0;
+    public @Nullable ThingStatus tcsStatus;
+    public ZoneStatus zoneStatus;
 
     public iComfortWiFiHeatingZoneHandler(Thing thing) {
         super(thing);
@@ -60,7 +62,6 @@ public class iComfortWiFiHeatingZoneHandler extends BaseiComfortWiFiHandler {
     public void update(ThingStatus tcsStatus, ZoneStatus zoneStatus) {
         this.tcsStatus = tcsStatus;
         this.zoneStatus = zoneStatus;
-
         // Make the zone offline when the related tcs is offline
         // If the related display is not a thing, ignore this
         if (tcsStatus != null && tcsStatus.equals(ThingStatus.OFFLINE)) {
@@ -113,10 +114,7 @@ public class iComfortWiFiHeatingZoneHandler extends BaseiComfortWiFiHandler {
 
     @SuppressWarnings("unchecked")
     @Override
-    public void handleCommand(@NonNull ChannelUID channelUID, @NonNull Command command) {
-        logger.debug("Entering Heating Zone Handler for Gateway {}, zone {}", zoneStatus.gatewaySN,
-                zoneStatus.zoneNumber);
-        logger.debug("Executing command {}", command.toString());
+    public void handleCommand(@NonNull ChannelUID channelUID, @Nullable Command command) {
 
         if (command == RefreshType.REFRESH) {
             update(tcsStatus, zoneStatus);
@@ -124,84 +122,84 @@ public class iComfortWiFiHeatingZoneHandler extends BaseiComfortWiFiHandler {
 
             iComfortWiFiBridgeHandler bridge = getiComfortWiFiBridge();
             if (bridge != null) {
-                // Accommodating the case where Framework units are different from back end.
+                String channelId = channelUID.getId();
                 if (command instanceof QuantityType) {
                     Unit<Temperature> tempUnit = ((QuantityType<Temperature>) command).getUnit();
                     if (tcsStatus != null && tcsStatus.equals(ThingStatus.OFFLINE)) {
                         bridge.setAlternateTemperatureUnit(TempUnits.getCustomTemperatureUnit(tempUnit));
                     }
-                }
+                    if (iComfortWiFiBindingConstants.ZONE_UNIFIED_OPERATION_MODE_CHANNEL.equals(channelId)) {
+                        logger.debug("Executing unified command");
 
-                String channelId = channelUID.getId();
-                if (iComfortWiFiBindingConstants.ZONE_UNIFIED_OPERATION_MODE_CHANNEL.equals(channelId)) {
-                    logger.debug("Executing unified command");
-
-                    if ((command.toString().toLowerCase().equals(UnifiedOperationMode.ECO.toString()))
-                            && (zoneStatus.awayMode == AwayStatus.AWAY_OFF)) {
-                        logger.debug("Setting Heating Zone to Away mode with command {}", command.toString());
-                        bridge.setZoneAwayMode(zoneStatus, AwayStatus.AWAY_ON.getAwayValue());
-                    } else if (command.toString().toLowerCase().equals(UnifiedOperationMode.OFF.toString())) {
-                        logger.debug("Setting Heating Zone to Off mode with command {}", command.toString());
-                        bridge.setZoneAwayMode(zoneStatus, AwayStatus.AWAY_OFF.getAwayValue());
-                        bridge.setZoneFanMode(zoneStatus, FanMode.AUTO.getFanModeValue());
-                        bridge.setZoneOperationMode(zoneStatus, OperationMode.OFF.getOperationModeValue());
-                    } else if (command.toString().toLowerCase().equals(UnifiedOperationMode.COOL.toString())) {
-                        logger.debug("Setting Heating Zone to Cool mode with command {}", command.toString());
-                        bridge.setZoneAwayMode(zoneStatus, AwayStatus.AWAY_OFF.getAwayValue());
-                        bridge.setZoneFanMode(zoneStatus, FanMode.AUTO.getFanModeValue());
-                        bridge.setZoneOperationMode(zoneStatus, OperationMode.COOL_ONLY.getOperationModeValue());
-                    } else if (command.toString().toLowerCase().equals(UnifiedOperationMode.HEAT.toString())) {
-                        logger.debug("Setting Heating Zone to Heat mode with command {}", command.toString());
-                        bridge.setZoneAwayMode(zoneStatus, AwayStatus.AWAY_OFF.getAwayValue());
-                        bridge.setZoneFanMode(zoneStatus, FanMode.AUTO.getFanModeValue());
-                        bridge.setZoneOperationMode(zoneStatus, OperationMode.HEAT_ONLY.getOperationModeValue());
-                    } else if (command.toString().toLowerCase().equals(UnifiedOperationMode.HEAT_COOL.toString())) {
-                        logger.debug("Setting Heating Zone to HeatCool mode with command {}", command.toString());
-                        bridge.setZoneAwayMode(zoneStatus, AwayStatus.AWAY_OFF.getAwayValue());
-                        bridge.setZoneFanMode(zoneStatus, FanMode.AUTO.getFanModeValue());
-                        bridge.setZoneOperationMode(zoneStatus, OperationMode.HEAT_OR_COOL.getOperationModeValue());
-                    } else if (command.toString().toLowerCase().equals(UnifiedOperationMode.FAN_ONLY.toString())) {
-                        logger.debug("Setting Heating Zone to Fan Only mode with command {}", command.toString());
-                        bridge.setZoneAwayMode(zoneStatus, AwayStatus.AWAY_OFF.getAwayValue());
-                        bridge.setZoneOperationMode(zoneStatus, OperationMode.OFF.getOperationModeValue());
-                        bridge.setZoneFanMode(zoneStatus, FanMode.CIRCULATE.getFanModeValue());
-                    }
-
-                } else if (iComfortWiFiBindingConstants.ZONE_AWAY_MODE_CHANNEL.equals(channelId)) {
-                    bridge.setZoneAwayMode(zoneStatus, AwayStatus.valueOf(command.toString()).getAwayValue());
-                } else if (zoneStatus.awayMode == AwayStatus.AWAY_OFF
-                        && zoneStatus.operationMode != OperationMode.OFF) {
-                    logger.debug("Zone is not in Away mode and command is not unified, executing the command");
-                    if (iComfortWiFiBindingConstants.ZONE_COOL_SET_POINT_CHANNEL.equals(channelId)
-                            && command instanceof QuantityType) {
-                        bridge.setZoneCoolingPoint(zoneStatus, ((QuantityType<Temperature>) command).doubleValue());
-                    } else if (iComfortWiFiBindingConstants.ZONE_HEAT_SET_POINT_CHANNEL.equals(channelId)
-                            && command instanceof QuantityType) {
-                        bridge.setZoneHeatingPoint(zoneStatus, ((QuantityType<Temperature>) command).doubleValue());
-                    } else if (iComfortWiFiBindingConstants.ZONE_SET_POINT_CHANNEL.equals(channelId)
-                            && command instanceof QuantityType) {
-                        if (zoneStatus.operationMode == OperationMode.HEAT_ONLY) {
-                            bridge.setZoneHeatingPoint(zoneStatus, ((QuantityType<Temperature>) command).doubleValue());
-                        } else if (zoneStatus.operationMode == OperationMode.COOL_ONLY) {
-                            bridge.setZoneCoolingPoint(zoneStatus, ((QuantityType<Temperature>) command).doubleValue());
-                        } else {
-                            logger.debug("Zone is not in Heat or Cool mode, cannot use Temperature Set Point");
+                        if ((command.toString().toLowerCase().equals(UnifiedOperationMode.ECO.toString()))
+                                && (zoneStatus.awayMode == AwayStatus.AWAY_OFF)) {
+                            logger.debug("Setting Heating Zone to Away mode with command {}", command.toString());
+                            bridge.setZoneAwayMode(zoneStatus, AwayStatus.AWAY_ON.getAwayValue());
+                        } else if (command.toString().toLowerCase().equals(UnifiedOperationMode.OFF.toString())) {
+                            logger.debug("Setting Heating Zone to Off mode with command {}", command.toString());
+                            bridge.setZoneAwayMode(zoneStatus, AwayStatus.AWAY_OFF.getAwayValue());
+                            bridge.setZoneFanMode(zoneStatus, FanMode.AUTO.getFanModeValue());
+                            bridge.setZoneOperationMode(zoneStatus, OperationMode.OFF.getOperationModeValue());
+                        } else if (command.toString().toLowerCase().equals(UnifiedOperationMode.COOL.toString())) {
+                            logger.debug("Setting Heating Zone to Cool mode with command {}", command.toString());
+                            bridge.setZoneAwayMode(zoneStatus, AwayStatus.AWAY_OFF.getAwayValue());
+                            bridge.setZoneFanMode(zoneStatus, FanMode.AUTO.getFanModeValue());
+                            bridge.setZoneOperationMode(zoneStatus, OperationMode.COOL_ONLY.getOperationModeValue());
+                        } else if (command.toString().toLowerCase().equals(UnifiedOperationMode.HEAT.toString())) {
+                            logger.debug("Setting Heating Zone to Heat mode with command {}", command.toString());
+                            bridge.setZoneAwayMode(zoneStatus, AwayStatus.AWAY_OFF.getAwayValue());
+                            bridge.setZoneFanMode(zoneStatus, FanMode.AUTO.getFanModeValue());
+                            bridge.setZoneOperationMode(zoneStatus, OperationMode.HEAT_ONLY.getOperationModeValue());
+                        } else if (command.toString().toLowerCase().equals(UnifiedOperationMode.HEAT_COOL.toString())) {
+                            logger.debug("Setting Heating Zone to HeatCool mode with command {}", command.toString());
+                            bridge.setZoneAwayMode(zoneStatus, AwayStatus.AWAY_OFF.getAwayValue());
+                            bridge.setZoneFanMode(zoneStatus, FanMode.AUTO.getFanModeValue());
+                            bridge.setZoneOperationMode(zoneStatus, OperationMode.HEAT_OR_COOL.getOperationModeValue());
+                        } else if (command.toString().toLowerCase().equals(UnifiedOperationMode.FAN_ONLY.toString())) {
+                            logger.debug("Setting Heating Zone to Fan Only mode with command {}", command.toString());
+                            bridge.setZoneAwayMode(zoneStatus, AwayStatus.AWAY_OFF.getAwayValue());
+                            bridge.setZoneOperationMode(zoneStatus, OperationMode.OFF.getOperationModeValue());
+                            bridge.setZoneFanMode(zoneStatus, FanMode.CIRCULATE.getFanModeValue());
                         }
 
-                    } else if (iComfortWiFiBindingConstants.ZONE_OPERATION_MODE_CHANNEL.equals(channelId)) {
-                        bridge.setZoneOperationMode(zoneStatus,
-                                OperationMode.valueOf(command.toString()).getOperationModeValue());
-                    } else if (iComfortWiFiBindingConstants.ZONE_FAN_MODE_CHANNEL.equals(channelId)) {
-                        bridge.setZoneFanMode(zoneStatus, FanMode.valueOf(command.toString()).getFanModeValue());
+                    } else if (iComfortWiFiBindingConstants.ZONE_AWAY_MODE_CHANNEL.equals(channelId)) {
+                        bridge.setZoneAwayMode(zoneStatus, AwayStatus.valueOf(command.toString()).getAwayValue());
+                    } else if (zoneStatus.awayMode == AwayStatus.AWAY_OFF
+                            && zoneStatus.operationMode != OperationMode.OFF) {
+                        logger.debug("Zone is not in Away mode and command is not unified, executing the command");
+                        if (iComfortWiFiBindingConstants.ZONE_COOL_SET_POINT_CHANNEL.equals(channelId)
+                                && command instanceof QuantityType) {
+                            bridge.setZoneCoolingPoint(zoneStatus, ((QuantityType<Temperature>) command).doubleValue());
+                        } else if (iComfortWiFiBindingConstants.ZONE_HEAT_SET_POINT_CHANNEL.equals(channelId)
+                                && command instanceof QuantityType) {
+                            bridge.setZoneHeatingPoint(zoneStatus, ((QuantityType<Temperature>) command).doubleValue());
+                        } else if (iComfortWiFiBindingConstants.ZONE_SET_POINT_CHANNEL.equals(channelId)
+                                && command instanceof QuantityType) {
+                            if (zoneStatus.operationMode == OperationMode.HEAT_ONLY) {
+                                bridge.setZoneHeatingPoint(zoneStatus,
+                                        ((QuantityType<Temperature>) command).doubleValue());
+                            } else if (zoneStatus.operationMode == OperationMode.COOL_ONLY) {
+                                bridge.setZoneCoolingPoint(zoneStatus,
+                                        ((QuantityType<Temperature>) command).doubleValue());
+                            } else {
+                                logger.debug("Zone is not in Heat or Cool mode, cannot use Temperature Set Point");
+                            }
+
+                        } else if (iComfortWiFiBindingConstants.ZONE_OPERATION_MODE_CHANNEL.equals(channelId)) {
+                            bridge.setZoneOperationMode(zoneStatus,
+                                    OperationMode.valueOf(command.toString()).getOperationModeValue());
+                        } else if (iComfortWiFiBindingConstants.ZONE_FAN_MODE_CHANNEL.equals(channelId)) {
+                            bridge.setZoneFanMode(zoneStatus, FanMode.valueOf(command.toString()).getFanModeValue());
+                        }
+                    } else {
+                        logger.debug("Zone is in Away mode and command is not unified, not executing the command");
                     }
-                } else {
-                    logger.debug("Zone is in Away mode and command is not unified, not executing the command");
                 }
             }
         }
     }
 
-    private boolean handleActiveFaults(ZoneStatus zoneStatus) {
+    public boolean handleActiveFaults(ZoneStatus zoneStatus) {
         if (zoneStatus.hasActiveFaults()) {
             updateiComfortWiFiThingStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     zoneStatus.getActiveFault());

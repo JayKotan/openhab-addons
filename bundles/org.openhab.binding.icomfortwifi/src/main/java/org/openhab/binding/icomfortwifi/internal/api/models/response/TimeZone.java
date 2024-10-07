@@ -12,26 +12,28 @@
  */
 package org.openhab.binding.icomfortwifi.internal.api.models.response;
 
-import java.util.ArrayList;
-
-import org.openhab.binding.icomfortwifi.internal.api.models.response.CustomTypes.RequestStatus;
-
 import com.google.gson.annotations.SerializedName;
 
 /**
- * Response model for the zone status
+ * Response model for the time zone
  *
- * @author Konstantin Panchenko - Initial contribution
+ * @author Jasper van Zuijlen - Initial contribution
  *
  */
-public class GatewaysAlerts {
+public class TimeZone {
 
-    @SerializedName("ReturnStatus")
-    public RequestStatus returnStatus;
+    @SerializedName("timeZoneId")
+    public String timeZoneId;
 
-    @SerializedName("Alerts")
-    public ArrayList<GatewayAlert> systemAlert;
+    @SerializedName("displayName")
+    public String displayName;
 
-    public GatewaysAlerts() {
-    }
+    @SerializedName("offsetMinutes")
+    public int offsetMinutes;
+
+    @SerializedName("currentOffsetMinutes")
+    public int currentOffsetMinutes;
+
+    @SerializedName("supportsDaylightSaving")
+    public boolean supportsDaylightSaving;
 }

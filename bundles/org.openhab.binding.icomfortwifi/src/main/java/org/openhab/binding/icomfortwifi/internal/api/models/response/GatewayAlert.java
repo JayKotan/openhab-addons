@@ -19,12 +19,11 @@ import org.openhab.binding.icomfortwifi.internal.api.models.response.CustomTypes
 import com.google.gson.annotations.SerializedName;
 
 /**
- *
+ * Response model for the System Alert
  *
  * @author Konstantin Panchenko - Initial contribution
- * @author Jason Kotan - Updated for Openhab 4.2.1
+ *
  */
-
 public class GatewayAlert {
 
     @SerializedName("Alarm_Description")

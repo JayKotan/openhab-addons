@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.icomfortwifi.internal.api;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.icomfortwifi.internal.api.models.request.ReqSetAwayMode;
 
 /**
@@ -20,21 +21,23 @@ import org.openhab.binding.icomfortwifi.internal.api.models.request.ReqSetAwayMo
  * @author Konstantin Panchenko - Initial contribution
  *
  */
+@NonNullByDefault
 public final class iComfortWiFiApiCommands {
 
-    private final static class iComfortServiceURI {
-        private final class URI {
-            private static final String HOST = "services.myicomfort.com";
-            private static final String PORT = "443";
-            private static final String PROTOCOL = "https:";
+    public final static class iComfortServiceURI {
+        public final class URI {
+            public static final String HOST = "services.myicomfort.com";
+            public static final String PORT = "443";
+            public static final String PROTOCOL = "https:";
 
-            private URI() {
+            public URI() {
             }
         }
 
-        private static final String BASE_PATH = "/DBAcessService.svc";
+        // public static final String BASE_PATH = "/DBAcessService.svc";
+        public static final String BASE_PATH = "/DBAcessService.svc";
 
-        private iComfortServiceURI() {
+        public iComfortServiceURI() {
         }
 
         protected String getURI() {
@@ -50,144 +53,146 @@ public final class iComfortWiFiApiCommands {
         }
     }
 
-    private final static class validateUser {
-        private static final String PATH = "/ValidateUser";
+    public final static class validateUser {
+        public static final String PATH = "/ValidateUser";
 
-        private final class paramsDef {
-            private static final String USER_NAME = "UserName";
-            private static final String LANGUAGE_NBR = "lang_nbr";
+        public final class paramsDef {
+            public static final String USER_NAME = "UserName";
+            public static final String LANGUAGE_NBR = "lang_nbr";
+            public static final String PASSWORD = "password";
 
-            private paramsDef() {
+            public paramsDef() {
             }
         }
 
-        private validateUser() {
+        public validateUser() {
         }
     }
 
-    private final static class getOwnerProfileInfo {
-        private static final String PATH = "/GetOwnerProfileInfo";
+    public final static class getOwnerProfileInfo {
+        public static final String PATH = "/GetOwnerProfileInfo";
 
-        private final class paramsDef {
-            private static final String USER_ID = "userid";
+        public final class paramsDef {
+            public static final String UserId = "userid";
 
-            private paramsDef() {
+            public paramsDef() {
             }
         }
 
-        private getOwnerProfileInfo() {
+        public getOwnerProfileInfo() {
         }
     }
 
-    private final static class getBuildingsInfo {
-        private static final String PATH = "/GetBuildingsInfo";
+    public final static class getBuildingsInfo {
+        public static final String PATH = "/GetBuildingsInfo";
 
-        private final class paramsDef {
-            private static final String USER_ID = "userid";
+        public final class paramsDef {
+            public static final String UserId = "userid";
 
-            private paramsDef() {
+            public paramsDef() {
             }
         }
 
-        private getBuildingsInfo() {
+        public getBuildingsInfo() {
         }
     }
 
-    private final static class getSystemsInfo {
-        private static final String PATH = "/GetSystemsInfo";
+    public final static class getSystemsInfo {
+        public static final String PATH = "/GetSystemsInfo";
 
-        private final class paramsDef {
-            private static final String USER_ID = "userid";
+        public final class paramsDef {
+            public static final String UserId = "userid";
 
-            private paramsDef() {
+            public paramsDef() {
             }
         }
 
-        private getSystemsInfo() {
+        public getSystemsInfo() {
         }
     }
 
-    private final static class getGatewayInfo {
-        private static final String PATH = "/GetGatewayInfo";
+    public final static class getGatewayInfo {
+        public static final String PATH = "/GetGatewayInfo";
 
-        private final class paramsDef {
-            private static final String GATEWAY_SN = "gatewaysn";
-            private static final String TEMP_UNIT = "tempunit";
+        public final class paramsDef {
+            public static final String GATEWAY_SN = "gatewaysn";
+            public static final String TEMP_UNIT = "tempunit";
 
-            private paramsDef() {
+            public paramsDef() {
             }
         }
 
-        private getGatewayInfo() {
+        public getGatewayInfo() {
         }
     }
 
-    private final static class getTStatInfoList {
-        private static final String PATH = "/GetTStatInfoList";
+    public final static class getTStatInfoList {
+        public static final String PATH = "/GetTStatInfoList";
 
-        @SuppressWarnings("unused")
-        private final class paramsDef {
-            private static final String GATEWAY_SN = "gatewaysn";
-            private static final String TEMP_UNIT = "tempunit";
-            private static final String CENTRAL_ZONED_AWAY = "Central_Zoned_Away";
-            private static final String CANCEL_AWAY = "Cancel_Away";
-            private static final String ZONE_NUMBER = "Zone_Number";
+        // @SuppressWarnings("unused")
+        public final class paramsDef {
+            public static final String GATEWAY_SN = "gatewaysn";
+            public static final String TEMP_UNIT = "tempunit";
+            public static final String CENTRAL_ZONED_AWAY = "Central_Zoned_Away";
+            public static final String CANCEL_AWAY = "Cancel_Away";
+            public static final String ZONE_NUMBER = "Zone_Number";
 
-            private paramsDef() {
+            public paramsDef() {
             }
         }
 
-        private getTStatInfoList() {
+        public getTStatInfoList() {
         }
     }
 
-    private final static class getGatewaysAlerts {
-        private static final String PATH = "/GetGatewaysAlerts";
+    public final static class getGatewaysAlerts {
+        public static final String PATH = "/GetGatewaysAlerts";
 
-        private final class paramsDef {
-            private static final String GATEWAY_SN = "gatewaysn";
-            private static final String LANGUAGE_NBR = "lang_nbr";
-            private static final String COUNT = "count";
+        public final class paramsDef {
+            public static final String GATEWAY_SN = "gatewaysn";
+            public static final String LANGUAGE_NBR = "lang_nbr";
+            public static final String COUNT = "count";
 
-            private paramsDef() {
+            public paramsDef() {
             }
         }
 
-        private getGatewaysAlerts() {
+        public getGatewaysAlerts() {
         }
     }
 
-    private final static class setAwayModeNew {
-        private static final String PATH = "/SetAwayModeNew";
+    public final static class setAwayModeNew {
+        public static final String PATH = "/SetAwayModeNew";
 
-        private final class paramsDef {
-            private static final String GATEWAY_SN = "gatewaysn";
-            private static final String ZONE_NUMBER = "zonenumber";
-            private static final String AWAY_MODE = "awaymode";
-            private static final String HEAT_SET_POINT = "heatsetpoint";
-            private static final String COOL_SET_POINT = "coolsetpoint";
-            private static final String FAN_MODE = "fanmode";
-            private static final String TEMP_SCALE = "tempscale";
+        // @SuppressWarnings("unused")
+        public final class paramsDef {
+            public static final String GATEWAY_SN = "gatewaysn";
+            public static final String ZONE_NUMBER = "zonenumber";
+            public static final String AWAY_MODE = "awaymode";
+            public static final String HEAT_SET_POINT = "heatsetpoint";
+            public static final String COOL_SET_POINT = "coolsetpoint";
+            public static final String FAN_MODE = "fanmode";
+            public static final String TEMP_SCALE = "tempscale";
 
-            private paramsDef() {
+            public paramsDef() {
             }
         }
 
-        private setAwayModeNew() {
+        public setAwayModeNew() {
         }
     }
 
-    private final static class setTStatInfo {
-        private static final String PATH = "/SetTStatInfo";
+    public final static class setTStatInfo {
+        public static final String PATH = "/SetTStatInfo";
 
-        @SuppressWarnings("unused")
-        private final class paramsDef {
+        // @SuppressWarnings("unused")
+        public final class paramsDef {
 
-            private paramsDef() {
+            public paramsDef() {
             }
         }
 
-        private setTStatInfo() {
+        public setTStatInfo() {
         }
     }
 
@@ -212,7 +217,7 @@ public final class iComfortWiFiApiCommands {
         StringBuilder urlBuilder = new StringBuilder((new iComfortServiceURI()).getURI())
                 .append(getOwnerProfileInfo.PATH)
                 .append("?")
-                .append(getOwnerProfileInfo.paramsDef.USER_ID)
+                .append(getOwnerProfileInfo.paramsDef.UserId)
                 .append("=")
                 .append(userName);
         // @formatter:on
@@ -224,7 +229,7 @@ public final class iComfortWiFiApiCommands {
         StringBuilder urlBuilder = new StringBuilder((new iComfortServiceURI()).getURI())
                 .append(getBuildingsInfo.PATH)
                 .append("?")
-                .append(getBuildingsInfo.paramsDef.USER_ID)
+                .append(getBuildingsInfo.paramsDef.UserId)
                 .append("=")
                 .append(userName);
         // @formatter:on
@@ -236,7 +241,7 @@ public final class iComfortWiFiApiCommands {
         StringBuilder urlBuilder = new StringBuilder((new iComfortServiceURI()).getURI())
                 .append(getSystemsInfo.PATH)
                 .append("?")
-                .append(getSystemsInfo.paramsDef.USER_ID)
+                .append(getSystemsInfo.paramsDef.UserId)
                 .append("=")
                 .append(userName);
         // @formatter:on

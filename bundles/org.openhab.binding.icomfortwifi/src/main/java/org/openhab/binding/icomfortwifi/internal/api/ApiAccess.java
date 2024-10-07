@@ -19,6 +19,8 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
+import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
@@ -39,17 +41,19 @@ import com.google.gson.GsonBuilder;
  *
  */
 public class ApiAccess {
-    private static final int REQUEST_TIMEOUT_SECONDS = 5;
-    private final Logger logger = LoggerFactory.getLogger(ApiAccess.class);
-    private final HttpClient httpClient;
-    private String userCredentials = null;
-    private final Gson gson;
+    private static final int REQUEST_TIMEOUT_SECONDS = 5; // Timeout for requests in seconds
+    private final Logger logger = LoggerFactory.getLogger(ApiAccess.class); // Logger for logging
+    private final HttpClient httpClient; // HTTP client for making requests
+    volatile @NonNull String userCredentials; // User credentials for authentication
+    private final Gson gson; // Gson instance for JSON serialization/deserialization
 
     public ApiAccess(HttpClient httpClient) {
+        // Set up Gson with a custom date deserializer
         GsonBuilder gsonBuilder = new GsonBuilder();
         gsonBuilder.registerTypeAdapter(Date.class, new JsonDateDeserializer());
         this.gson = gsonBuilder.create();
-        this.httpClient = httpClient;
+        this.httpClient = httpClient; // Initialize HTTP client
+        this.userCredentials = ""; // Initialize in the constructor
     }
 
     public void setUserCredentials(String userCredentials) {
@@ -64,58 +68,75 @@ public class ApiAccess {
      * @param headers The optional additional headers to apply, can be null
      * @param requestData The optional request data to use, can be null
      * @param contentType The content type to use with the request data. Required when using requestData
-     * @return The result of the request or null
+     * @param outClass The class type to deserialize the response into, can be null
+     * @return The deserialized response object or null
      * @throws TimeoutException Thrown when a request times out
      */
-    public <TOut> TOut doRequest(HttpMethod method, String url, Map<String, String> headers, String requestData,
-            String contentType, Class<TOut> outClass) throws TimeoutException {
-
+    public @Nullable <TOut> TOut doRequest(HttpMethod method, String url, Map<String, String> headers,
+            @Nullable String requestData, String contentType, @Nullable Class<TOut> outClass) throws TimeoutException {
+        logger.debug("Requesting: [{}]", url); // Log the request URL
+        @Nullable
         TOut retVal = null;
-        logger.debug("Requesting: [{}]", url);
-
         try {
-            Request request = httpClient.newRequest(url).method(method);
-
+            Request request = httpClient.newRequest(url).method(method); // Create a new request
+            // Ensure headers are properly typed
             if (headers != null) {
-                for (Map.Entry<String, String> header : headers.entrySet()) {
-                    request.header(header.getKey(), header.getValue());
-                }
+                headers.forEach(request::header); // Set headers on the request
             }
-
             if (requestData != null) {
-                request.content(new StringContentProvider(requestData), contentType);
+                request.content(new StringContentProvider(requestData), contentType); // Set request content
             }
+            ContentResponse response = request.timeout(REQUEST_TIMEOUT_SECONDS, TimeUnit.SECONDS).send(); // Send the
+                                                                                                          // request
+            logger.debug("Response: {}", response); // Log the response
+            logger.debug("\n{}\n{}", response.getHeaders(), response.getContentAsString()); // Log headers and content
 
-            ContentResponse response = request.timeout(REQUEST_TIMEOUT_SECONDS, TimeUnit.SECONDS).send();
+            // New logging for raw response content
+            String reply = response.getContentAsString(); // Get the response content
+            logger.debug("Raw response content: {}", reply); // Log the raw JSON response
 
-            logger.debug("Response: {}", response);
-            logger.debug("\n{}\n{}", response.getHeaders(), response.getContentAsString());
-
+            // Check the response status
             if ((response.getStatus() == HttpStatus.OK_200) || (response.getStatus() == HttpStatus.ACCEPTED_202)) {
-                String reply = response.getContentAsString();
-
                 if (outClass != null) {
-                    retVal = this.gson.fromJson(reply, outClass);
+                    retVal = gson.fromJson(reply, outClass); // Deserialize the response to the specified class
                 }
+            } else if (response.getStatus() == HttpStatus.CREATED_201) {
+                // success, nothing to return, ignore
+            } else {
+                logger.debug("Request failed with unexpected response code {}", response.getStatus()); // Log unexpected
+                                                                                                       // response
             }
-        } catch (InterruptedException | ExecutionException e) {
-            logger.debug("Error in handling request: ", e);
+        } catch (ExecutionException | InterruptedException e) {
+            logger.error("Error in handling request: ", e); // Log the error
+            throw new RuntimeException("Request to " + url + " interrupted", e); // Rethrow as runtime exception
         }
 
-        return retVal;
+        return retVal; // Return the result
     }
 
     /**
-     * Issues an HTTP GET request on the API's URL, using an object that is serialized to JSON as input.
-     * Makes sure that the request is correctly formatted.*
+     * Issues an authenticated HTTP GET request on the API's URL, deserializing the response into the specified class.
+     *
+     * @param <TOut> The type of the expected response.
+     * @param url The URL to query.
+     * @param outClass The class type to deserialize the response into.
+     * @return The deserialized response object or null.
+     * @throws TimeoutException Thrown when a request times out.
+     */
+    public @Nullable <TOut> TOut doAuthenticatedGet(String url, Class<TOut> outClass) throws TimeoutException {
+        return doAuthenticatedRequest(HttpMethod.GET, url, null, outClass); // Call the authenticated request method
+    }
+
+    /**
+     * Issues an HTTP PUT request on the API's URL, using an object that is serialized to JSON as input.
+     * Makes sure that the request is correctly formatted.
      *
      * @param url The URL to query
-     * @param outClass The type of the requested result
-     * @return The result of the request or null
+     * @param requestContainer The object to use as JSON data for the request
      * @throws TimeoutException Thrown when a request times out
      */
-    public <TOut> TOut doAuthenticatedGet(String url, Class<TOut> outClass) throws TimeoutException {
-        return doAuthenticatedRequest(HttpMethod.GET, url, null, outClass);
+    public void doAuthenticatedPut(String url, @Nullable Object requestContainer) throws TimeoutException {
+        doAuthenticatedRequest(HttpMethod.PUT, url, requestContainer, null); // Call the authenticated request method
     }
 
     /**
@@ -124,56 +145,17 @@ public class ApiAccess {
      *
      * @param url The URL to query
      * @param requestContainer The object to use as JSON data for the request
-     * @throws TimeoutException Thrown when a request times out
-     */
-    public void doAuthenticatedPut(String url, Object requestContainer) throws TimeoutException {
-        doAuthenticatedRequest(HttpMethod.PUT, url, requestContainer, null);
-    }
-
-    /**
-     * Issues an HTTP PUT request on the API's URL, using an object that is serialized to JSON as input.
-     * Makes sure that the request is correctly formatted.*
-     *
-     * @param url The URL to query
-     * @param requestContainer The object to use as JSON data for the request
      * @param outClass The type of the requested result
      * @throws TimeoutException Thrown when a request times out
      */
-    public <TOut> TOut doAuthenticatedPut(String url, Object requestContainer, Class<TOut> outClass)
+    public @Nullable <TOut> TOut doAuthenticatedPut(String url, Object requestContainer, Class<TOut> outClass)
             throws TimeoutException {
         return doAuthenticatedRequest(HttpMethod.PUT, url, requestContainer, outClass);
     }
 
     /**
-     * Issues an HTTP request on the API's URL, using an object that is serialized to JSON as input and
-     * using the authentication applied to the type.
-     * Makes sure that the request is correctly formatted.*
-     *
-     * @param method The HTTP method to use (POST, GET, ...)
-     * @param url The URL to query
-     * @param requestContainer The object to use as JSON data for the request
-     * @param outClass The type of the requested result
-     * @return The result of the request or null
-     * @throws TimeoutException Thrown when a request times out
-     */
-    private <TOut> TOut doAuthenticatedRequest(HttpMethod method, String url, Object requestContainer,
-            Class<TOut> outClass) throws TimeoutException {
-        Map<String, String> headers = null;
-        if (userCredentials != null) {
-            headers = new HashMap<String, String>();
-
-            headers.put("Authorization", userCredentials);
-            headers.put("Accept",
-                    "application/json, application/xml, text/json, text/x-json, text/javascript, text/xml");
-            headers.put("Accept-Charset", "utf-8");
-        }
-
-        return doRequest(method, url, headers, requestContainer, outClass);
-    }
-
-    /**
-     * Issues an HTTP request on the API's URL, using an object that is serialized to JSON as input.
-     * Makes sure that the request is correctly formatted.*
+     * Issues an HTTP PUT request on the API's URL, using an object that is serialized to JSON as input.
+     * Makes sure that the request is correctly formatted.
      *
      * @param method The HTTP method to use (POST, GET, ...)
      * @param url The URL to query
@@ -183,14 +165,38 @@ public class ApiAccess {
      * @return The result of the request or null
      * @throws TimeoutException Thrown when a request times out
      */
-    private <TOut> TOut doRequest(HttpMethod method, String url, Map<String, String> headers, Object requestContainer,
-            Class<TOut> outClass) throws TimeoutException {
+    private @Nullable <TOut> TOut doRequest(HttpMethod method, String url, Map<String, String> headers,
+            @Nullable Object requestContainer, String contentType, @Nullable Class<TOut> outClass)
+            throws TimeoutException {
 
-        String json = null;
-        if (requestContainer != null) {
-            json = this.gson.toJson(requestContainer);
+        String json = requestContainer != null ? gson.toJson(requestContainer) : null; // Serialize the request
+                                                                                       // container to JSON
+        return doRequest(method, url, headers, json, contentType, outClass); // Call the main doRequest method
+    }
+
+    /**
+     * Issues an HTTP request on the API's URL, using the authentication applied to the type.
+     * Makes sure that the request is correctly formatted.
+     *
+     * @param <TOut> The type of the expected response.
+     * @param method The HTTP method to use (POST, GET, ...)
+     * @param url The URL to query.
+     * @param requestContainer The object to use as JSON data for the request, can be null.
+     * @param outClass The class type to deserialize the response into, can be null.
+     * @return The deserialized response object or null.
+     * @throws TimeoutException Thrown when a request times out.
+     */
+    public @Nullable <TOut> TOut doAuthenticatedRequest(HttpMethod method, String url,
+            @Nullable Object requestContainer, @Nullable Class<TOut> outClass) throws TimeoutException {
+        Map<String, String> headers = new HashMap<>();
+        if (userCredentials != null) {
+            headers.put("Authorization", userCredentials); // Use credentials as-is without re-encoding
+            headers.put("Accept",
+                    "application/json, application/xml, text/json, text/x-json, text/javascript, text/xml");
+            headers.put("Accept-Charset", "utf-8");
         }
 
-        return doRequest(method, url, headers, json, "application/json", outClass);
+        return doRequest(method, url, headers.isEmpty() ? null : headers, requestContainer,
+                requestContainer != null ? "application/json" : null, outClass);
     }
 }

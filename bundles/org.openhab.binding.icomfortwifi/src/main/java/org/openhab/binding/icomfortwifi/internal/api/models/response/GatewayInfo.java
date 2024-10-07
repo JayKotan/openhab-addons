@@ -21,7 +21,7 @@ import com.google.gson.annotations.SerializedName;
 /**
  * Response model for the gateway information
  *
- * @author Konstantin Panchenko- Initial contribution
+ * @author Konstantin Panchenko - Initial contribution
  *
  */
 public class GatewayInfo {
@@ -55,4 +55,20 @@ public class GatewayInfo {
 
     @SerializedName("SystemID")
     public Integer systemID;
+
+    @SerializedName("gatewayId")
+    public String gatewayId;
+
+    @SerializedName("mac")
+    public String macAddress;
+
+    @SerializedName("crc")
+    public String crc;
+
+    @SerializedName("isWiFi")
+    public boolean isWifi;
+
+    public String getGatewayId() {
+        return gatewayId;
+    }
 }

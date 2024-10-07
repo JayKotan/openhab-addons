@@ -10,16 +10,25 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
+/**
+  * Copyright (c) 2010-2017 by the respective copyright holders.
+ *
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ */
 package org.openhab.binding.icomfortwifi.internal.discovery;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import org.openhab.binding.icomfortwifi.handler.iComfortWiFiAccountStatusListener;
-import org.openhab.binding.icomfortwifi.handler.iComfortWiFiBridgeHandler;
-import org.openhab.binding.icomfortwifi.iComfortWiFiBindingConstants;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.icomfortwifi.internal.api.models.response.SystemInfo;
 import org.openhab.binding.icomfortwifi.internal.api.models.response.ZoneStatus;
+import org.openhab.binding.icomfortwifi.internal.handler.iComfortWiFiAccountStatusListener;
+import org.openhab.binding.icomfortwifi.internal.handler.iComfortWiFiBridgeHandler;
+import org.openhab.binding.icomfortwifi.internal.iComfortWiFiBindingConstants;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
@@ -34,13 +43,14 @@ import org.slf4j.LoggerFactory;
  * @author Konstantin Panchenko - Initial contribution
  *
  */
+@NonNullByDefault
 public class iComfortWiFiDiscoveryService extends AbstractDiscoveryService
         implements iComfortWiFiAccountStatusListener {
-    private final Logger logger = LoggerFactory.getLogger(iComfortWiFiDiscoveryService.class);
-    private static final int TIMEOUT = 5;
+    public final Logger logger = LoggerFactory.getLogger(iComfortWiFiDiscoveryService.class);
+    public static final int TIMEOUT = 5;
 
-    private iComfortWiFiBridgeHandler bridge;
-    private ThingUID bridgeUID;
+    public iComfortWiFiBridgeHandler bridge;
+    public ThingUID bridgeUID;
 
     public iComfortWiFiDiscoveryService(iComfortWiFiBridgeHandler bridge) {
         super(iComfortWiFiBindingConstants.SUPPORTED_THING_TYPES_UIDS, TIMEOUT);
@@ -80,7 +90,7 @@ public class iComfortWiFiDiscoveryService extends AbstractDiscoveryService
     }
 
     //
-    private void discoverDevices() {
+    public void discoverDevices() {
         if (bridge.getThing().getStatus() != ThingStatus.ONLINE) {
             logger.debug("iComfortWiFi Gateway not online, scanning postponed");
             return;
@@ -96,7 +106,7 @@ public class iComfortWiFiDiscoveryService extends AbstractDiscoveryService
         stopScan();
     }
 
-    private void addSystemDiscoveryResult(SystemInfo systemInfo) {
+    public void addSystemDiscoveryResult(SystemInfo systemInfo) {
         String id = systemInfo.gatewaySN;
         String name = systemInfo.systemName;
         ThingUID thingUID = new ThingUID(iComfortWiFiBindingConstants.THING_TYPE_ICOMFORT_THERMOSTAT, bridgeUID, id);
@@ -108,7 +118,7 @@ public class iComfortWiFiDiscoveryService extends AbstractDiscoveryService
         addDiscoveredThing(thingUID, properties, name);
     }
 
-    private void addZoneDiscoveryResult(String systemName, ZoneStatus zone) {
+    public void addZoneDiscoveryResult(String systemName, ZoneStatus zone) {
         String zoneID = zone.getZoneID();
         String name = zone.zoneName + " (" + systemName + ")";
         ThingUID thingUID = new ThingUID(iComfortWiFiBindingConstants.THING_TYPE_ICOMFORT_ZONE, bridgeUID, zoneID);
@@ -120,7 +130,7 @@ public class iComfortWiFiDiscoveryService extends AbstractDiscoveryService
         addDiscoveredThing(thingUID, properties, name);
     }
 
-    private void addDiscoveredThing(ThingUID thingUID, Map<String, Object> properties, String displayLabel) {
+    public void addDiscoveredThing(ThingUID thingUID, Map<String, Object> properties, String displayLabel) {
         DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID).withProperties(properties)
                 .withBridge(bridgeUID).withLabel(displayLabel).build();
         thingDiscovered(discoveryResult);
