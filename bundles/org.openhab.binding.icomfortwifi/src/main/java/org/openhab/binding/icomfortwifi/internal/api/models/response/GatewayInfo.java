@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.icomfortwifi.internal.api.models.response;
 
-import org.openhab.binding.icomfortwifi.internal.api.models.response.CustomTypes.PrefferedLanguage;
+import org.openhab.binding.icomfortwifi.internal.api.models.response.CustomTypes.PreferredLanguage;
 import org.openhab.binding.icomfortwifi.internal.api.models.response.CustomTypes.RequestStatus;
 import org.openhab.binding.icomfortwifi.internal.api.models.response.CustomTypes.TempUnits;
 
@@ -45,7 +45,7 @@ public class GatewayInfo {
     public Double heatSetPointLowLimit;
 
     @SerializedName("Pref_Language_Nbr")
-    public PrefferedLanguage prefferedLanguage;
+    public PreferredLanguage preferredLanguage;
 
     @SerializedName("Pref_Temp_Unit")
     public TempUnits preferredTemperatureUnit;

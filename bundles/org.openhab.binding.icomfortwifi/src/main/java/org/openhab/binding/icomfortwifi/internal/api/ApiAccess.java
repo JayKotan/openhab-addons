@@ -19,7 +19,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
@@ -41,11 +41,13 @@ import com.google.gson.GsonBuilder;
  * @author Jason Kotan - Updated Imports and additional Null handeling. Updated API Access, both doRequest,
  *         doAuthenticatedRequest.
  */
+@NonNullByDefault
 public class ApiAccess {
     private static final int REQUEST_TIMEOUT_SECONDS = 5; // Timeout for requests in seconds
     private final Logger logger = LoggerFactory.getLogger(ApiAccess.class); // Logger for logging
     private final HttpClient httpClient; // HTTP client for making requests
-    volatile @NonNull String userCredentials; // User credentials for authentication
+    @Nullable
+    volatile String userCredentials; // User credentials for authentication
     private final Gson gson; // Gson instance for JSON serialization/deserialization
 
     public ApiAccess(HttpClient httpClient) {
@@ -54,10 +56,10 @@ public class ApiAccess {
         gsonBuilder.registerTypeAdapter(Date.class, new JsonDateDeserializer());
         this.gson = gsonBuilder.create();
         this.httpClient = httpClient; // Initialize HTTP client
-        this.userCredentials = ""; // Initialize in the constructor
+        this.userCredentials = null; // Initialize in the constructor
     }
 
-    public void setUserCredentials(String userCredentials) {
+    public void setUserCredentials(@Nullable String userCredentials) {
         this.userCredentials = userCredentials;
     }
 
@@ -81,7 +83,7 @@ public class ApiAccess {
         try {
             Request request = httpClient.newRequest(url).method(method); // Create a new request
             // Ensure headers are properly typed
-            if (headers != null) {
+            {
                 headers.forEach(request::header); // Set headers on the request
             }
             if (requestData != null) {
@@ -109,7 +111,7 @@ public class ApiAccess {
             }
         } catch (ExecutionException | InterruptedException e) {
             logger.error("Error in handling request: ", e); // Log the error
-            throw new RuntimeException("Request to " + url + " interrupted", e); // Rethrow as runtime exception
+            Thread.currentThread().interrupt();
         }
 
         return retVal; // Return the result
@@ -154,30 +156,28 @@ public class ApiAccess {
         return doAuthenticatedRequest(HttpMethod.PUT, url, requestContainer, outClass);
     }
 
-    /**
-     * Issues an HTTP request on the API's URL, using the authentication applied to the type.
-     * Makes sure that the request is correctly formatted.
-     *
-     * @param <TOut> The type of the expected response.
-     * @param method The HTTP method to use (POST, GET, ...)
-     * @param url The URL to query.
-     * @param requestContainer The object to use as JSON data for the request, can be null.
-     * @param outClass The class type to deserialize the response into, can be null.
-     * @return The deserialized response object or null.
-     * @throws TimeoutException Thrown when a request times out.
-     */
     public @Nullable <TOut> TOut doAuthenticatedRequest(HttpMethod method, String url,
             @Nullable Object requestContainer, @Nullable Class<TOut> outClass) throws TimeoutException {
-        Map<String, String> headers = new HashMap<>();
-        if (userCredentials != null) {
-            headers.put("Authorization", userCredentials); // Use credentials as-is without re-encoding
-            headers.put("Accept",
-                    "application/json, application/xml, text/json, text/x-json, text/javascript, text/xml");
-            headers.put("Accept-Charset", "utf-8");
-        }
 
-        return doRequest(method, url, headers.isEmpty() ? null : headers, requestContainer,
-                requestContainer != null ? "application/json" : null, outClass);
+        // Initialize headers map
+        Map<String, String> headers = new HashMap<>();
+
+        // Safely get user credentials
+        String authCredentials = userCredentials;
+
+        if (authCredentials != null) {
+            headers.put("Authorization", authCredentials); // Use credentials as-is without re-encoding
+        } else {
+            logger.warn("User credentials are null or empty.");
+            return null; // Handle accordingly (consider throwing an exception if this is critical)
+        }
+        // Add additional headers
+        headers.put("Accept", "application/json, application/xml, text/json, text/x-json, text/javascript, text/xml");
+        headers.put("Accept-Charset", "utf-8");
+        // Ensure the content type is always non-null
+        // String contentType = requestContainer != null ? "application/json" : "application/x-www-form-urlencoded";
+        // Make the request
+        return doRequest(method, url, headers, requestContainer, "application/json", outClass);
     }
 
     /**

@@ -126,11 +126,11 @@
 		<description>Gets or sets the heat or cool set point of this zone automatically.</description>
 		<category>Temperature</category>
 		<tags>
-		<tag>Setpoint</tag>
-		<tag>Temperature</tag>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
 		</tags>
 		<state step="0.5" pattern="%.1f %unit%" readOnly="false"/>
-		</channel-type>
+	</channel-type>
 
 	<channel-type id="alarmDescription">
 		<item-type>String</item-type>

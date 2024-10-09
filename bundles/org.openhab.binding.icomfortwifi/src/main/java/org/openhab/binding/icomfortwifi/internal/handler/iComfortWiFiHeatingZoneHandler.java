@@ -29,6 +29,7 @@ import org.openhab.binding.icomfortwifi.internal.iComfortWiFiBindingConstants;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.ImperialUnits;
+import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
@@ -38,7 +39,7 @@ import org.openhab.core.types.RefreshType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import si.uom.SI;
+// import si.uom.SI;
 
 /**
  * The {@link iComfortWiFiHeatingZoneHandler} is responsible for handling commands, which are
@@ -127,7 +128,7 @@ public class iComfortWiFiHeatingZoneHandler extends BaseiComfortWiFiHandler {
                 QuantityType<Temperature> tempCommand = castToQuantityTypeTemperature(command);
                 if (tempCommand != null) {
                     Unit<Temperature> tempUnit = tempCommand.getUnit();
-                    if (tcsStatus != null && tcsStatus.equals(ThingStatus.OFFLINE)) {
+                    if (ThingStatus.OFFLINE.equals(tcsStatus)) {
                         bridge.setAlternateTemperatureUnit(TempUnits.getCustomTemperatureUnit(tempUnit));
                     }
                     if (iComfortWiFiBindingConstants.ZONE_UNIFIED_OPERATION_MODE_CHANNEL.equals(channelId)) {
@@ -236,7 +237,7 @@ public class iComfortWiFiHeatingZoneHandler extends BaseiComfortWiFiHandler {
         if (command instanceof QuantityType<?>) {
             QuantityType<?> qt = (QuantityType<?>) command;
             Unit<?> unit = qt.getUnit();
-            if (unit.isCompatible(SI.CELSIUS) || unit.isCompatible(ImperialUnits.FAHRENHEIT)) {
+            if (unit.isCompatible(SIUnits.CELSIUS) || unit.isCompatible(ImperialUnits.FAHRENHEIT)) {
                 @SuppressWarnings("unchecked")
                 QuantityType<Temperature> tempCommand = (QuantityType<Temperature>) qt;
                 return tempCommand;

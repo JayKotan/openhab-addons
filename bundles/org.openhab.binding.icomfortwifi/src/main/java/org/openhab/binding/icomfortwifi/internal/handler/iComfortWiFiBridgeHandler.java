@@ -20,7 +20,6 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-import org.apache.commons.lang3.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
@@ -194,14 +193,13 @@ public class iComfortWiFiBridgeHandler extends BaseBridgeHandler {
 
     private boolean checkConfig() {
         String errorMessage = "";
-        if (StringUtils.isEmpty(configuration.userName)) {
+        if (configuration.userName.isEmpty()) {
             errorMessage = "Username not configured";
-        } else if (StringUtils.isEmpty(configuration.password)) {
+        } else if (configuration.password.isEmpty()) {
             errorMessage = "Password not configured";
         } else {
             return true;
         }
-
         updateAccountStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, errorMessage);
         return false;
     }

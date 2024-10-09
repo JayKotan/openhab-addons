@@ -206,7 +206,7 @@ public class CustomTypes {
         UNKNOWN;
     }
 
-    public enum PrefferedLanguage {
+    public enum PreferredLanguage {
         @SerializedName("0")
         ENGLISH(0),
         @SerializedName("1")
@@ -215,15 +215,15 @@ public class CustomTypes {
         SPANISH(2),
         UNKNOWN(-1);
 
-        public Integer prefferedLanguage;
+        public Integer preferredLanguage;
 
         // Revert to public constructor
-        PrefferedLanguage(Integer prefferedLanguage) {
-            this.prefferedLanguage = prefferedLanguage;
+        PreferredLanguage(Integer preferredLanguage) {
+            this.preferredLanguage = preferredLanguage;
         }
 
-        public Integer getPrefferedLanguageValue() {
-            return this.prefferedLanguage;
+        public Integer getPreferedLanguageValue() {
+            return this.preferredLanguage;
         }
     }
 

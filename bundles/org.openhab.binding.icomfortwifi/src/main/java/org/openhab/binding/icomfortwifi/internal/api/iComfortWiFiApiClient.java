@@ -20,17 +20,20 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeoutException;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.http.HttpMethod;
 import org.openhab.binding.icomfortwifi.internal.api.models.request.ReqSetAwayMode;
 import org.openhab.binding.icomfortwifi.internal.api.models.request.ReqSetTStatInfo;
 import org.openhab.binding.icomfortwifi.internal.api.models.response.BuildingsInfo;
-import org.openhab.binding.icomfortwifi.internal.api.models.response.CustomTypes.PrefferedLanguage;
+import org.openhab.binding.icomfortwifi.internal.api.models.response.CustomTypes.PreferredLanguage;
 import org.openhab.binding.icomfortwifi.internal.api.models.response.CustomTypes.RequestStatus;
 import org.openhab.binding.icomfortwifi.internal.api.models.response.CustomTypes.TempUnits;
 import org.openhab.binding.icomfortwifi.internal.api.models.response.GatewayInfo;
 import org.openhab.binding.icomfortwifi.internal.api.models.response.GatewaysAlerts;
 import org.openhab.binding.icomfortwifi.internal.api.models.response.OwnerProfileInfo;
+import org.openhab.binding.icomfortwifi.internal.api.models.response.SystemInfo;
 import org.openhab.binding.icomfortwifi.internal.api.models.response.SystemsInfo;
 import org.openhab.binding.icomfortwifi.internal.api.models.response.UserValidation;
 import org.openhab.binding.icomfortwifi.internal.api.models.response.ZoneStatus;
@@ -51,14 +54,15 @@ import org.slf4j.LoggerFactory;
  * @author Konstantin Panchenko - Initial contribution
  * @auther Jason Kotan Updated imports. Modified Login and Validate user to work with API.
  */
+@NonNullByDefault
 public class iComfortWiFiApiClient {
 
     public final Logger logger = LoggerFactory.getLogger(iComfortWiFiApiClient.class);
     public final HttpClient httpClient;
     public final iComfortWiFiBridgeConfiguration configuration;
     public final ApiAccess apiAccess;
-    private BuildingsInfo buildingsInfo = new BuildingsInfo();
-    private OwnerProfileInfo ownerProfileInfo = new OwnerProfileInfo();
+    private @Nullable BuildingsInfo buildingsInfo = new BuildingsInfo();
+    private @Nullable OwnerProfileInfo ownerProfileInfo = new OwnerProfileInfo();
     private SystemsInfo systemsInfo = new SystemsInfo();
     private final Integer alertsCount = 20;
 
@@ -68,6 +72,7 @@ public class iComfortWiFiApiClient {
      * @param configuration The configuration of the account to use
      * @throws Exception
      */
+    // @NonNullByDefault
     public iComfortWiFiApiClient(iComfortWiFiBridgeConfiguration configuration, HttpClient httpClient)
             throws Exception {
         this.configuration = configuration;
@@ -83,7 +88,7 @@ public class iComfortWiFiApiClient {
         apiAccess.setUserCredentials("");
         ownerProfileInfo = null;
         buildingsInfo = null;
-        systemsInfo = null;
+        systemsInfo = new SystemsInfo();
 
         if (httpClient.isStarted()) {
             try {
@@ -114,15 +119,11 @@ public class iComfortWiFiApiClient {
                 logger.debug("Failed to get ownerProfileInfo");
                 success = false;
             }
-            if (buildingsInfo == null || systemsInfo == null) {
+            if (buildingsInfo == null) {
                 logger.debug("Failed to get system buildingsInfo");
                 success = false;
             }
-            if (systemsInfo == null) {
-                logger.debug("Failed to get systemsInfo");
-                success = false;
-            }
-            if (ownerProfileInfo == null || buildingsInfo == null || systemsInfo == null) {
+            if (ownerProfileInfo == null || buildingsInfo == null) {
                 logger.debug("Failed to get system basic information");
                 success = false;
             }
@@ -140,51 +141,40 @@ public class iComfortWiFiApiClient {
         try {
             if (systemsInfo.returnStatus.equals(RequestStatus.SUCCESS)) {
                 for (int i = 0; i < systemsInfo.systemInfo.size(); i++) {
-                    // This is to get initial Temperature Unit
-                    if (systemsInfo.systemInfo.get(i).getGatewayInfo() == null) {
-                        GatewayInfo gatewayInfo = requestGatewayInfo(systemsInfo.systemInfo.get(i).gatewaySN,
-                                TempUnits.CELSIUS);
+                    SystemInfo system = systemsInfo.systemInfo.get(i);
+                    // Initialize GatewayInfo if null
+                    if (system.getGatewayInfo() == null) {
+                        GatewayInfo gatewayInfo = requestGatewayInfo(system.gatewaySN, TempUnits.CELSIUS);
                         if (gatewayInfo.returnStatus.equals(RequestStatus.SUCCESS)) {
-                            systemsInfo.systemInfo.get(i).setGetewayInfo(gatewayInfo);
-                        } else {
-                            continue;
+                            system.setGetewayInfo(gatewayInfo);
                         }
                     }
-                    // Getting Gateway Information
-                    TempUnits prefTempCurrent = systemsInfo.systemInfo.get(i).getGatewayInfo().preferredTemperatureUnit;
-                    GatewayInfo gatewayInfo = requestGatewayInfo(systemsInfo.systemInfo.get(i).gatewaySN,
-                            prefTempCurrent);
+                    // Use preferred temperature unit from gateway info
+                    TempUnits prefTempCurrent = system.getGatewayInfo().preferredTemperatureUnit;
+                    GatewayInfo gatewayInfo = requestGatewayInfo(system.gatewaySN, prefTempCurrent);
                     if (gatewayInfo.returnStatus.equals(RequestStatus.SUCCESS)) {
-                        // Ignoring preferred temperature unit provided by the system
-                        // in case they were changed from Framework
                         gatewayInfo.preferredTemperatureUnit = prefTempCurrent;
-                        systemsInfo.systemInfo.get(i).setGetewayInfo(gatewayInfo);
+                        system.setGetewayInfo(gatewayInfo);
                     } else {
-                        systemsInfo.systemInfo.get(i).setZonesStatus(null);
-                        systemsInfo.systemInfo.get(i).setGetewayInfo(null);
+                        system.setZonesStatus(null);
+                        system.setGetewayInfo(null);
                         continue;
                     }
-                    // Getting alerts
-                    GatewaysAlerts gatewaysAlerts = requestGatewaysAlerts(systemsInfo.systemInfo.get(i).gatewaySN,
-                            systemsInfo.systemInfo.get(i).getGatewayInfo().prefferedLanguage, alertsCount);
-                    if (gatewaysAlerts.returnStatus.equals(RequestStatus.SUCCESS)) {
-                        systemsInfo.systemInfo.get(i).setGetewaysAlerts(gatewaysAlerts);
-                    } else {
-                        systemsInfo.systemInfo.get(i).setGetewaysAlerts(null);
-                    }
-                    // Getting Zones Status
-                    ZonesStatus zonesStatus = requestZonesStatus(systemsInfo.systemInfo.get(i).gatewaySN,
-                            prefTempCurrent);
+                    // Update alerts
+                    GatewaysAlerts gatewaysAlerts = requestGatewaysAlerts(system.gatewaySN,
+                            system.getGatewayInfo().preferredLanguage, alertsCount);
+                    system.setGetewaysAlerts(
+                            gatewaysAlerts.returnStatus.equals(RequestStatus.SUCCESS) ? gatewaysAlerts : null);
+                    // Update zones status
+                    ZonesStatus zonesStatus = requestZonesStatus(system.gatewaySN, prefTempCurrent);
                     if (zonesStatus.returnStatus.equals(RequestStatus.SUCCESS)) {
-                        for (int j = 0; j < zonesStatus.zoneStatus.size(); j++) {
-                            // Same as for gateway
-                            zonesStatus.zoneStatus.get(i).preferredTemperatureUnit = prefTempCurrent;
+                        for (ZoneStatus zone : zonesStatus.zoneStatus) {
+                            zone.preferredTemperatureUnit = prefTempCurrent;
                         }
-                        systemsInfo.systemInfo.get(i).setZonesStatus(zonesStatus);
+                        system.setZonesStatus(zonesStatus);
                     } else {
-                        systemsInfo.systemInfo.get(i).setZonesStatus(null);
-                        systemsInfo.systemInfo.get(i).setGetewayInfo(null);
-                        continue;
+                        system.setZonesStatus(null);
+                        system.setGetewayInfo(null);
                     }
                 }
             }
@@ -210,7 +200,7 @@ public class iComfortWiFiApiClient {
                     }
                     // Getting alerts
                     GatewaysAlerts gatewaysAlerts = requestGatewaysAlerts(systemsInfo.systemInfo.get(i).gatewaySN,
-                            systemsInfo.systemInfo.get(i).getGatewayInfo().prefferedLanguage, alertsCount);
+                            systemsInfo.systemInfo.get(i).getGatewayInfo().preferredLanguage, alertsCount);
                     if (gatewaysAlerts.returnStatus.equals(RequestStatus.SUCCESS)) {
                         systemsInfo.systemInfo.get(i).setGetewaysAlerts(gatewaysAlerts);
                     } else {
@@ -235,11 +225,11 @@ public class iComfortWiFiApiClient {
         }
     }
 
-    public OwnerProfileInfo getOwnerProfileInfo() {
+    public @Nullable OwnerProfileInfo getOwnerProfileInfo() {
         return ownerProfileInfo;
     }
 
-    public BuildingsInfo getBuildingsInfo() {
+    public @Nullable BuildingsInfo getBuildingsInfo() {
         return buildingsInfo;
     }
 
@@ -298,37 +288,60 @@ public class iComfortWiFiApiClient {
         update();
     }
 
-    private OwnerProfileInfo requestUserAccount(String userName) throws TimeoutException {
+    private @Nullable OwnerProfileInfo requestUserAccount(String userName) throws TimeoutException {
         String url = iComfortWiFiApiCommands.getCommandGetOwnerProfileInfo(userName);
         return apiAccess.doAuthenticatedGet(url, OwnerProfileInfo.class);
     }
 
-    private BuildingsInfo requestBuildingsInfo(String userName) throws TimeoutException {
+    private @Nullable BuildingsInfo requestBuildingsInfo(String userName) throws TimeoutException {
         String url = iComfortWiFiApiCommands.getCommandGetBuildingsInfo(userName);
         return apiAccess.doAuthenticatedGet(url, BuildingsInfo.class);
     }
 
-    // @SuppressWarnings("null")
     private SystemsInfo requestSystemsInfo(String userName) throws TimeoutException {
         String url = iComfortWiFiApiCommands.getCommandGetSystemsInfo(userName);
-        return apiAccess.doAuthenticatedGet(url, SystemsInfo.class);
+        SystemsInfo status = apiAccess.doAuthenticatedGet(url, SystemsInfo.class);
+        // Check for null and handle appropriately
+        if (status == null) {
+            throw new IllegalStateException("SystemsInfo could not be retrieved.");
+        }
+        return status;
     }
 
     private ZonesStatus requestZonesStatus(String gatewaySN, TempUnits tempUnit) throws TimeoutException {
         String url = iComfortWiFiApiCommands.getCommandGetTStatInfoList(gatewaySN, tempUnit.getTempUnitsValue());
-        return apiAccess.doAuthenticatedGet(url, ZonesStatus.class);
+        ZonesStatus zonesStatus = apiAccess.doAuthenticatedGet(url, ZonesStatus.class);
+        // Check for null and handle it
+        if (zonesStatus == null) {
+            throw new IllegalStateException("ZonesStatus could not be retrieved.");
+        }
+        return zonesStatus;
     }
 
     private GatewayInfo requestGatewayInfo(String gatewaySN, TempUnits tempUnit) throws TimeoutException {
         String url = iComfortWiFiApiCommands.getCommandGetGatewayInfo(gatewaySN, tempUnit.getTempUnitsValue());
-        return apiAccess.doAuthenticatedGet(url, GatewayInfo.class);
+        GatewayInfo gatewayInfo = apiAccess.doAuthenticatedGet(url, GatewayInfo.class);
+        // Check if the returned GatewayInfo is null
+        if (gatewayInfo == null) {
+            // Handle the null case, for example, throwing an exception or logging a message
+            throw new IllegalStateException("Failed to retrieve GatewayInfo for gateway: " + gatewaySN);
+        }
+        return gatewayInfo;
     }
 
-    private GatewaysAlerts requestGatewaysAlerts(String gatewaySN, PrefferedLanguage languageNbr, Integer count)
+    private GatewaysAlerts requestGatewaysAlerts(String gatewaySN, PreferredLanguage languageNbr, Integer count)
             throws TimeoutException {
         String url = iComfortWiFiApiCommands.getCommandGetGatewaysAlerts(gatewaySN,
-                languageNbr.getPrefferedLanguageValue().toString(), count.toString());
-        return apiAccess.doAuthenticatedGet(url, GatewaysAlerts.class);
+                languageNbr.getPreferedLanguageValue().toString(), count.toString());
+        GatewaysAlerts gatewaysAlerts = apiAccess.doAuthenticatedGet(url, GatewaysAlerts.class);
+
+        // Check if the returned GatewaysAlerts is null
+        if (gatewaysAlerts == null) {
+            // Handle the null case, e.g., throw an exception or log a message
+            throw new IllegalStateException("Failed to retrieve GatewaysAlerts for gateway: " + gatewaySN);
+        }
+
+        return gatewaysAlerts;
     }
 
     // User name and Password from configuration validation
