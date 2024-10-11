@@ -12,12 +12,15 @@
  */
 package org.openhab.binding.icomfortwifi.internal.configuration;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Contains the common configuration definition of an iComfortWiFi Thing
  *
  * @author Konstantin Panchenko - Initial contribution
  *
  */
+@NonNullByDefault
 public class iComfortWiFiThingConfiguration {
     public String id = ""; // GatewaySN for System ID or GatewaySN_ZoneID for Zonde ID
     public String name = ""; // System or Zone name (optional)

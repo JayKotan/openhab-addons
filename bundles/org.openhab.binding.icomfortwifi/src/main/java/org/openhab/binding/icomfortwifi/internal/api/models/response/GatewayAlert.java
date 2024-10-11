@@ -14,6 +14,7 @@ package org.openhab.binding.icomfortwifi.internal.api.models.response;
 
 import java.util.Date;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.icomfortwifi.internal.api.models.response.CustomTypes.AlertStatus;
 
 import com.google.gson.annotations.SerializedName;
@@ -24,6 +25,7 @@ import com.google.gson.annotations.SerializedName;
  * @author Konstantin Panchenko - Initial contribution
  * @author Jason Kotan - Added in headers.
  */
+@NonNullByDefault
 public class GatewayAlert {
 
     @SerializedName("Alarm_Description")
@@ -47,6 +49,25 @@ public class GatewayAlert {
     @SerializedName("Status")
     public AlertStatus status;
 
+    public GatewayAlert(String alarmDescription, Integer alarmNbr, String alarmType, String alarmValue,
+            Date dateTimeReset, Date dateTimeSet, AlertStatus status) {
+        this.alarmDescription = alarmDescription;
+        this.alarmNbr = alarmNbr;
+        this.alarmType = alarmType;
+        this.alarmValue = alarmValue;
+        this.dateTimeReset = dateTimeReset;
+        this.dateTimeSet = dateTimeSet;
+        this.status = status;
+    }
+
+    // Default constructor
     public GatewayAlert() {
+        this.alarmDescription = ""; // or throw an exception
+        this.alarmNbr = 0; // or throw an exception
+        this.alarmType = ""; // or throw an exception
+        this.alarmValue = ""; // or throw an exception
+        this.dateTimeReset = new Date(); // or throw an exception
+        this.dateTimeSet = new Date(); // or throw an exception
+        this.status = AlertStatus.UNKNOWN; // Assuming you have a default status
     }
 }

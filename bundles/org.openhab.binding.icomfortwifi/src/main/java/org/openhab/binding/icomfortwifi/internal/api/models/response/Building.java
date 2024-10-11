@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.icomfortwifi.internal.api.models.response;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 import com.google.gson.annotations.SerializedName;
 
 /**
@@ -20,91 +22,92 @@ import com.google.gson.annotations.SerializedName;
  * @author Konstantin Panchenko - Initial contribution
  *
  */
+@NonNullByDefault
 public class Building {
 
     @SerializedName("Addr1")
-    public String address_1;
+    public String address_1 = ""; // Default empty string
 
     @SerializedName("Addr2")
-    public String address_2;
+    public String address_2 = ""; // Default empty string
 
     @SerializedName("Age_of_Building")
-    public Integer buildingAge;
+    public Integer buildingAge = 0; // Default to 0
 
     @SerializedName("BuildingAlert")
-    public Boolean buildingAlert;
+    public Boolean buildingAlert = false; // Default to false
 
     @SerializedName("BuildingID")
-    public Integer buildingID;
+    public Integer buildingID = 0; // Default to 0
 
     @SerializedName("BuildingReminder")
-    public Boolean buildingReminder;
+    public Boolean buildingReminder = false; // Default to false
 
     @SerializedName("BuildingSize")
-    public Integer buildingSize;
+    public Integer buildingSize = 0; // Default to 0
 
     @SerializedName("BuildingStyle")
-    public Integer buildingStyle;
+    public Integer buildingStyle = 0; // Default to 0
 
     @SerializedName("Building_Name")
-    public String buildingName;
+    public String buildingName = ""; // Default empty string
 
     @SerializedName("City")
-    public String city;
+    public String city = ""; // Default empty string
 
     @SerializedName("Country")
-    public String country;
+    public String country = ""; // Default empty string
 
     @SerializedName("DealerAlerts_DlrWants")
-    public Boolean dealerAlertsDlrWants;
+    public Boolean dealerAlertsDlrWants = false; // Default to false
 
     @SerializedName("DealerAlerts_OwnerAllow")
-    public Boolean dealerAlertsOwnerAllow;
+    public Boolean dealerAlertsOwnerAllow = false; // Default to false
 
     @SerializedName("DealerID")
-    public Integer dealerID;
+    public Integer dealerID = 0; // Default to 0
 
     @SerializedName("DealerReminder_DlrWants")
-    public Boolean dealoerReminderDlrWants;
+    public Boolean dealerReminderDlrWants = false; // Default to false
 
     @SerializedName("DealerReminder_OwnerAllow")
-    public Boolean dealerReminderOwnerAllow;
+    public Boolean dealerReminderOwnerAllow = false; // Default to false
 
     @SerializedName("DealerTStatView")
-    public Boolean dealerTStatView;
+    public Boolean dealerTStatView = false; // Default to false
 
     @SerializedName("DefaultBuilding")
-    public Boolean defaultBuilding;
+    public Boolean defaultBuilding = false; // Default to false
 
     @SerializedName("Latitude")
-    public Double latitude;
+    public Double latitude = 0.0; // Default to 0.0
 
     @SerializedName("Longitude")
-    public Double longitude;
+    public Double longitude = 0.0; // Default to 0.0
 
     @SerializedName("NotificationEmail")
-    public String notificationEmail;
+    public String notificationEmail = ""; // Default empty string
 
     @SerializedName("Number_of_Bedrooms")
-    public Integer numberOfBedrooms;
+    public Integer numberOfBedrooms = 0; // Default to 0
 
     @SerializedName("Number_of_Floors")
-    public Integer numberOfFloors;
+    public Integer numberOfFloors = 0; // Default to 0
 
     @SerializedName("Number_of_Occupants")
-    public Integer numberOfOccupants;
+    public Integer numberOfOccupants = 0; // Default to 0
 
     @SerializedName("St_Prov")
-    public String stateOrProvince;
+    public String stateOrProvince = ""; // Default empty string
 
     @SerializedName("UserID")
-    public String userID;
+    public String userID = ""; // Default empty string
 
     @SerializedName("UtilityCompany")
-    public String utilityCompany;
+    public String utilityCompany = ""; // Default empty string
 
     @SerializedName("ZIP_PC")
-    public String zipOrPostalCode;
+    public String zipOrPostalCode = ""; // Default empty string
 
     public Building() {
     }

@@ -55,8 +55,18 @@ public class ApiAccess {
         GsonBuilder gsonBuilder = new GsonBuilder();
         gsonBuilder.registerTypeAdapter(Date.class, new JsonDateDeserializer());
         this.gson = gsonBuilder.create();
-        this.httpClient = httpClient; // Initialize HTTP client
         this.userCredentials = null; // Initialize in the constructor
+        this.httpClient = httpClient; // Initialize HTTP client
+
+        // Ensure the HttpClient is started
+        try {
+            if (this.httpClient.isStopped()) {
+                this.httpClient.start(); // Start the client if it is not running
+                logger.info("HttpClient started in ApiAccess constructor.");
+            }
+        } catch (Exception e) {
+            logger.error("Failed to start HttpClient in ApiAccess constructor: {}", e.getMessage(), e);
+        }
     }
 
     public void setUserCredentials(@Nullable String userCredentials) {
@@ -78,6 +88,10 @@ public class ApiAccess {
     public @Nullable <TOut> TOut doRequest(HttpMethod method, String url, Map<String, String> headers,
             @Nullable String requestData, String contentType, @Nullable Class<TOut> outClass) throws TimeoutException {
         logger.debug("Requesting: [{}]", url); // Log the request URL
+        if (httpClient.isStopped()) {
+            logger.error("HttpClient is stopped. Cannot send request.");
+            return null; // or throw an exception
+        }
         @Nullable
         TOut retVal = null;
         try {
@@ -109,8 +123,10 @@ public class ApiAccess {
                 logger.debug("Request failed with unexpected response code {}", response.getStatus()); // Log unexpected
                                                                                                        // response
             }
-        } catch (ExecutionException | InterruptedException e) {
-            logger.error("Error in handling request: ", e); // Log the error
+        } catch (ExecutionException e) {
+            logger.debug("Error in handling request: ", e);
+        } catch (InterruptedException e) {
+            logger.debug("Handling request interrupted: ", e);
             Thread.currentThread().interrupt();
         }
 
@@ -200,4 +216,12 @@ public class ApiAccess {
                                                                                        // container to JSON
         return doRequest(method, url, headers, json, contentType, outClass); // Call the main doRequest method
     }
+
+    // public void shutdown() {
+    // try {
+    // httpClient.stop();
+    // } catch (Exception e) {
+    // logger.error("Failed to stop HttpClient", e);
+    // }
+    // }
 }

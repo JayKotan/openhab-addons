@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.icomfortwifi.internal.api.models.request;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.icomfortwifi.internal.api.models.response.ZoneStatus;
 
 import com.google.gson.annotations.SerializedName;
@@ -22,22 +23,22 @@ import com.google.gson.annotations.SerializedName;
  * @author Konstantin Panchenko - Initial contribution
  *
  */
-
+@NonNullByDefault
 public class ReqSetTStatInfo {
     @SerializedName("Cool_Set_Point")
-    public Double coolSetPoint = null;
+    public Double coolSetPoint = 0.0;
     @SerializedName("Heat_Set_Point")
-    public Double heatSetPoint = null;
+    public Double heatSetPoint = 0.0;
     @SerializedName("Fan_Mode")
     public Integer fanMode = 0;
     @SerializedName("Operation_Mode")
     public Integer operationMode = 0;
     @SerializedName("Pref_Temp_Units")
-    public String prefTempUnits = null;
+    public String prefTempUnits = "";
     @SerializedName("Zone_Number")
     public Integer zoneNumber = 0;
     @SerializedName("GatewaySN")
-    public String gatewaySN = null;
+    public String gatewaySN = "";
 
     public ReqSetTStatInfo() {
     }
@@ -47,7 +48,7 @@ public class ReqSetTStatInfo {
         this.heatSetPoint = zoneStatus.heatSetPoint;
         this.fanMode = zoneStatus.fanMode.getFanModeValue();
         this.operationMode = zoneStatus.operationMode.getOperationModeValue();
-        this.prefTempUnits = zoneStatus.preferredTemperatureUnit.getTempUnitsValue();
+        this.prefTempUnits = zoneStatus.preferedTemperatureUnit.getTempUnitsValue();
         this.zoneNumber = zoneStatus.zoneNumber;
         this.gatewaySN = zoneStatus.gatewaySN;
     }

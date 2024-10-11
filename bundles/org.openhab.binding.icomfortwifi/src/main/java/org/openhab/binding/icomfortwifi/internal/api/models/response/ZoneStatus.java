@@ -14,6 +14,7 @@ package org.openhab.binding.icomfortwifi.internal.api.models.response;
 
 import java.util.Date;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.icomfortwifi.internal.api.models.response.CustomTypes.AwayStatus;
 import org.openhab.binding.icomfortwifi.internal.api.models.response.CustomTypes.ConnectionStatus;
 import org.openhab.binding.icomfortwifi.internal.api.models.response.CustomTypes.FanMode;
@@ -29,84 +30,86 @@ import com.google.gson.annotations.SerializedName;
  * @author Konstantin Panchenko - Initial contribution
  *
  */
-
+@NonNullByDefault
 public class ZoneStatus {
 
     @SerializedName("Away_Mode")
-    public AwayStatus awayMode;
+    public AwayStatus awayMode = AwayStatus.UNKNOWN;
 
     @SerializedName("Central_Zoned_Away")
-    public Integer centralZonedAway;
+    public Integer centralZonedAway = 0;
 
     @SerializedName("ConnectionStatus")
-    public ConnectionStatus connectionStatus;
+    public ConnectionStatus connectionStatus = ConnectionStatus.UNKNOWN;
 
     @SerializedName("Cool_Set_Point")
-    public Double coolSetPoint;
+    public Double coolSetPoint = 0.0;
 
     @SerializedName("DateTime_Mark")
-    public Date dateTimeMark;
+    public Date dateTimeMark = new Date();
 
     @SerializedName("Fan_Mode")
-    public FanMode fanMode;
+    public FanMode fanMode = FanMode.UNKNOWN;
 
     @SerializedName("GMT_To_Local")
-    public Integer gmtToLocal;
+    public Integer gmtToLocal = 0;
 
     @SerializedName("GatewaySN")
-    public String gatewaySN;
+    public String gatewaySN = "";
 
     @SerializedName("Golden_Table_Updated")
-    public Boolean goldenTableUpdated;
+    public Boolean goldenTableUpdated = false;
 
     @SerializedName("Heat_Set_Point")
-    public Double heatSetPoint;
+    public Double heatSetPoint = 0.0;
 
     @SerializedName("Indoor_Humidity")
-    public Integer indoorHumidity;
+    public Integer indoorHumidity = 0;
 
     @SerializedName("Indoor_Temp")
-    public Double indoorTemp;
+    public Double indoorTemp = 0.0;
 
     @SerializedName("Operation_Mode")
-    public OperationMode operationMode;
+    public OperationMode operationMode = OperationMode.UNKNOWN;
 
     @SerializedName("Pref_Temp_Units")
-    public TempUnits preferredTemperatureUnit;
+    public TempUnits preferedTemperatureUnit = TempUnits.FAHRENHEIT;
 
     @SerializedName("Program_Schedule_Mode")
-    public String programScheduleMode;
+    public String programScheduleMode = "";
 
     @SerializedName("Program_Schedule_Selection")
-    public Integer programScheduleSelection;
+    public Integer programScheduleSelection = 0;
 
     @SerializedName("System_Status")
-    public SystemStatus systemStatus;
+    public SystemStatus systemStatus = SystemStatus.UNKNOWN;
 
     @SerializedName("Zone_Enabled")
-    public Integer zoneEnabled;
+    public Integer zoneEnabled = 0;
 
     @SerializedName("Zone_Name")
-    public String zoneName;
+    public String zoneName = "";
 
     @SerializedName("Zone_Number")
-    public Integer zoneNumber;
+    public Integer zoneNumber = 0;
 
     @SerializedName("Zones_Installed")
-    public Integer zonesInstalled;
+    public Integer zonesInstalled = 0;
 
     public ZoneStatus() {
     }
 
-    public boolean hasActiveFaults() { // Always false, don't know what System Status could be.
+    public String getZoneID() {
+        return gatewaySN + "_" + zoneNumber; // Assuming gatewaySN and zoneNumber are initialized
+    }
+
+    public boolean hasActiveFaults() {
+        // Return false as per your previous indication.
         return false;
     }
 
-    public String getActiveFault() { // For future implementation System Status must be provided as string message
-        return systemStatus.toString();
-    }
-
-    public String getZoneID() {
-        return gatewaySN + "_" + zoneNumber.toString();
+    public String getActiveFault() {
+        // Directly return the string representation of the current system status.
+        return systemStatus.toString(); // Assumed to be non-null, so no need for null check.
     }
 }

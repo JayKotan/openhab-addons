@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.icomfortwifi.internal.api.models.response;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.icomfortwifi.internal.api.models.response.CustomTypes.RequestStatus;
 
 import com.google.gson.annotations.SerializedName;
@@ -22,7 +23,7 @@ import com.google.gson.annotations.SerializedName;
  * @author Konstantin Panchenko - Initial contribution
  *
  */
-
+@NonNullByDefault
 public class UserValidation {
 
     @SerializedName("msg_code")
@@ -30,4 +31,8 @@ public class UserValidation {
 
     @SerializedName("msg_desc")
     public String msgDesc = "";
+
+    public UserValidation() {
+        this.msgCode = RequestStatus.UNKNOWN; // Initialize with a default value
+    }
 }

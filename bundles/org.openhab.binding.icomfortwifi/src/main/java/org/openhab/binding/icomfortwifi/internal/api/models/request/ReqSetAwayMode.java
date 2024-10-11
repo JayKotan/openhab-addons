@@ -13,7 +13,6 @@
 package org.openhab.binding.icomfortwifi.internal.api.models.request;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-// import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.icomfortwifi.internal.api.models.response.ZoneStatus;
 
 import com.google.gson.annotations.SerializedName;
@@ -28,7 +27,7 @@ import com.google.gson.annotations.SerializedName;
 public class ReqSetAwayMode {
 
     @SerializedName("GatewaySN")
-    public String gatewaySN;
+    public String gatewaySN = "";
 
     @SerializedName("ZoneNumber")
     public Integer zoneNumber = 0;
@@ -37,19 +36,19 @@ public class ReqSetAwayMode {
     public Integer awayMode = 0;
 
     @SerializedName("HeatSetPoint")
-    public Double heatSetPoint = 0.0;  // Nullable field
+    public Double heatSetPoint = 0.0; // Nullable field
 
     @SerializedName("CoolSetPoint")
-    public Double coolSetPoint = 0.0;  // Nullable field
+    public Double coolSetPoint = 0.0; // Nullable field
 
     @SerializedName("FanMode")
     public Integer fanMode = 0;
 
     @SerializedName("TempScale")
-    public String preferredTemperatureUnit = "";  // Nullable field
+    public String preferedTemperatureUnit = ""; // Nullable field
 
     public ReqSetAwayMode() {
-        this.gatewaySN = "";
+        // this.gatewaySN = "";
     }
 
     public ReqSetAwayMode(ZoneStatus zoneStatus) {
@@ -59,6 +58,6 @@ public class ReqSetAwayMode {
         this.heatSetPoint = zoneStatus.heatSetPoint;
         this.coolSetPoint = zoneStatus.coolSetPoint;
         this.fanMode = zoneStatus.fanMode.getFanModeValue();
-        this.preferredTemperatureUnit = zoneStatus.preferredTemperatureUnit.getTempUnitsValue();
+        this.preferedTemperatureUnit = zoneStatus.preferedTemperatureUnit.getTempUnitsValue();
     }
 }

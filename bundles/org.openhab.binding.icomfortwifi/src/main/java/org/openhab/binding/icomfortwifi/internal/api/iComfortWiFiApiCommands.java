@@ -312,7 +312,7 @@ public final class iComfortWiFiApiCommands {
                 .append("&")
                 .append(setAwayModeNew.paramsDef.TEMP_SCALE)
                 .append("=")
-                .append(reqSetAway.preferredTemperatureUnit.toString());
+                .append(reqSetAway.preferedTemperatureUnit.toString());
         // @formatter:on
         return urlBuilder.toString();
     }

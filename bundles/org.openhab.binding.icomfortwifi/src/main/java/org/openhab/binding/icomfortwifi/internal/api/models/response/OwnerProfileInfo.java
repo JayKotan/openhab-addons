@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.icomfortwifi.internal.api.models.response;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.icomfortwifi.internal.api.models.response.CustomTypes.RequestStatus;
 
 import com.google.gson.annotations.SerializedName;
@@ -22,6 +23,7 @@ import com.google.gson.annotations.SerializedName;
  * @author Konstantin Panchenko - Initial contribution
  *
  */
+@NonNullByDefault
 public class OwnerProfileInfo {
 
     @SerializedName("FirstName")
@@ -58,5 +60,16 @@ public class OwnerProfileInfo {
     public String eMail;
 
     public OwnerProfileInfo() {
+        this.firstName = ""; // Default empty string or adjust as needed
+        this.lastName = ""; // Default empty string or adjust as needed
+        this.mobilePhone = ""; // Default empty string or adjust as needed
+        this.newGatewayPending = false; // Default value for Boolean
+        this.phone = ""; // Default empty string or adjust as needed
+        this.pwdFlag = false; // Default value for Boolean
+        this.registrationComplete = false; // Default value for Boolean
+        this.returnStatus = RequestStatus.UNKNOWN; // or another default value
+        this.tcInComplete = false; // Default value for Boolean
+        this.userID = ""; // Default empty string or adjust as needed
+        this.eMail = ""; // Default empty string or adjust as needed
     }
 }

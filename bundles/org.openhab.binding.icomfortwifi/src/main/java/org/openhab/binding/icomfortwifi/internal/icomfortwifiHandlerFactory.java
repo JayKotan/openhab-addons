@@ -36,6 +36,8 @@ import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Provides the thing factory for this binding
@@ -47,7 +49,7 @@ import org.osgi.service.component.annotations.Reference;
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.icomfortwifi")
 @NonNullByDefault
 public class iComfortWiFiHandlerFactory extends BaseThingHandlerFactory {
-
+    private static final Logger logger = LoggerFactory.getLogger(iComfortWiFiHandlerFactory.class);
     private final Map<ThingUID, @Nullable ServiceRegistration<?>> discoveryServiceRegs = new HashMap<>();
     private HttpClient httpClient;
 
@@ -103,7 +105,16 @@ public class iComfortWiFiHandlerFactory extends BaseThingHandlerFactory {
     @Activate
     public iComfortWiFiHandlerFactory(@Reference final HttpClientFactory httpClientFactory) {
         HttpClient client = httpClientFactory.getCommonHttpClient();
-        this.httpClient = client; // This should now not be null
+        try {
+            if (!client.isRunning()) {
+                logger.info("Starting the HttpClient.");
+                client.start(); // Start the HttpClient if it is not running
+            }
+            this.httpClient = client; // Assign the HttpClient
+        } catch (Exception e) {
+            logger.error("Failed to manage HttpClient: {}", e.getMessage(), e);
+            throw new IllegalStateException("HttpClient management failed", e);
+        }
     }
 
     // @Reference

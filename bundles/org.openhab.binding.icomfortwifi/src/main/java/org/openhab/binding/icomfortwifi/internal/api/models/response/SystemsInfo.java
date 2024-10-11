@@ -13,9 +13,11 @@
 
 package org.openhab.binding.icomfortwifi.internal.api.models.response;
 
-import java.util.ArrayList;
+// import java.util.ArrayList;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.icomfortwifi.internal.api.models.response.CustomTypes.RequestStatus;
+import org.openhab.binding.icomfortwifi.internal.utils.NonNullArrayList;
 
 import com.google.gson.annotations.SerializedName;
 
@@ -25,15 +27,17 @@ import com.google.gson.annotations.SerializedName;
  * @author Konstantin Panchenko - Initial contribution
  *
  */
-
+@NonNullByDefault
 public class SystemsInfo {
 
     @SerializedName("ReturnStatus")
     public RequestStatus returnStatus;
 
     @SerializedName("Systems")
-    public ArrayList<SystemInfo> systemInfo;
+    public NonNullArrayList<SystemInfo> systemInfo;
 
     public SystemsInfo() {
+        this.returnStatus = RequestStatus.UNKNOWN; // or another default value
+        this.systemInfo = new NonNullArrayList<>(); // Initialize with an empty NonNullArrayList
     }
 }
