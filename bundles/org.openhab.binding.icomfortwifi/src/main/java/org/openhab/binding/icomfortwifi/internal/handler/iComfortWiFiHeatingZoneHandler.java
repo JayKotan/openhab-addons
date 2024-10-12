@@ -250,20 +250,21 @@ public class iComfortWiFiHeatingZoneHandler extends BaseiComfortWiFiHandler {
                         // Check if command is valid before accessing its value
                         if (command != null) {
                             try {
-                                ProgramScheduleSelection selection = ProgramScheduleSelection.valueOf(command.toString());
-                                bridge.setZoneProgramScheduleSelection(zoneStatus, selection.getProgramScheduleSelectionValue());
+                                ProgramScheduleSelection selection = ProgramScheduleSelection
+                                        .valueOf(command.toString());
+                                bridge.setZoneProgramScheduleSelection(zoneStatus,
+                                        selection.getProgramScheduleSelectionValue());
                             } catch (IllegalArgumentException e) {
                                 logger.warn("Unknown ProgramScheduleSelection: {}", command);
                             }
                         }
                     }
-                    }
-                } else {
-                    logger.debug("Zone is in Away mode and command is not unified, not executing the command");
                 }
+            } else {
+                logger.debug("Zone is in Away mode and command is not unified, not executing the command");
             }
         }
-    
+    }
 
     /**
      * Safely casts a Command to QuantityType<Temperature> if possible.
