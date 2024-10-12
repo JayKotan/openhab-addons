@@ -24,6 +24,8 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.icomfortwifi.internal.api.models.response.CustomTypes.AwayStatus;
 import org.openhab.binding.icomfortwifi.internal.api.models.response.CustomTypes.FanMode;
 import org.openhab.binding.icomfortwifi.internal.api.models.response.CustomTypes.OperationMode;
+import org.openhab.binding.icomfortwifi.internal.api.models.response.CustomTypes.ProgramScheduleMode;
+import org.openhab.binding.icomfortwifi.internal.api.models.response.CustomTypes.ProgramScheduleSelection;
 import org.openhab.binding.icomfortwifi.internal.api.models.response.CustomTypes.TempUnits;
 import org.openhab.binding.icomfortwifi.internal.api.models.response.CustomTypes.UnifiedOperationMode;
 import org.openhab.binding.icomfortwifi.internal.api.models.response.ZoneStatus;
@@ -112,6 +114,10 @@ public class iComfortWiFiHeatingZoneHandler extends BaseiComfortWiFiHandler {
                     new StringType(zoneStatus.awayMode.toString()));
             updateState(iComfortWiFiBindingConstants.ZONE_FAN_MODE_CHANNEL,
                     new StringType(zoneStatus.fanMode.toString()));
+            updateState(iComfortWiFiBindingConstants.ZONE_PROGRAM_SCHEDULE_MODE_CHANNEL,
+                    new StringType(zoneStatus.programScheduleMode.toString()));
+            updateState(iComfortWiFiBindingConstants.ZONE_PROGRAM_SCHEDULE_SELECTION_CHANNEL,
+                    new StringType(zoneStatus.programScheduleSelection.toString()));
             updateState(iComfortWiFiBindingConstants.ZONE_HEAT_SET_POINT_CHANNEL, new QuantityType<>(
                     zoneStatus.heatSetPoint, zoneStatus.preferedTemperatureUnit.getTemperatureUnit()));
             updateState(iComfortWiFiBindingConstants.ZONE_COOL_SET_POINT_CHANNEL, new QuantityType<>(
@@ -230,13 +236,34 @@ public class iComfortWiFiHeatingZoneHandler extends BaseiComfortWiFiHandler {
                         if (command != null) {
                             bridge.setZoneFanMode(zoneStatus, FanMode.valueOf(command.toString()).getFanModeValue());
                         }
+                    } else if (iComfortWiFiBindingConstants.ZONE_PROGRAM_SCHEDULE_MODE_CHANNEL.equals(channelId)) {
+                        // Check if command is valid before accessing its value
+                        if (command != null) {
+                            try {
+                                ProgramScheduleMode mode = ProgramScheduleMode.valueOf(command.toString());
+                                bridge.setZoneProgramScheduleMode(zoneStatus, mode.getProgramScheduleModeValue());
+                            } catch (IllegalArgumentException e) {
+                                logger.warn("Unknown ProgramScheduleMode: {}", command);
+                            }
+                        }
+                    } else if (iComfortWiFiBindingConstants.ZONE_PROGRAM_SCHEDULE_SELECTION_CHANNEL.equals(channelId)) {
+                        // Check if command is valid before accessing its value
+                        if (command != null) {
+                            try {
+                                ProgramScheduleSelection selection = ProgramScheduleSelection.valueOf(command.toString());
+                                bridge.setZoneProgramScheduleSelection(zoneStatus, selection.getProgramScheduleSelectionValue());
+                            } catch (IllegalArgumentException e) {
+                                logger.warn("Unknown ProgramScheduleSelection: {}", command);
+                            }
+                        }
+                    }
                     }
                 } else {
                     logger.debug("Zone is in Away mode and command is not unified, not executing the command");
                 }
             }
         }
-    }
+    
 
     /**
      * Safely casts a Command to QuantityType<Temperature> if possible.

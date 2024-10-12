@@ -290,6 +290,23 @@ public class iComfortWiFiApiClient {
         update();
     }
 
+    public void setZoneProgramScheduleMode(ZoneStatus zoneStatus, String programScheduleMode) throws TimeoutException {
+        String url = iComfortWiFiApiCommands.getCommandSetTStatInfo();
+        ReqSetTStatInfo requestSetInfo = new ReqSetTStatInfo(zoneStatus);
+        requestSetInfo.programScheduleMode = programScheduleMode;
+        apiAccess.doAuthenticatedPut(url, requestSetInfo);
+        update();
+    }
+
+    public void setZoneProgramScheduleSelection(ZoneStatus zoneStatus, Integer programScheduleSelection)
+            throws TimeoutException {
+        String url = iComfortWiFiApiCommands.getCommandSetTStatInfo();
+        ReqSetTStatInfo requestSetInfo = new ReqSetTStatInfo(zoneStatus);
+        requestSetInfo.programScheduleSelection = programScheduleSelection;
+        apiAccess.doAuthenticatedPut(url, requestSetInfo);
+        update();
+    }
+
     public void setZoneFanMode(ZoneStatus zoneStatus, Integer fanMode) throws TimeoutException {
         String url = iComfortWiFiApiCommands.getCommandSetTStatInfo();
         ReqSetTStatInfo requestSetInfo = new ReqSetTStatInfo(zoneStatus);

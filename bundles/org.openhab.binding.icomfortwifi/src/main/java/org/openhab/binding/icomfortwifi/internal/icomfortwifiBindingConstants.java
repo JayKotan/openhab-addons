@@ -53,6 +53,8 @@ public class iComfortWiFiBindingConstants {
     public static final String ZONE_UNIFIED_OPERATION_MODE_CHANNEL = "UnifiedOperationMode"; // Used to set combined
                                                                                              // Away and Operation mode
     public static final String ZONE_FAN_MODE_CHANNEL = "FanMode";
+    public static final String ZONE_PROGRAM_SCHEDULE_MODE_CHANNEL = "ProgramScheduleMode";
+    public static final String ZONE_PROGRAM_SCHEDULE_SELECTION_CHANNEL = "ProgramScheduleSelection";
     public static final String ZONE_COOL_SET_POINT_CHANNEL = "CoolSetPoint";
     public static final String ZONE_HEAT_SET_POINT_CHANNEL = "HeatSetPoint";
     public static final String ZONE_SET_POINT_CHANNEL = "SetPoint"; // To set heat only / cool only point

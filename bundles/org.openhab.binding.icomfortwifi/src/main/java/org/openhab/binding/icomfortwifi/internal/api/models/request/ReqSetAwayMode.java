@@ -38,6 +38,10 @@ public class ReqSetAwayMode {
     public Integer fanMode = 0;
     @SerializedName("TempScale")
     public String preferedTemperatureUnit = null;
+    @SerializedName("Program_Schedule_Mode")
+    public String programScheduleMode = "";
+    @SerializedName("Program_Schedule_Selection")
+    public Integer programScheduleSelection = 0;
 
     public ReqSetAwayMode() {
     }
@@ -50,5 +54,7 @@ public class ReqSetAwayMode {
         this.coolSetPoint = zoneStatus.coolSetPoint;
         this.fanMode = zoneStatus.fanMode.getFanModeValue();
         this.preferedTemperatureUnit = zoneStatus.preferedTemperatureUnit.getTempUnitsValue();
+        this.programScheduleMode = zoneStatus.programScheduleMode.getProgramScheduleModeValue();
+        this.programScheduleSelection = zoneStatus.programScheduleSelection.getProgramScheduleSelectionValue();
     }
 }

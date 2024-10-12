@@ -38,6 +38,10 @@ public class ReqSetTStatInfo {
     public Integer zoneNumber = 0;
     @SerializedName("GatewaySN")
     public String gatewaySN = null;
+    @SerializedName("Program_Schedule_Mode")
+    public String programScheduleMode = "";
+    @SerializedName("Program_Schedule_Selection")
+    public Integer programScheduleSelection = 0;
 
     public ReqSetTStatInfo() {
     }
@@ -50,5 +54,7 @@ public class ReqSetTStatInfo {
         this.prefTempUnits = zoneStatus.preferedTemperatureUnit.getTempUnitsValue();
         this.zoneNumber = zoneStatus.zoneNumber;
         this.gatewaySN = zoneStatus.gatewaySN;
+        this.programScheduleMode = zoneStatus.programScheduleMode.getProgramScheduleModeValue();
+        this.programScheduleSelection = zoneStatus.programScheduleSelection.getProgramScheduleSelectionValue();
     }
 }

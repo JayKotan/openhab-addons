@@ -252,10 +252,10 @@ public class CustomTypes {
     public enum ProgramScheduleSelection {
         @SerializedName("0")
         SUMMER(0),
-        @SerializedName("1")
-        SPRING_FALL(1),
         @SerializedName("2")
-        WINTER(2),
+        SPRING_FALL(2),
+        @SerializedName("1")
+        WINTER(1),
         @SerializedName("3")
         SAVE_ENERGY(3),
         @SerializedName("4")
@@ -276,20 +276,20 @@ public class CustomTypes {
 
     public enum ProgramScheduleMode {
         @SerializedName("0")
-        MANUAL(0),
+        MANUAL("0"),
         @SerializedName("1")
-        SCHEDULE(1),
-        UNKNOWN(-1);
+        SCHEDULE("1"),
+        UNKNOWN("-1");
 
-        public Integer programScheduleModeValue;
+        public String programScheduleModeValue;
 
         // Revert to public constructor
-        ProgramScheduleMode(Integer programScheduleModeValue) {
+        ProgramScheduleMode(String programScheduleModeValue) {
             this.programScheduleModeValue = programScheduleModeValue;
         }
 
-        // public Integer getProgramScheduleModeValue() {
-        // return this.programScheduleModeValue;
-        // }
+        public String getProgramScheduleModeValue() {
+            return this.programScheduleModeValue;
+        }
     }
 }

@@ -112,6 +112,16 @@ public class iComfortWiFiBridgeHandler extends BaseBridgeHandler {
         updateThings();
     }
 
+    public void setZoneProgramScheduleMode(ZoneStatus zoneStatus, String mode) {
+        tryToCall(() -> apiClient.setZoneProgramScheduleMode(zoneStatus, mode));
+        updateThings();
+    }
+
+    public void setZoneProgramScheduleSelection(ZoneStatus zoneStatus, Integer mode) {
+        tryToCall(() -> apiClient.setZoneProgramScheduleSelection(zoneStatus, mode));
+        updateThings();
+    }
+
     public void setZoneFanMode(ZoneStatus zoneStatus, Integer mode) {
         tryToCall(() -> apiClient.setZoneFanMode(zoneStatus, mode));
         updateThings();
