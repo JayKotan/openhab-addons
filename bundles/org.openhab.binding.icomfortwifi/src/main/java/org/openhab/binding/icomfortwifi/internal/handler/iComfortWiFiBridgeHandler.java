@@ -12,9 +12,9 @@
  */
 package org.openhab.binding.icomfortwifi.internal.handler;
 
-// import java.util.HashMap;
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -30,7 +30,6 @@ import org.openhab.binding.icomfortwifi.internal.api.models.response.SystemInfo;
 import org.openhab.binding.icomfortwifi.internal.api.models.response.SystemsInfo;
 import org.openhab.binding.icomfortwifi.internal.api.models.response.ZoneStatus;
 import org.openhab.binding.icomfortwifi.internal.configuration.iComfortWiFiBridgeConfiguration;
-import org.openhab.binding.icomfortwifi.internal.utils.NonNullArrayList;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -57,14 +56,12 @@ public class iComfortWiFiBridgeHandler extends BaseBridgeHandler {
     private @NonNullByDefault({}) iComfortWiFiBridgeConfiguration configuration;
     private @NonNullByDefault({}) iComfortWiFiApiClient apiClient;
     private List<iComfortWiFiAccountStatusListener> listeners = new CopyOnWriteArrayList<>();
-    // private SystemsInfo systemsInfo; // Make sure this is declared
 
     protected @Nullable ScheduledFuture<?> refreshTask;
 
     public iComfortWiFiBridgeHandler(Bridge thing, HttpClient httpClient) {
         super(thing);
         this.httpClient = httpClient;
-        // this.systemsInfo = new SystemsInfo();
         // this.configuration = getThing().getConfiguration().as(iComfortWiFiBridgeConfiguration.class);
     }
 
@@ -179,10 +176,11 @@ public class iComfortWiFiBridgeHandler extends BaseBridgeHandler {
     }
 
     private void disposeApiClient() {
-        if (apiClient != null) {
-            apiClient.logout();
+        iComfortWiFiApiClient localApiClient = apiClient;
+        if (localApiClient != null) {
+            localApiClient.logout();
+            // this.apiClient = null;
         }
-        apiClient = null;
     }
 
     private void disposeRefreshTask() {
@@ -260,59 +258,35 @@ public class iComfortWiFiBridgeHandler extends BaseBridgeHandler {
     }
 
     private void updateThings() {
-        NonNullArrayList<SystemInfo> systemsInfoListFromApi = apiClient.getSystemsInfo().systemInfo; // This returns
-                                                                                                     // NonNullArrayList
-        // Lists to hold data for easier access
-        List<ZoneStatus> zoneStatusList = new ArrayList<>();
-        List<String> zoneIdList = new ArrayList<>();
-        NonNullArrayList<String> tcsIdList = new NonNullArrayList<>(); // Ensure no null values in this list
-        NonNullArrayList<ThingStatus> tcsStatusList = new NonNullArrayList<>(); // Ensure no null values in this list
+        Map<String, SystemInfo> idToTcsMap = new HashMap<>();
+        Map<String, ZoneStatus> idToZoneMap = new HashMap<>();
+        Map<String, String> zoneIdToTcsIdMap = new HashMap<>();
+        Map<String, ThingStatus> idToTcsThingsStatusMap = new HashMap<>();
+
         // Creating lookup tables
-        for (SystemInfo systemInfo : systemsInfoListFromApi) {
-            {
-                NonNullArrayList<ZoneStatus> zonesStatusList = systemInfo.getZonesStatus().zoneStatus; // Assuming this
-                                                                                                       // returns
-                                                                                                       // NonNullArrayList
-                for (ZoneStatus zoneStatus : zonesStatusList) {
-                    {
-                        zoneStatusList.add(zoneStatus);
-                        zoneIdList.add(zoneStatus.getZoneID());
-                        tcsIdList.add(systemInfo.gatewaySN); // Assuming the same index for TCS IDs
-                    }
-                }
+        for (SystemInfo systemInfo : apiClient.getSystemsInfo().systemInfo) {
+            idToTcsMap.put(systemInfo.gatewaySN, systemInfo);
+            for (ZoneStatus zoneStatus : systemInfo.getZonesStatus().zoneStatus) {
+                idToZoneMap.put(zoneStatus.getZoneID(), zoneStatus);
+                zoneIdToTcsIdMap.put(zoneStatus.getZoneID(), systemInfo.gatewaySN);
             }
+
         }
-        // Update the things by type, with pre-filtered info
+
+        // Then update the things by type, with pre-filtered info
         for (Thing thing : getThing().getThings()) {
             ThingHandler thingHandler = thing.getHandler();
+
+            if (thingHandler instanceof iComfortWiFiTemperatureControlSystemHandler) {
+                iComfortWiFiTemperatureControlSystemHandler tcsHandler = (iComfortWiFiTemperatureControlSystemHandler) thingHandler;
+                tcsHandler.update(idToTcsMap.get(tcsHandler.getId()));
+                idToTcsThingsStatusMap.put(tcsHandler.getId(), tcsHandler.getThing().getStatus());
+            }
+
             if (thingHandler instanceof iComfortWiFiHeatingZoneHandler) {
                 iComfortWiFiHeatingZoneHandler zoneHandler = (iComfortWiFiHeatingZoneHandler) thingHandler;
-                String zoneId = zoneHandler.getId();
-                // Find corresponding index
-                int index = zoneIdList.indexOf(zoneId);
-                if (index >= 0) {
-                    // Retrieve TCS ID safely
-                    String tcsId = tcsIdList.get(index);
-                    // Retrieve ThingStatus safely
-                    ThingStatus tcsStatus = tcsStatusList.get(tcsIdList.indexOf(tcsId));
-                    // Retrieve ZoneStatus safely without Optional
-                    ZoneStatus zoneStatus = null;
-                    for (ZoneStatus status : zoneStatusList) {
-                        if (status.getZoneID().equals(zoneId)) {
-                            zoneStatus = status;
-                            break; // Exit loop once found
-                        }
-                    }
-                    // Check if zoneStatus was found
-                    if (zoneStatus == null) {
-                        throw new IllegalStateException("No ZoneStatus found for Zone ID: " + zoneId);
-                    }
-                    // Now safely update the zoneHandler
-                    zoneHandler.update(tcsStatus, zoneStatus);
-                } else {
-                    // Handle the case where no matching Zone ID was found
-                    throw new IllegalStateException("No matching TCS ID found for Zone ID: " + zoneId);
-                }
+                zoneHandler.update(idToTcsThingsStatusMap.get(zoneIdToTcsIdMap.get(zoneHandler.getId())),
+                        idToZoneMap.get(zoneHandler.getId()));
             }
         }
     }

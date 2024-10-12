@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.icomfortwifi.internal.api.models.request;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.icomfortwifi.internal.api.models.response.ZoneStatus;
 
 import com.google.gson.annotations.SerializedName;
@@ -23,32 +22,24 @@ import com.google.gson.annotations.SerializedName;
  * @author Konstantin Panchenko - Initial contribution
  *
  */
-@NonNullByDefault
+
 public class ReqSetAwayMode {
-
     @SerializedName("GatewaySN")
-    public String gatewaySN = "";
-
+    public String gatewaySN = null;
     @SerializedName("ZoneNumber")
     public Integer zoneNumber = 0;
-
     @SerializedName("AwayMode")
     public Integer awayMode = 0;
-
     @SerializedName("HeatSetPoint")
-    public Double heatSetPoint = 0.0; // Nullable field
-
+    public Double heatSetPoint = null;
     @SerializedName("CoolSetPoint")
-    public Double coolSetPoint = 0.0; // Nullable field
-
+    public Double coolSetPoint = null;
     @SerializedName("FanMode")
     public Integer fanMode = 0;
-
     @SerializedName("TempScale")
-    public String preferedTemperatureUnit = ""; // Nullable field
+    public String preferedTemperatureUnit = null;
 
     public ReqSetAwayMode() {
-        // this.gatewaySN = "";
     }
 
     public ReqSetAwayMode(ZoneStatus zoneStatus) {

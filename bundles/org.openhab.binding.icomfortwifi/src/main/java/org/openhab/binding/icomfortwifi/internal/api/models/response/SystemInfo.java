@@ -14,7 +14,9 @@ package org.openhab.binding.icomfortwifi.internal.api.models.response;
 
 // import java.util.ArrayList;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
+// import java.util.List;
+
+// import org.openhab.binding.icomfortwifi.internal.api.models.response.CustomTypes.RequestStatus;
 
 import com.google.gson.annotations.SerializedName;
 
@@ -25,69 +27,67 @@ import com.google.gson.annotations.SerializedName;
  *
  */
 
-@NonNullByDefault
 public class SystemInfo {
 
+    public SystemInfo() {
+    }
+
     @SerializedName("BuildingID")
-    public Integer buildingID = 0;
+    public Integer buildingID;
 
     @SerializedName("Firmware_Ver")
-    public String firmwareVersion = "";
+    public String firmwareVersion;
 
     @SerializedName("Gateway_SN")
-    public String gatewaySN = "";
+    public String gatewaySN;
 
     @SerializedName("RegistrationCompleteFlag")
-    public Boolean registrationCompleteFlag = Boolean.FALSE;
+    public Boolean registrationCompleteFlag;
 
     @SerializedName("Status")
-    public String status = "";
+    public String status;
 
     @SerializedName("SystemID")
-    public Integer systemID = 0;
+    public Integer systemID;
 
     @SerializedName("System_Name")
-    public String systemName = "";
+    public String systemName;
 
-    private final ZonesStatus zonesStatus;
-    private final GatewayInfo gatewayInfo;
-    private final GatewaysAlerts gatewaysAlerts;
-
-    public SystemInfo(GatewayInfo gatewayInfo, GatewaysAlerts gatewaysAlerts, ZonesStatus zonesStatus) {
-        this.gatewayInfo = gatewayInfo;
-        this.gatewaysAlerts = gatewaysAlerts;
-        this.zonesStatus = zonesStatus;
-    }
+    private ZonesStatus zonesStatus;
 
     public ZonesStatus getZonesStatus() {
         return zonesStatus;
     }
 
+    public void setZonesStatus(ZonesStatus zonesStatus) {
+        this.zonesStatus = zonesStatus;
+    }
+
+    private GatewayInfo gatewayInfo;
+
     public GatewayInfo getGatewayInfo() {
         return gatewayInfo;
     }
+
+    public void setGetewayInfo(GatewayInfo gatewayInfo) {
+        this.gatewayInfo = gatewayInfo;
+    }
+
+    private GatewaysAlerts gatewaysAlerts;
 
     public GatewaysAlerts getGatewaysAlerts() {
         return gatewaysAlerts;
     }
 
-    public boolean hasActiveFaults() {
+    public void setGetewaysAlerts(GatewaysAlerts gatewaysAlerts) {
+        this.gatewaysAlerts = gatewaysAlerts;
+    }
+
+    public boolean hasActiveFaults() { // Always return false, implemented for compatibility and future use.
         return false;
     }
 
-    public String getActiveFault() {
+    public String getActiveFault() { // Not used, don't know status values
         return status;
     }
-
-    // public void setZonesStatus(ZonesStatus zonesStatus) {
-    // this.zonesStatus = zonesStatus;
-    // }
-
-    // public void setGetewayInfo(GatewayInfo gatewayInfo) {
-    // this.gatewayInfo = gatewayInfo;
-    // }
-
-    // public void setGetewaysAlerts(GatewaysAlerts gatewaysAlerts) {
-    // this.gatewaysAlerts = gatewaysAlerts;
-    // }
 }

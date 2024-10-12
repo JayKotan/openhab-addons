@@ -12,11 +12,9 @@
  */
 package org.openhab.binding.icomfortwifi.internal.api.models.response;
 
-// import java.util.ArrayList;
+import java.util.ArrayList;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.icomfortwifi.internal.api.models.response.CustomTypes.RequestStatus;
-import org.openhab.binding.icomfortwifi.internal.utils.NonNullArrayList;
 
 import com.google.gson.annotations.SerializedName;
 
@@ -26,17 +24,14 @@ import com.google.gson.annotations.SerializedName;
  * @author Konstantin Panchenko - Initial contribution
  *
  */
-@NonNullByDefault
 public class ZonesStatus {
 
     @SerializedName("ReturnStatus")
     public RequestStatus returnStatus;
 
     @SerializedName("tStatInfo")
-    public NonNullArrayList<ZoneStatus> zoneStatus;
+    public ArrayList<ZoneStatus> zoneStatus;
 
     public ZonesStatus() {
-        this.returnStatus = RequestStatus.UNKNOWN; // Initialize with a default value
-        this.zoneStatus = new NonNullArrayList<>(); // Initialize as an empty ArrayList
     }
 }

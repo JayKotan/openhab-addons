@@ -64,6 +64,36 @@
 		</state>
 	</channel-type>
 
+	<channel-type id="programScheduleSelection">
+		<item-type>String</item-type>
+		<label>Program Schedule Selection</label>
+		<description>Current Program Schedule Selection</description>
+		<category>heating</category>
+		<state pattern="%s" readOnly="false">
+			<options>
+				<option value="SUMMER">System set to SUMMER</option>
+				<option value="SPRING_FALL">System set to SPRING FALL</option>
+				<option value="WINTER">System set to WINTER</option>
+				<option value="SAVE_ENERGY">System set to SAVE ENERGY</option>
+				<option value="CUSTOM">System set to CUSTOM</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="programScheduleMode">
+		<item-type>String</item-type>
+		<label>Program Schedule Mode</label>
+		<description>Current Program Schedule Mode</description>
+		<category>heating</category>
+		<state pattern="%s" readOnly="false">
+			<options>
+				<option value="MANUAL">System set to MANUAL</option>
+				<option value="SCHEDULE">System set to SCHEDULE</option>
+				<option value="UNKNOWN">System set to UNKNOWN</option>
+			</options>
+		</state>
+	</channel-type>
+
 	<channel-type id="fanMode">
 		<item-type>String</item-type>
 		<label>Fan Mode Status</label>

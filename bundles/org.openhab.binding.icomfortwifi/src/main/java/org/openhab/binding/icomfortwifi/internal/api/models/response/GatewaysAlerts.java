@@ -10,12 +10,10 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-
 package org.openhab.binding.icomfortwifi.internal.api.models.response;
 
 import java.util.ArrayList;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.icomfortwifi.internal.api.models.response.CustomTypes.RequestStatus;
 
 import com.google.gson.annotations.SerializedName;
@@ -26,22 +24,14 @@ import com.google.gson.annotations.SerializedName;
  * @author Konstantin Panchenko - Initial contribution
  *
  */
-@NonNullByDefault
 public class GatewaysAlerts {
 
     @SerializedName("ReturnStatus")
-    public RequestStatus returnStatus = RequestStatus.UNKNOWN;
+    public RequestStatus returnStatus;
 
     @SerializedName("Alerts")
-    public ArrayList<GatewayAlert> systemAlert; // Ensure GatewayAlert is non-nullable
-
-    public GatewaysAlerts(RequestStatus returnStatus, ArrayList<GatewayAlert> systemAlert) {
-        this.returnStatus = returnStatus;
-        this.systemAlert = systemAlert;
-    }
+    public ArrayList<GatewayAlert> systemAlert;
 
     public GatewaysAlerts() {
-        this.returnStatus = RequestStatus.UNKNOWN;
-        this.systemAlert = new ArrayList<>();
     }
 }

@@ -35,7 +35,7 @@ public class GatewayInfo {
     public Double coolSetPointLowLimit = 0.0;
 
     @SerializedName("Daylight_Savings_Time")
-    public Integer daylightSavingsTime = 0;
+    public Integer daylightSavingsTime = 1;
 
     @SerializedName("Heat_Cool_Dead_Band")
     public Double heatCoolDeadBand = 0.0;

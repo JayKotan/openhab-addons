@@ -216,12 +216,4 @@ public class ApiAccess {
                                                                                        // container to JSON
         return doRequest(method, url, headers, json, contentType, outClass); // Call the main doRequest method
     }
-
-    // public void shutdown() {
-    // try {
-    // httpClient.stop();
-    // } catch (Exception e) {
-    // logger.error("Failed to stop HttpClient", e);
-    // }
-    // }
 }

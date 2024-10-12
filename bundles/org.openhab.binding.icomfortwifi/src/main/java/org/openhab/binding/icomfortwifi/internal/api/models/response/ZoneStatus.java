@@ -19,6 +19,8 @@ import org.openhab.binding.icomfortwifi.internal.api.models.response.CustomTypes
 import org.openhab.binding.icomfortwifi.internal.api.models.response.CustomTypes.ConnectionStatus;
 import org.openhab.binding.icomfortwifi.internal.api.models.response.CustomTypes.FanMode;
 import org.openhab.binding.icomfortwifi.internal.api.models.response.CustomTypes.OperationMode;
+import org.openhab.binding.icomfortwifi.internal.api.models.response.CustomTypes.ProgramScheduleMode;
+import org.openhab.binding.icomfortwifi.internal.api.models.response.CustomTypes.ProgramScheduleSelection;
 import org.openhab.binding.icomfortwifi.internal.api.models.response.CustomTypes.SystemStatus;
 import org.openhab.binding.icomfortwifi.internal.api.models.response.CustomTypes.TempUnits;
 
@@ -76,10 +78,10 @@ public class ZoneStatus {
     public TempUnits preferedTemperatureUnit = TempUnits.FAHRENHEIT;
 
     @SerializedName("Program_Schedule_Mode")
-    public String programScheduleMode = "";
+    public ProgramScheduleMode programScheduleMode = ProgramScheduleMode.UNKNOWN;
 
     @SerializedName("Program_Schedule_Selection")
-    public Integer programScheduleSelection = 0;
+    public ProgramScheduleSelection programScheduleSelection = ProgramScheduleSelection.CUSTOM;
 
     @SerializedName("System_Status")
     public SystemStatus systemStatus = SystemStatus.UNKNOWN;
@@ -97,6 +99,26 @@ public class ZoneStatus {
     public Integer zonesInstalled = 0;
 
     public ZoneStatus() {
+        this.awayMode = AwayStatus.AWAY_OFF; // Default value for AwayStatus
+        this.connectionStatus = ConnectionStatus.UNKNOWN; // Default value for ConnectionStatus
+        this.coolSetPoint = 0.0; // Default value for cooling set point
+        this.dateTimeMark = new Date(); // Default to current date/time or null if preferred
+        this.fanMode = FanMode.AUTO; // Default value for FanMode
+        this.gmtToLocal = 0; // Default to GMT
+        this.gatewaySN = ""; // Default empty string
+        this.goldenTableUpdated = false; // Default value for Boolean
+        this.heatSetPoint = 0.0; // Default value for heating set point
+        this.indoorHumidity = 0; // Default value for indoor humidity
+        this.indoorTemp = 0.0; // Default value for indoor temperature
+        this.operationMode = OperationMode.OFF; // Default value for OperationMode
+        this.preferedTemperatureUnit = TempUnits.FAHRENHEIT; // Default value for temperature unit
+        this.programScheduleMode = ProgramScheduleMode.UNKNOWN; // Default value for ProgramScheduleMode
+        this.programScheduleSelection = ProgramScheduleSelection.CUSTOM; // Default value for ProgramScheduleSelection
+        this.systemStatus = SystemStatus.UNKNOWN; // Default value for SystemStatus
+        this.zoneEnabled = 0; // Default value for zone enabled
+        this.zoneName = ""; // Default empty string for zone name
+        this.zoneNumber = 0; // Default value for zone number
+        this.zonesInstalled = 0; // Default value for installed zones
     }
 
     public String getZoneID() {
@@ -109,7 +131,6 @@ public class ZoneStatus {
     }
 
     public String getActiveFault() {
-        // Directly return the string representation of the current system status.
-        return systemStatus.toString(); // Assumed to be non-null, so no need for null check.
+        return systemStatus.toString(); // No need for null check since systemStatus is @NonNull
     }
 }
