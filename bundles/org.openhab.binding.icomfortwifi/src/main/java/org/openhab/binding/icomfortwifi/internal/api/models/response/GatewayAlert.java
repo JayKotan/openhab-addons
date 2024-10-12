@@ -23,7 +23,7 @@ import com.google.gson.annotations.SerializedName;
  * Response model for the System Alert
  *
  * @author Konstantin Panchenko - Initial contribution
- * @author Jason Kotan - Added in headers.
+ * @author Jason Kotan - Updated to comply with OpenHab 4.2.
  */
 @NonNullByDefault
 public class GatewayAlert {

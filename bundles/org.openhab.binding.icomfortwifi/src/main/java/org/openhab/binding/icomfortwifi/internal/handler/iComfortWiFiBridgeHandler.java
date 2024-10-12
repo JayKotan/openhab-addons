@@ -47,6 +47,7 @@ import org.slf4j.LoggerFactory;
  * to get the data updated to the correct things.
  *
  * @author Konstantin Panchenko - Initial contribution
+ * @author Jason Kotan - Updated to comply with OpenHab 4.2.
  */
 @NonNullByDefault
 public class iComfortWiFiBridgeHandler extends BaseBridgeHandler {

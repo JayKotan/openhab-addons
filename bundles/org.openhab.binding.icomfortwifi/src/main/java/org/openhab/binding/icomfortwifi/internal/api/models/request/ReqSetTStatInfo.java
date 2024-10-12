@@ -20,6 +20,7 @@ import com.google.gson.annotations.SerializedName;
  * Request model for the setting status information
  *
  * @author Konstantin Panchenko - Initial contribution
+ * @author Jason Kotan - Updated to comply with OpenHab 4.2. Added two fields
  *
  */
 

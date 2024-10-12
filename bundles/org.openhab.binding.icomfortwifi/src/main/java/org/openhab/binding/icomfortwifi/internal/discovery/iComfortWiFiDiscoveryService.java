@@ -41,7 +41,7 @@ import org.slf4j.LoggerFactory;
  * The {@link iComfortWiFiDiscoveryService} class is capable of discovering the available data from iComfortWiFi
  *
  * @author Konstantin Panchenko - Initial contribution
- * @author Jason Kotan - Added @nullByDefault- updated Import section
+ * @author Jason Kotan - Updated to comply with OpenHab 4.2.
  *
  */
 @NonNullByDefault

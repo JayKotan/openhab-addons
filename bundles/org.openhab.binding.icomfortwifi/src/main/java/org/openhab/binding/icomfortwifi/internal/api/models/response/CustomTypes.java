@@ -25,7 +25,7 @@ import com.google.gson.annotations.SerializedName;
  * Response model for the zone status
  *
  * @author Konstantin Panchenko - Initial contribution
- * @author Jason Kotan - Updated Imports
+ * @author Jason Kotan - Updated to comply with OpenHab 4.2. Added two Custom types for two new fields.
  */
 @NonNullByDefault
 public class CustomTypes {

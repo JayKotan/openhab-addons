@@ -22,6 +22,7 @@ import com.google.gson.annotations.SerializedName;
  * Response model for the zone status
  *
  * @author Konstantin Panchenko - Initial contribution
+ * @author Jason Kotan - Updated to comply with OpenHab 4.2.
  *
  */
 public class GatewaysAlerts {

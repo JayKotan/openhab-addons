@@ -50,7 +50,7 @@ import org.slf4j.LoggerFactory;
  * sent to one of the channels.
  *
  * @author Konstantin Panchenko - Initial contribution
- * @author Jason Kotan - Updated Thingstatus to @Nullable. Improved the handling of temp units in Handlecommand
+ * @author Jason Kotan - Updated to comply with OpenHab 4.2.
  */
 
 public class iComfortWiFiHeatingZoneHandler extends BaseiComfortWiFiHandler {

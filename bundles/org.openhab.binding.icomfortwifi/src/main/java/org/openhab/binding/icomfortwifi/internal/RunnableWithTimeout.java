@@ -14,12 +14,15 @@ package org.openhab.binding.icomfortwifi.internal;
 
 import java.util.concurrent.TimeoutException;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Provides an interface for a delegate that can throw a timeout
  *
  * @author Konstantin Panchenko - Initial contribution
- *
+ * @author Jason Kotan - Updated to comply with OpenHab 4.2.
  */
+@NonNullByDefault
 public interface RunnableWithTimeout {
 
     public abstract void run() throws TimeoutException;

@@ -25,7 +25,7 @@ import org.openhab.core.thing.ThingTypeUID;
  * used across the whole binding.
  *
  * @author Konstantin Panchenko - Initial contribution
- * @author Jason Kotan - Updated imports
+ * @author Jason Kotan - Updated to comply with OpenHab 4.2.
  */
 @NonNullByDefault
 public class iComfortWiFiBindingConstants {

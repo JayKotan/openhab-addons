@@ -18,6 +18,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  * Exception for errors from the API Client.
  *
  * @author Konstantin Panchenko - Initial contribution
+ * @author Jason Kotan - Updated to comply with OpenHab 4.2.
  *
  */
 @NonNullByDefault

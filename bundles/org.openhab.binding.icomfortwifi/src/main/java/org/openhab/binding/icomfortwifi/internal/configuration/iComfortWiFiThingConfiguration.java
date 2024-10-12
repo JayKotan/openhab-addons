@@ -18,6 +18,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  * Contains the common configuration definition of an iComfortWiFi Thing
  *
  * @author Konstantin Panchenko - Initial contribution
+ * @author Jason Kotan - Updated to comply with OpenHab 4.2.
  *
  */
 @NonNullByDefault

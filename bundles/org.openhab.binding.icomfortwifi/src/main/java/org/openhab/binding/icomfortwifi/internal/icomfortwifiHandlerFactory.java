@@ -41,7 +41,7 @@ import org.osgi.service.component.annotations.Reference;
  * Provides the thing factory for this binding
  *
  * @author Konstantin Panchenko - Initial contribution
- * @author Jason Kotan - Added @nonNullByDefault. Change the @Refrence with @Activate iComfortWiFiHandlerFactory code
+ * @author @author Jason Kotan - Updated to comply with OpenHab 4.2.
  *
  */
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.icomfortwifi")

@@ -19,7 +19,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  * Contains the configuration of the binding.
  *
  * @author Konstantin Panchenko - Initial contribution
- * @author Jason Kotan - Updated Import section
+ * @author Jason Kotan - Updated to comply with OpenHab 4.2.
  */
 @NonNullByDefault
 public class iComfortWiFiBridgeConfiguration {

@@ -1,6 +1,6 @@
 # iComfort WiFi Binding
 
-_This is a Open HAB 2 Binding for Lennox iComfort WiFi system / thermostat (Note this will not work with newer system S30/E30)._
+_This is a Open HAB 4.2 Binding for Lennox iComfort WiFi system / thermostat (Note this will not work with newer system S30/E30)._
 
 ## Supported Things
 
@@ -60,6 +60,8 @@ FanMode - Current fan mode (Read / Write)
 CoolSetPoint - Cool set point for the zone (Read / Write)
 HeatSetPoint - Heat set point for the zone (Read / Write)
 SetPoint - Heat or Cool set point for the zone (Read / Write)
+programScheduleSelection - Displays the Selected Program (Curerently Read only)
+programScheduleMode - Displays the current Schedule mode (Curerently Read only)
 
 ## Full Example
 
@@ -115,11 +117,12 @@ Group gHomeThermostatGA "House Thermostat" { ga="Thermostat" [modes="off,heat,co
   String Thermostate_Mode_GA "Thermostat Mode" (gHomeThermostatGA) {ga="thermostatMode", channel="icomfortwifi:zone:demoaccount:home_zone_1:UnifiedOperationMode"} //Available modes listed on the Group item
   Number Thermostate_Temp_GA "House Temperature" (gHomeThermostatGA) {ga="thermostatTemperatureAmbient", channel="icomfortwifi:zone:demoaccount:home_zone_1:Temperature"}
   Number Thermostate_Humid_GA "House Humidity" (gHomeThermostatGA) {ga="thermostatHumidityAmbient", channel="icomfortwifi:zone:demoaccount:home_zone_1:Humidity"} //Won't be shown in Google Home App, but will be return with voice responce
-  Number Thermostate_Setpoint_GA "House Setpoint" (gHomeThermostatGA) {ga="thermostatTemperatureSetpoint", channel="icomfortwifi:zone:demoaccount:home_zone_1:SetPoint"} //Temperature Set Point for Cool or Heat mode  
+  Number Thermostate_Setpoint_GA "House Setpoint" (gHomeThermostatGA) {ga="thermostatTemperatureSetpoint", channel="icomfortwifi:zone:demoaccount:home_zone_1:SetPoint"} //Temperature Set Point for Cool or Heat mode
   Number Thermostate_Setpoint_High_GA "House Setpoint High" (gHomeThermostatGA) {ga="thermostatTemperatureSetpointHigh", channel="icomfortwifi:zone:demoaccount:home_zone_1::CoolSetPoint"} //Temperature high (cooling) set point in auto-select Cool/Heat mode
   Number Thermostate_Setpoint_Low_GA "House Setpoint Low" (gHomeThermostatGA) {ga="thermostatTemperatureSetpointLow", channel="icomfortwifi:zone:demoaccount:home_zone_1::HeatSetPoint"} //Temperature low (heating) set point in auto-select Cool/Heat mode
 
 ## Foot note
 
-This binding is based on Nest binding and EVO Home binding, all the credits for original code goes to the original authors.
-I also used a lot of reversed engineering done by other programmers on Internet and I have to Thank them here!
+This binding is based on the Nest binding and EVO Home binding, all the credits for original code goes to the original authors.
+A lot of reverse engineering that was done by other programmers on Internet was used and we have to Thank them here!
+

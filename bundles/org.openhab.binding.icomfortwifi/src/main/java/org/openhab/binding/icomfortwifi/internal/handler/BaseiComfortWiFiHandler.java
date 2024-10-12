@@ -36,7 +36,7 @@ import org.openhab.core.types.UnDefType;
  * Base class for an iComfortWiFi handler
  *
  * @author Konstantin Panchenko - Initial contribution
- * @author Jason Kotan - Added @NonNllByDefault
+ * @author Jason Kotan - Updated to comply with OpenHab 4.2.
  */
 @NonNullByDefault
 public abstract class BaseiComfortWiFiHandler extends BaseThingHandler {
