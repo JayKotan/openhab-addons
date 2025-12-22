@@ -1,18 +1,67 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
 
-  <modelVersion>4.0.0</modelVersion>
+    <modelVersion>4.0.0</modelVersion>
 
-  <parent>
-    <groupId>org.openhab.addons.bundles</groupId>
-    <artifactId>org.openhab.addons.reactor.bundles</artifactId>
-    <version>4.3.0-SNAPSHOT</version>
-  </parent>
+    <parent>
+        <groupId>org.openhab.addons.bundles</groupId>
+        <artifactId>org.openhab.addons.reactor.bundles</artifactId>
+        <version>5.0.0-SNAPSHOT</version>
+    </parent>
 
-  <artifactId>org.openhab.binding.icomfortwifi</artifactId>
+    <artifactId>org.openhab.binding.icomfortwifi</artifactId>
+    <version>5.0.0-SNAPSHOT</version>
+    <packaging>bundle</packaging>
 
-  <name>openHAB Add-ons :: Bundles :: iComfortWiFi Binding</name>
-  <description>Binding for Lennox iComfort WiFi thermostate</description>
+    <name>openHAB Add-ons :: Bundles :: iComfortWiFi Binding</name>
+    <description>Binding for Lennox iComfort WiFi thermostat</description>
+
+    <properties>
+        <bundle.namespace>org.openhab.binding.icomfortwifi</bundle.namespace>
+        <maven.compiler.source>17</maven.compiler.source>
+        <maven.compiler.target>17</maven.compiler.target>
+    </properties>
+
+    <dependencies>
+        <!-- Core openHAB APIs -->
+        <dependency>
+            <groupId>org.openhab.core</groupId>
+            <artifactId>org.openhab.core.thing</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.openhab.core</groupId>
+            <artifactId>org.openhab.core.config.core</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.openhab.core</groupId>
+            <artifactId>org.openhab.core.io.net</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.openhab.core</groupId>
+            <artifactId>org.openhab.core.library</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.openhab.core</groupId>
+            <artifactId>org.openhab.core.library.unit</artifactId>
+        </dependency>
+
+        <!-- JSON handling (if your binding uses it) -->
+        <dependency>
+            <groupId>com.google.code.gson</groupId>
+            <artifactId>gson</artifactId>
+        </dependency>
+
+        <!-- Jetty client (if your binding uses HTTP calls) -->
+        <dependency>
+            <groupId>org.eclipse.jetty</groupId>
+            <artifactId>jetty-client</artifactId>
+        </dependency>
+    </dependencies>
 
 </project>
