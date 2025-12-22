@@ -1,4 +1,4 @@
-# Pentair Pool
+# Pentair Binding
 
 This is an openHAB binding for a Pentair Pool System.
 It is based on combined efforts of many on the Internet in reverse-engineering the proprietary Pentair protocol (see References section).
@@ -59,7 +59,7 @@ This binding supports the following thing types:
 | controller      |   Thing    | Pentair EasyTouch, SunTouch, or IntelliTouch pool controller.      |
 | intelliflo      |   Thing    | Pentair IntelliFlo variable speed pump. |
 | intellichlor    |   Thing    | Pentair IntelliChlor chlorinator.       |
-| intellichem     |   Thing    | Pentair IntelliChem.
+| intellichem     |   Thing    | Pentair IntelliChem.                     |
 
 ## Binding Configuration
 
@@ -91,7 +91,6 @@ Bridge pentair:ip_bridge:1 [ address="192.168.1.202", port=10001 ] {
 ```
 
 For a serial bridge you would use a configuration similar to this, again saved as 'pentair.things':
-
 
 ```java
 Bridge pentair:serial_bridge:1 [ serialPort="/dev/ttyUSB0" ] {
@@ -296,8 +295,6 @@ sitemap pool label="Pool stuff" {
 
 ## References
 
-
 Setting up RS485 and basic protocol - <https://www.sdyoung.com/home/decoding-the-pentair-easytouch-rs-485-protocol/>
 ser2sock GitHub - <https://github.com/nutechsoftware/ser2sock>
-nodejs-poolController - https://github.com/tagyoureit/nodejs-poolController
-
+nodejs-poolController - <https://github.com/tagyoureit/nodejs-poolController>

@@ -113,7 +113,6 @@ If you're missing a channel this means that it's not supported for your inverter
 | serialNumber      | The serial number of the Wi-Fi module     |
 | inverterType      | Inverter Type (for example X1_HYBRID_G4)  |
 
-
 ### Local Connect EV Charger Configuration
 
 ### Parameters
@@ -153,7 +152,6 @@ If you're missing a channel this means that it's not supported for your inverter
 | charger-state                            | String                      | Charger State.                                                |
 | last-update-time                         | DateTime                    | Last time with a successful retrieval of data.                |
 
-
 ### Cloud Connect Inverter Configuration
 
 | Parameter         | Description                                                                                                                                        |
@@ -162,7 +160,7 @@ If you're missing a channel this means that it's not supported for your inverter
 | password          | The registration number, shown in the Solax Cloud web portal. Mandatory parameter.                                                                 |
 | token             | Token for accessing the Solax Cloud API. Can be obtained via Service -> API on the Solax cloud web portal. Mandatory parameter.                    |
 
-### Channels
+### Cloud Connect Channels
 
 | Channel                         | Type                       | Description                                                                                                                                 |
 |---------------------------------|----------------------------|---------------------------------------------------------------------------------------------------------------------------------------------|

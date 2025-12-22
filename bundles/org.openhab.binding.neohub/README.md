@@ -56,7 +56,7 @@ But you can override this in special cases if you want to use (say) port forward
 ## Connection Refused Errors
 
 From early 2022 Heatmiser introduced NeoHub firmware that has the ability to enable / disable connecting to it via a TCP port.
-If the TCP port is disabled the OpenHAB binding cannot connect and the binding will report a _"Connection Refused"_ warning in the log.
+If the TCP port is disabled the openHAB binding cannot connect and the binding will report a _"Connection Refused"_ warning in the log.
 In prior firmware versions the TCP port was always enabled.
 But in the new firmware the TCP port is initially enabled on power up but if no communication occurs for 48 hours it is automatically disabled.
 Alternatively the Heatmiser mobile app has a setting (Settings | System | API Access | Legacy API Enable | On) whereby the TCP port can be permanently enabled.
@@ -74,6 +74,7 @@ The device name is automatically discovered by the NeoHub Thing, and it is also 
 ## Channels for "NeoHub"
 
 The following Channels, and their associated channel types are shown below.
+
 | Channel        | Data Type            | Description                                                                                                                                  |
 |----------------|----------------------|----------------------------------------------------------------------------------------------------------------------------------------------|
 | meshNetworkQoS | Number:Dimensionless | RF mesh network Quality-of-Service; this is the percentage of configured devices that are currently connected online via the RF mesh network |

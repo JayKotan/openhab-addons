@@ -4,7 +4,7 @@ This binding is used to enable communications between openHAB and "Modern Forms"
 
 ## Supported Things
 
-The binding currently supports the following thing:
+The binding currently supports the following Thing:
 
 | Thing         | ID          |                                                                |
 |---------------|-------------|----------------------------------------------------------------|
@@ -32,7 +32,6 @@ Auto discovery is not supported at this time.
 | wind-level       | String                 | RW         | The amount of wind produced.        |
 | light-on         | Switch                 | RW         | Turns the light on/off              |
 | light-intensity  | Number:Dimensionless   | RW         | Controls the intensity of the light |
-
 
 ## Full Example
 

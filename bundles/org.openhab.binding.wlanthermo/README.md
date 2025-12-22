@@ -1,6 +1,7 @@
 # WlanThermo Binding
 
 This binding add support for the WlanThermo BBQ Thermometer.
+
 | Nano                                 | Mini                                |
 |--------------------------------------|-------------------------------------|
 | ![WlanThermo Nano V1+](doc/nano.jpg) | ![WlanThermo Mini V2](doc/mini.jpg) |
@@ -26,7 +27,7 @@ Things must be created manually.
 
 WlanThermo things require you to specify the IP-address of your WlanThermo device (the one you enter into your browser to access the WebUI)
 The configuration of username/password is optional.
-If ommitted, the binding data will be read-only for all channels.
+If omitted, the binding data will be read-only for all channels.
 WlanThermo Mini things do not require a username/password and will always be read-only!
 
 ## Channels
@@ -37,7 +38,7 @@ Depending on the WlanThermo you're using, the following channels are available.
 
 If username/password is given in the thing, most channels are writeable.
 
-#### The device itself provides the following channels:
+#### The device itself provides the following channels
 
 | channel             | type                 | description                              |
 |---------------------|----------------------|------------------------------------------|
@@ -46,7 +47,7 @@ If username/password is given in the thing, most channels are writeable.
 | rssi_signalstrength | Number               | Signal Strength in range [0 ... 4]       |
 | rssi                | Number               | Signal Strength in dBm                   |
 
-#### The following channels apply for all 8 probes of the WlanThermo Nano:
+#### The following channels apply for all 8 probes of the WlanThermo Nano
 
 | channel            | type               | description                                                          |
 |--------------------|--------------------|----------------------------------------------------------------------|
@@ -76,14 +77,14 @@ If username/password is given in the thing, most channels are writeable.
 
 All channels are read only!
 
-#### The device itself provides the following channels:
+#### The device itself provides the following channels
 
 | channel  | type                 | description                   |
 |----------|----------------------|-------------------------------|
 | cpu_load | Number:Dimensionless | CPU Load in %                 |
 | cpu_temp | Number:Temperature   | CPU Temperature               |
 
-#### The following channels apply for all 10 probes of the WlanThermo Mini:
+#### The following channels apply for all 10 probes of the WlanThermo Mini
 
 | channel            | type               | description                                                          |
 |--------------------|--------------------|----------------------------------------------------------------------|
@@ -97,7 +98,7 @@ All channels are read only!
 | color              | Color              | The color of this probe                                              |
 | color_name         | String             | The color name of this probe                                         |
 
-#### The following channels apply for both Pitmaster channels of the WlanThermo Mini:
+#### The following channels apply for both Pitmaster channels of the WlanThermo Mini
 
 | channel    | type                 | description                                                             |
 |------------|----------------------|-------------------------------------------------------------------------|
@@ -240,9 +241,6 @@ Number:Temperature      nano_pit_setpoint       "Setpoint"              (gPitmas
 Number                  nano_pit_cycle          "Duty Cycle"            (gPitmasterNano1)   {channel="wlanthermo:nano:5af97cb9:pit1#duty_cycle"}
 Number                  nano_pit_pidprofile     "PID Profile"           (gPitmasterNano1)   {channel="wlanthermo:nano:5af97cb9:pit1#pid_id"}
 Number                  nano_pit_channel        "Input Channel ID"      (gPitmasterNano1)   {channel="wlanthermo:nano:5af97cb9:pit1#channel_id"}
-
-
-
 
 Group                   gWlanThermoMini         "WlanThermo Mini"
 Number                  mini_cpuload            "CPU Load"              (gWlanThermoMini)   {channel="wlanthermo:mini:<mini_thing_id>:system#cpu_load"}

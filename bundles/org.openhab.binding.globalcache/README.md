@@ -71,7 +71,7 @@ Note that you must set the Active Cable configuration parameter to match how the
 Available options are Infrared, Serial, and Relay/Sensor.
 The default is Infrared.
 
-When the iTach Fles is configured for serial operation, you must use the iTach Flex's web application to set the serial port
+When the iTach Flex is configured for serial operation, you must use the iTach Flex's web application to set the serial port
 parameters for **baud rate**, **flow control**, and **parity** to match the configuration of the end device to which the iTach Flex is connected.
 
 | Parameter      | Parameter ID  | Required/Optional | Description |
@@ -277,7 +277,6 @@ SAMSUNGHLS_POWER_ON = 38000,1,1,170,169,21,64,21,64,21,64,21,21,21,21,21,21,21,2
 SAMSUNGHLS_POWER_OFF    = 38000,1,1,170,169,21,64,21,64,21,64,21,21,21,21,21,21,21,21,21,21,21,64,21,64,21,64,21,21,21,21,21,21,21,21,21,21,21,21,21,21,21,21,21,64,21,64,21,21,21,21,21,64,21,64,21,64,21,64,21,21,21,21,21,64,21,64,21,21,21,1673
 SAMSUNGHLS_HDMI1    = 38000,1,1,170,169,21,64,21,64,21,64,21,21,21,21,21,21,21,21,21,21,21,64,21,64,21,64,21,21,21,21,21,21,21,21,21,21,21,64,21,64,21,21,21,64,21,21,21,21,21,21,21,64,21,21,21,21,21,64,21,21,21,64,21,64,21,64,21,21,21,1673
 SAMSUNGHLS_HDMI2    = 38000,1,1,170,169,21,64,21,64,21,64,21,21,21,21,21,21,21,21,21,21,21,64,21,64,21,64,21,21,21,21,21,21,21,21,21,21,21,64,21,21,21,21,21,64,21,21,21,64,21,64,21,64,21,21,21,64,21,64,21,21,21,64,21,21,21,21,21,21,21,1673
-
 
 # Xfinity Pace XG2V2-P Cable Box
 XFINITYXG2_GUIDE    = 38000,1,37,8,34,8,65,8,29,8,106,8,50,8,50,8,44,8,101,8,525,8,34,8,60,8,29,8,29,8,39,8,65,8,29,8,29,8,3058,8,34,8,65,8,29,8,106,8,50,8,50,8,44,8,101,8,525,8,34,8,101,8,70,8,29,8,39,8,65,8,29,8,29,8,3058

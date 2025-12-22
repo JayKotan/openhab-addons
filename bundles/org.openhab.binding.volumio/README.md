@@ -29,7 +29,6 @@ Thing volumio:player:VolumioLivingRoom "Volumio" @ "Living Room" [hostname="volu
 
 The devices support the following channels:
 
-
 | Channel           | Type   | Read/Write | Description                                                                                                          |
 |-------------------|--------|------------|----------------------------------------------------------------------------------------------------------------------|
 | title             | String | R          | Title of the song currently playing.                                                                                 |
@@ -49,7 +48,6 @@ The devices support the following channels:
 | system-command    | String | RW         | Sends a system command to shutdown or reboot the Volumio device. Use "shutdown" or "reboot" as string command.       |
 | stop-command      | String | RW         | Sends a Stop command to stop the player. Use "stop" as string command.                                               |
 
-
 ## Full Example
 
 demo.things:
@@ -61,12 +59,12 @@ Thing volumio:player:VolumioLivingRoom "Volumio" @ "Living Room" [hostname="volu
 demo.items:
 
 ```java
-String	Volumio_CurrentTitle	    "Current Title [%s]"	    <musicnote>      {channel="volumio:player:VolumioLivingRoom:title"}
-String	Volumio_CurrentArtist	    "Current Artist [%s]"	                     {channel="volumio:player:VolumioLivingRoom:artist"}
-String	Volumio_CurrentAlbum	    "Current Album [%s]"	                     {channel="volumio:player:VolumioLivingRoom:album"}
-Dimmer	Volumio_CurrentVolume	    "Current Volume [%.1f %%]"  <soundvolume>	 {channel="volumio:player:VolumioLivingRoom:volume"}
-Player	Volumio	                    "Current Status [%s]"	    <volumiologo>    {channel="volumio:player:VolumioLivingRoom:player"}
-String	Volumio_CurrentTrackType	"Current Track Type [%s]"   <musicnote>      {channel="volumio:player:VolumioLivingRoom:track-type"}
+String  Volumio_CurrentTitle        "Current Title [%s]"        <musicnote>      {channel="volumio:player:VolumioLivingRoom:title"}
+String  Volumio_CurrentArtist       "Current Artist [%s]"                        {channel="volumio:player:VolumioLivingRoom:artist"}
+String  Volumio_CurrentAlbum        "Current Album [%s]"                         {channel="volumio:player:VolumioLivingRoom:album"}
+Dimmer  Volumio_CurrentVolume       "Current Volume [%.1f %%]"  <soundvolume>    {channel="volumio:player:VolumioLivingRoom:volume"}
+Player  Volumio                     "Current Status [%s]"       <volumiologo>    {channel="volumio:player:VolumioLivingRoom:player"}
+String  Volumio_CurrentTrackType    "Current Track Type [%s]"   <musicnote>      {channel="volumio:player:VolumioLivingRoom:track-type"}
 ```
 
 demo.sitemap:
@@ -77,7 +75,7 @@ sitemap demo label="Main Menu"
     Frame label="Volumio" {
         Slider item=Volumio_CurrentVolume
         Text item=Volumio
-		Text item=Volumio_CurrentTitle
+        Text item=Volumio_CurrentTitle
     }
 }
 ```
