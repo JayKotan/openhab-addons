@@ -83,71 +83,71 @@
 		<item-type>Number:Temperature</item-type>
 		<label>Temperature</label>
 		<description>Current zone temperature</description>
-		<category>Temperature</category>
-		<state readOnly="true" pattern="%.1f %unit%"></state>
+		<category>temperature</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
 	<channel-type id="humidity">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Humidity</label>
 		<description>Current zone humidity</description>
-		<category>Humidity</category>
-		<state readOnly="true" pattern="%.1f %unit%"></state>
+		<category>humidity</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
 	<channel-type id="cool-set-point">
 		<item-type>Number:Temperature</item-type>
 		<label>Cool Set Point</label>
 		<description>Gets or sets the cool set point of this zone.</description>
-		<category>Temperature</category>
+		<category>temperature</category>
 		<tags>
 			<tag>Setpoint</tag>
 			<tag>Temperature</tag>
 		</tags>
-		<state step="1" pattern="%.1f %unit%" readOnly="false"></state>
+		<state step="1" pattern="%.1f %unit%" readOnly="false"/>
 	</channel-type>
 
 	<channel-type id="heat-set-point">
 		<item-type>Number:Temperature</item-type>
 		<label>Heat Set Point</label>
 		<description>Gets or sets the heat set point of this zone.</description>
-		<category>Temperature</category>
+		<category>temperature</category>
 		<tags>
 			<tag>Setpoint</tag>
 			<tag>Temperature</tag>
 		</tags>
-		<state step="1" pattern="%.1f %unit%" readOnly="false"></state>
+		<state step="1" pattern="%.1f %unit%" readOnly="false"/>
 	</channel-type>
 
 	<channel-type id="alarm-description">
 		<item-type>String</item-type>
 		<label>Alarm Description</label>
 		<description>Description of alarm being raised.</description>
-		<category>Text</category>
-		<state readOnly="true"></state>
+		<category>text</category>
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="alarm-nbr">
 		<item-type>Number</item-type>
 		<label>Alarm Code</label>
 		<description>Code of alarm being raised.</description>
-		<category>Number</category>
-		<state readOnly="true"></state>
+		<category>number</category>
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="alarm-type">
 		<item-type>String</item-type>
 		<label>Alarm Type</label>
 		<description>Type of alarm being raised.</description>
-		<category>Text</category>
-		<state readOnly="true"></state>
+		<category>text</category>
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="alarm-status">
 		<item-type>String</item-type>
 		<label>Alarm Status</label>
 		<description>Status of the alarm.</description>
-		<category>Text</category>
+		<category>text</category>
 		<state pattern="%s" readOnly="true">
 			<options>
 				<option value="ALERT_CLEARED">Alert has been cleared</option>
@@ -160,16 +160,16 @@
 		<item-type>DateTime</item-type>
 		<label>Alarm Date Set</label>
 		<description>Date and Time when alarm was raised.</description>
-		<category>DateTime</category>
-		<state readOnly="true"></state>
+		<category>datetime</category>
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="alert-number">
 		<item-type>Number</item-type>
 		<label>Alert Number</label>
 		<description>Display alert with specified number (up to 20).</description>
-		<category>Number</category>
-		<state readOnly="false" min="0" max="20"></state>
+		<category>number</category>
+		<state readOnly="false" min="0" max="20"/>
 	</channel-type>
 
 </thing:thing-descriptions>

@@ -66,7 +66,8 @@ public class iComfortWiFiHeatingZoneHandler extends BaseiComfortWiFiHandler {
 
             this.updateiComfortWiFiThingStatus(ThingStatus.ONLINE);
 
-            if (tcsStatus != null && tcsStatus.equals(ThingStatus.OFFLINE)) {
+            ThingStatus safeStatus = tcsStatus != null ? tcsStatus : ThingStatus.UNKNOWN;
+            if (ThingStatus.OFFLINE.equals(safeStatus)) {
                 this.updateiComfortWiFiThingStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                         "Controller offline");
                 return;
@@ -76,32 +77,43 @@ public class iComfortWiFiHeatingZoneHandler extends BaseiComfortWiFiHandler {
 
             if (!this.handleActiveFaults(localStatus)) {
 
-                Unit<Temperature> prefUnit = localStatus.getTemperatureUnit();
+                Unit<Temperature> rawUnit = localStatus.getTemperatureUnit();
+                Unit<Temperature> prefUnit = Checks.requireNonNull(rawUnit);
+
                 boolean isAway = "AWAY_ON".equals(localStatus.awayMode);
 
+                // Promote nullable numeric and enum fields once and reuse
+                Number indoorTemp = Checks.requireNonNull(localStatus.indoorTemp);
+                Number heatSetPoint = Checks.requireNonNull(localStatus.heatSetPoint);
+                Number coolSetPoint = Checks.requireNonNull(localStatus.coolSetPoint);
+                Number indoorHumidity = Checks.requireNonNull(localStatus.indoorHumidity);
+
+                // systemStatus may be null; capture it into a local and convert safely
+                org.openhab.binding.icomfortwifi.internal.dto.CustomTypes.SystemStatus sys = localStatus.systemStatus;
+                String systemStatusStr = sys != null ? sys.toString() : "IDLE";
+                this.updateState("system-status", new StringType(systemStatusStr));
+
+                OperationMode opMode = Checks.requireNonNull(localStatus.operationMode);
+                String awayModeStr = localStatus.awayMode != null ? localStatus.awayMode : "AWAY_OFF";
+                FanMode fanMode = Checks.requireNonNull(localStatus.fanMode);
+
                 // Update basic states
-                this.updateState("temperature",
-                        new QuantityType<>(Checks.requireNonNull(localStatus.indoorTemp), prefUnit));
+                this.updateState("temperature", new QuantityType<>(indoorTemp.doubleValue(), prefUnit));
+                this.updateState("heat-set-point", new QuantityType<>(heatSetPoint.doubleValue(), prefUnit));
+                this.updateState("cool-set-point", new QuantityType<>(coolSetPoint.doubleValue(), prefUnit));
+                this.updateState("humidity", new QuantityType<>(indoorHumidity.doubleValue(), Units.PERCENT));
 
-                this.updateState("heat-set-point",
-                        new QuantityType<>(Checks.requireNonNull(localStatus.heatSetPoint), prefUnit));
+                // Use the promoted systemStatusStr
+                this.updateState("system-status", new StringType(systemStatusStr));
 
-                this.updateState("cool-set-point",
-                        new QuantityType<>(Checks.requireNonNull(localStatus.coolSetPoint), prefUnit));
-
-                this.updateState("humidity",
-                        new QuantityType<>(Checks.requireNonNull(localStatus.indoorHumidity), Units.PERCENT));
-
-                this.updateState("system-status", new StringType(
-                        localStatus.systemStatus != null ? localStatus.systemStatus.toString() : "IDLE"));
-
-                this.updateState("operation-mode", new StringType(localStatus.operationMode.toString()));
+                // Operation mode
+                this.updateState("operation-mode", new StringType(opMode.toString()));
 
                 // Unified Operation Mode
                 if (isAway) {
                     this.updateState("unified-operation-mode", new StringType("eco"));
                 } else {
-                    String modeString = switch (localStatus.operationMode) {
+                    String modeString = switch (opMode) {
                         case HEAT_ONLY -> "heat";
                         case COOL_ONLY -> "cool";
                         case HEAT_OR_COOL -> "heatcool";
@@ -110,10 +122,9 @@ public class iComfortWiFiHeatingZoneHandler extends BaseiComfortWiFiHandler {
                     this.updateState("unified-operation-mode", new StringType(modeString));
                 }
 
-                this.updateState("away-mode",
-                        new StringType(localStatus.awayMode != null ? localStatus.awayMode : "AWAY_OFF"));
-
-                this.updateState("fan-mode", new StringType(localStatus.fanMode.toString()));
+                // Away mode and fan mode
+                this.updateState("away-mode", new StringType(awayModeStr));
+                this.updateState("fan-mode", new StringType(fanMode.toString()));
             }
 
         } else {
@@ -155,7 +166,10 @@ public class iComfortWiFiHeatingZoneHandler extends BaseiComfortWiFiHandler {
                     default -> UnifiedOperationMode.OFF;
                 };
 
-                this.handleUnifiedMode(bridge, currentStatus, mode, !"AWAY_ON".equals(currentStatus.awayMode));
+                String away = currentStatus.awayMode;
+                boolean isAwayOff = !"AWAY_ON".equals(away != null ? away : "AWAY_OFF");
+
+                this.handleUnifiedMode(bridge, currentStatus, mode, isAwayOff);
 
             } catch (Exception e) {
                 logger.warn("Error handling unified mode command: {}", command);
@@ -171,7 +185,11 @@ public class iComfortWiFiHeatingZoneHandler extends BaseiComfortWiFiHandler {
             boolean isHeat = "heat-set-point".equals(channelId);
 
             // Preserve existing behavior: convert to the zone's reported unit (no forced conversion)
-            double value = Checks.requireNonNull(tempCommand.toUnit(currentStatus.getTemperatureUnit())).doubleValue();
+            Unit<Temperature> rawUnit = currentStatus.getTemperatureUnit();
+            Unit<Temperature> unit = Checks.requireNonNull(rawUnit);
+
+            QuantityType<Temperature> converted = Checks.requireNonNull(tempCommand.toUnit(unit));
+            double value = converted.doubleValue();
 
             if (isHeat) {
                 bridge.setZoneHeatingPoint(currentStatus, value);

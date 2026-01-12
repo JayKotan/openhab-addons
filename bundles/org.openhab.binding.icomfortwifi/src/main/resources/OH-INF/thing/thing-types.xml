@@ -9,8 +9,8 @@
 			<bridge-type-ref id="account"/>
 		</supported-bridge-type-refs>
 
-		<label>iComfort WiFi Thermostat</label>
-		<description>This represents the iComfort WiFi Thermostat control display.</description>
+		<label>iComfort Wi‑Fi Thermostat</label>
+		<description>This represents the iComfort Wi‑Fi Thermostat control display.</description>
 
 		<channel-groups>
 			<channel-group id="alerts-and-reminders" typeId="alert-01"/>
@@ -18,9 +18,9 @@
 
 		<properties>
 			<property name="vendor">Lennox</property>
-			<property name="systemName"></property>
-			<property name="gatewaySerialNumber"></property>
-			<property name="firmwareVersion"></property>
+			<property name="systemName"/>
+			<property name="gatewaySerialNumber"/>
+			<property name="firmwareVersion"/>
 		</properties>
 
 		<representation-property>gatewaySerialNumber</representation-property>
@@ -42,8 +42,8 @@
 			<bridge-type-ref id="account"/>
 		</supported-bridge-type-refs>
 
-		<label>iComfort WiFi Heating Zone</label>
-		<description>This represents the iComfort WiFi Heating Zone.</description>
+		<label>iComfort Wi‑Fi Heating Zone</label>
+		<description>This represents the iComfort Wi‑Fi Heating Zone.</description>
 
 		<channels>
 			<channel id="temperature" typeId="temperature"/>
@@ -71,8 +71,8 @@
 
 	<channel-group-type id="alert-01">
 		<label>Gateway Alerts</label>
-		<description>Alerts and Reminders</description>
-		<category>HVAC</category>
+		<description>Alerts and reminders</description>
+		<category>hvac</category>
 
 		<channels>
 			<channel id="alarm-description" typeId="alarm-description"/>

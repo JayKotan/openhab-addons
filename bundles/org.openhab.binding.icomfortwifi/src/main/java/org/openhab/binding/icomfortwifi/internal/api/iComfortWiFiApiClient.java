@@ -60,9 +60,14 @@ public class iComfortWiFiApiClient {
     private final iComfortWiFiBridgeConfiguration configuration;
     private final ApiAccess apiAccess;
     private @Nullable BuildingsInfo buildingsInfo = new BuildingsInfo();
+    @SuppressWarnings("unused")
     private @Nullable OwnerProfileInfo ownerProfileInfo = new OwnerProfileInfo();
+
+    @SuppressWarnings("unused")
     private SystemsInfo systemsInfo = new SystemsInfo();
-    @SuppressWarnings("FieldCanBeLocal")
+
+    // noinspection FieldCanBeLocal
+    @SuppressWarnings("unused")
     private final Integer alertsCount = 20;
 
     public iComfortWiFiApiClient(iComfortWiFiBridgeConfiguration configuration, HttpClient httpClient) {
