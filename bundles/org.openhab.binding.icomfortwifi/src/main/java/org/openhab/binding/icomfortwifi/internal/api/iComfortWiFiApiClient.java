@@ -27,14 +27,12 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.http.HttpMethod;
 import org.openhab.binding.icomfortwifi.internal.configuration.iComfortWiFiBridgeConfiguration;
-import org.openhab.binding.icomfortwifi.internal.dto.BuildingsInfo;
 import org.openhab.binding.icomfortwifi.internal.dto.CustomTypes;
 import org.openhab.binding.icomfortwifi.internal.dto.CustomTypes.PreferredLanguage;
 import org.openhab.binding.icomfortwifi.internal.dto.CustomTypes.RequestStatus;
 import org.openhab.binding.icomfortwifi.internal.dto.CustomTypes.TempUnits;
 import org.openhab.binding.icomfortwifi.internal.dto.GatewayInfo;
 import org.openhab.binding.icomfortwifi.internal.dto.GatewaysAlerts;
-import org.openhab.binding.icomfortwifi.internal.dto.OwnerProfileInfo;
 import org.openhab.binding.icomfortwifi.internal.dto.ReqSetAwayMode;
 import org.openhab.binding.icomfortwifi.internal.dto.ReqSetTStatInfo;
 import org.openhab.binding.icomfortwifi.internal.dto.SystemInfo;
@@ -46,28 +44,26 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * *
- * 
- * @author Konstantin Panchenko - Initial contribution
- * @author Jason Kotan - Added @nullByDefault- updated Import section
+ * iComfort Wi‑Fi API client.
  *
+ * Handles authentication, polling, and write operations against the Lennox
+ * iComfort cloud API.
+ *
+ * @author Konstantin Panchenko - Initial contribution
+ * @author Jason Kota - openHAB 5.x cleanup and thermostat alerts
  */
 @NonNullByDefault
 public class iComfortWiFiApiClient {
+
     private final Logger logger = Objects.requireNonNull(LoggerFactory.getLogger(iComfortWiFiApiClient.class));
 
     private final HttpClient httpClient;
     private final iComfortWiFiBridgeConfiguration configuration;
     private final ApiAccess apiAccess;
-    private @Nullable BuildingsInfo buildingsInfo = new BuildingsInfo();
-    @SuppressWarnings("unused")
-    private @Nullable OwnerProfileInfo ownerProfileInfo = new OwnerProfileInfo();
 
-    @SuppressWarnings("unused")
     private SystemsInfo systemsInfo = new SystemsInfo();
 
-    // noinspection FieldCanBeLocal
-    @SuppressWarnings("unused")
+    // Number of alerts to request for gateway and thermostat
     private final Integer alertsCount = 20;
 
     public iComfortWiFiApiClient(iComfortWiFiBridgeConfiguration configuration, HttpClient httpClient) {
@@ -76,18 +72,30 @@ public class iComfortWiFiApiClient {
         this.apiAccess = new ApiAccess(httpClient);
     }
 
+    // ---------------------------------------------------------------------
+    // Lifecycle
+    // ---------------------------------------------------------------------
+
     public void close() {
-        this.apiAccess.setUserCredentials("");
-        this.ownerProfileInfo = null;
-        this.buildingsInfo = null;
-        this.systemsInfo = new SystemsInfo();
-        if (this.httpClient.isStarted()) {
-            try {
-                this.httpClient.stop();
-            } catch (Exception var2) {
-                this.logger.debug("Could not stop http client.", var2);
-            }
+        try {
+            // Clear credentials first
+            this.apiAccess.setUserCredentials("");
+        } catch (Exception e) {
+            logger.debug("Error clearing API credentials", e);
         }
+
+        try {
+            // Removed the null check to satisfy the compiler
+            if (this.httpClient.isStarted()) {
+                this.httpClient.stop();
+            }
+        } catch (Exception e) {
+            this.logger.debug("Could not stop http client.", e);
+        }
+    }
+
+    public void logout() {
+        close();
     }
 
     public boolean login() {
@@ -97,114 +105,94 @@ public class iComfortWiFiApiClient {
         }
 
         try {
-            // Encode username safely (no checked exception)
             String encodedUser = Checks
                     .requireNonNull(URLEncoder.encode(this.configuration.username, StandardCharsets.UTF_8));
-
-            // Retrieve all required account information
-            this.ownerProfileInfo = this.requestUserAccount(encodedUser);
-            this.buildingsInfo = this.requestBuildingsInfo(encodedUser);
             this.systemsInfo = this.requestSystemsInfo(encodedUser);
-
-            // Post‑retrieval sanity check
-            if (this.ownerProfileInfo == null || this.buildingsInfo == null) {
-                this.logger.debug("Failed to get system basic information");
-                success = false;
-            }
-
         } catch (TimeoutException e) {
-            this.logger.warn("Timeout during login information retrieval.");
+            this.logger.warn("Timeout during login information retrieval.", e);
+            success = false;
+        } catch (Exception e) {
+            this.logger.warn("Unexpected error during login", e);
             success = false;
         }
 
         return success;
     }
 
-    public void logout() {
-        this.close();
+    public SystemsInfo getSystemsInfo() {
+        return this.systemsInfo;
     }
+
+    // ---------------------------------------------------------------------
+    // Update Logic
+    // ---------------------------------------------------------------------
 
     public void update() {
         CustomTypes.TempUnits unit = TempUnits.FAHRENHEIT;
+        List<SystemInfo> systems = this.systemsInfo.getSystems();
 
-        List<SystemInfo> systems = this.systemsInfo.systemInfo;
         if (!systems.isEmpty()) {
-            SystemInfo firstSystem = Checks.requireNonNull(systems.get(0));
-
+            SystemInfo firstSystem = systems.get(0);
             GatewayInfo gw = firstSystem.getGatewayInfo();
-            if (gw != null) {
-                CustomTypes.TempUnits preferred = gw.preferredTemperatureUnit;
-                if (preferred != null) {
-                    unit = preferred;
-                }
+            if (gw != null && gw.preferredTemperatureUnit != null) {
+                unit = Objects.requireNonNull(gw.preferredTemperatureUnit);
             }
         }
-
         this.update(unit);
-    }
+    } // <--- This brace was missing
 
-    public void update(CustomTypes.TempUnits tempUnit) {
+    public void update(TempUnits tempUnit) {
         try {
-            if (this.systemsInfo.returnStatus == RequestStatus.SUCCESS) {
+            if (this.systemsInfo.returnStatus != RequestStatus.SUCCESS) {
+                return;
+            }
 
-                // Enhanced for-loop avoids all Iterator<> null-safety warnings
-                for (SystemInfo system : this.systemsInfo.systemInfo) {
-
-                    String sn = system.gatewaySN;
-                    if (sn == null || sn.isEmpty()) {
-                        continue;
-                    }
-
-                    GatewayInfo fetchedInfo = this.requestGatewayInfo(sn, tempUnit);
-                    if (fetchedInfo != null && fetchedInfo.returnStatus == RequestStatus.SUCCESS) {
-                        system.setGatewayInfo(fetchedInfo);
-
-                        CustomTypes.PreferredLanguage prefLang = fetchedInfo.preferredLanguage;
-                        if (prefLang == null) {
-                            prefLang = PreferredLanguage.ENGLISH;
-                        }
-
-                        GatewaysAlerts alerts = this.requestGatewaysAlerts(sn, Checks.requireNonNull(prefLang),
-                                this.alertsCount);
-                        if (alerts != null && alerts.returnStatus == RequestStatus.SUCCESS) {
-                            system.setGatewaysAlerts(alerts);
-                        }
-
-                        CustomTypes.TempUnits activeUnit = fetchedInfo.preferredTemperatureUnit;
-                        if (activeUnit == null) {
-                            activeUnit = tempUnit;
-                        }
-
-                        ZonesStatus zones = this.requestZonesStatus(sn, Checks.requireNonNull(activeUnit));
-                        if (zones != null && zones.returnStatus == RequestStatus.SUCCESS) {
-                            for (ZoneStatus zone : zones.zoneStatus) {
-                                zone.preferredTemperatureUnit = activeUnit;
-                            }
-                            system.setZonesStatus(zones);
-                        }
-
-                    } else {
-                        this.logger.debug("GatewayInfo for SN {} was null or failed; skipping sub-updates.", sn);
-                    }
+            for (SystemInfo system : this.systemsInfo.getSystems()) {
+                String sn = system.gatewaySN;
+                if (sn == null || sn.isEmpty()) {
+                    continue;
                 }
 
+                GatewayInfo fetchedInfo = requestGatewayInfo(sn, tempUnit);
+                if (fetchedInfo == null || fetchedInfo.returnStatus != RequestStatus.SUCCESS) {
+                    continue;
+                }
+
+                system.setGatewayInfo(fetchedInfo);
+
+                // Fix for Error [164,69]: Explicitly handle PreferredLanguage nullability
+                PreferredLanguage prefLang = fetchedInfo.preferredLanguage;
+                if (prefLang == null) {
+                    prefLang = PreferredLanguage.ENGLISH;
+                }
+
+                GatewaysAlerts gwAlerts = requestGatewaysAlerts(sn, prefLang, this.alertsCount);
+                if (gwAlerts != null) {
+                    system.setGatewaysAlerts(gwAlerts);
+                }
+
+                // Fix for Error [171,72]: Explicitly handle TempUnits nullability
+                TempUnits preferred = fetchedInfo.preferredTemperatureUnit;
+                TempUnits activeUnit = (preferred != null) ? preferred : tempUnit;
+
+                ZonesStatus zones = requestZonesStatus(sn, activeUnit);
+                if (zones != null && zones.returnStatus == RequestStatus.SUCCESS) {
+                    system.setZonesStatus(zones);
+                }
             }
         } catch (TimeoutException e) {
-            this.logger.info("Timeout on update");
+            this.logger.info("Timeout during API update", e);
         }
     }
-
-    @SuppressWarnings("unchecked")
-    private static Class<@Nullable ZonesStatus> nullableZonesStatusClass() {
-        return (Class<@Nullable ZonesStatus>) (Class<?>) ZonesStatus.class;
-    }
+    // ---------------------------------------------------------------------
+    // Zone write operations
+    // ---------------------------------------------------------------------
 
     public void setZoneAwayMode(ZoneStatus zoneStatus, Integer awayMode) throws TimeoutException {
         ReqSetAwayMode requestSetAway = new ReqSetAwayMode(zoneStatus);
         requestSetAway.awayMode = awayMode;
 
         String url = iComfortWiFiApiCommands.getCommandSetAwayModeNew(requestSetAway);
-
         ZonesStatus newZonesStatus = this.apiAccess.doAuthenticatedPut(url, requestSetAway, nullableZonesStatusClass());
 
         if (newZonesStatus == null) {
@@ -212,27 +200,21 @@ public class iComfortWiFiApiClient {
             return;
         }
 
-        // Use enhanced for loop to avoid iterator generic/annotation mismatch
-        for (SystemInfo system : this.systemsInfo.systemInfo) {
-            Objects.requireNonNull(system);
+        for (SystemInfo system : this.systemsInfo.getSystems()) {
+            ZonesStatus currentZones = system.getZonesStatusOrNull();
+            List<ZoneStatus> zones = (currentZones != null) ? currentZones.zoneStatus : null;
 
-            ZonesStatus currentZones = system.getZonesStatus();
-            if (currentZones == null) {
+            if (zones == null || zones.isEmpty()) {
                 continue;
             }
 
-            List<ZoneStatus> zoneList = Objects.requireNonNull(currentZones.zoneStatus);
-            if (zoneList.isEmpty()) {
-                continue;
-            }
-
-            ZoneStatus firstZone = Objects.requireNonNull(zoneList.get(0));
-
+            ZoneStatus firstZone = Objects.requireNonNull(zones.get(0));
             String targetSN = zoneStatus.gatewaySN;
+            String firstZoneSN = firstZone.gatewaySN;
 
-            if (targetSN.equals(firstZone.gatewaySN)) {
+            // Redundant null check removed; targetSN is assumed NonNull
+            if (targetSN.equals(firstZoneSN)) {
                 system.setZonesStatus(newZonesStatus);
-                // break; // optional
             }
         }
     }
@@ -242,7 +224,7 @@ public class iComfortWiFiApiClient {
         ReqSetTStatInfo requestSetInfo = new ReqSetTStatInfo(zoneStatus);
         requestSetInfo.heatSetPoint = setPoint;
         this.apiAccess.doAuthenticatedPut(url, requestSetInfo, "application/json");
-        this.update();
+        update();
     }
 
     public void setZoneCoolingPoint(ZoneStatus zoneStatus, Double setPoint) throws TimeoutException {
@@ -250,7 +232,7 @@ public class iComfortWiFiApiClient {
         ReqSetTStatInfo requestSetInfo = new ReqSetTStatInfo(zoneStatus);
         requestSetInfo.coolSetPoint = setPoint;
         this.apiAccess.doAuthenticatedPut(url, requestSetInfo, "application/json");
-        this.update();
+        update();
     }
 
     public void setZoneOperationMode(ZoneStatus zoneStatus, Integer operationMode) throws TimeoutException {
@@ -258,7 +240,7 @@ public class iComfortWiFiApiClient {
         ReqSetTStatInfo requestSetInfo = new ReqSetTStatInfo(zoneStatus);
         requestSetInfo.operationMode = operationMode;
         this.apiAccess.doAuthenticatedPut(url, requestSetInfo, "application/json");
-        this.update();
+        update();
     }
 
     public void setZoneFanMode(ZoneStatus zoneStatus, Integer fanMode) throws TimeoutException {
@@ -266,29 +248,16 @@ public class iComfortWiFiApiClient {
         ReqSetTStatInfo requestSetInfo = new ReqSetTStatInfo(zoneStatus);
         requestSetInfo.fanMode = fanMode;
         this.apiAccess.doAuthenticatedPut(url, requestSetInfo, "application/json");
-        this.update();
+        update();
     }
+
+    // ---------------------------------------------------------------------
+    // Low-level request helpers
+    // ---------------------------------------------------------------------
 
     @SuppressWarnings("unchecked")
-    private static Class<@Nullable OwnerProfileInfo> nullableOwnerProfileInfoClass() {
-        return (Class<@Nullable OwnerProfileInfo>) (Class<?>) OwnerProfileInfo.class;
-    }
-
-    private @Nullable OwnerProfileInfo requestUserAccount(String username) throws TimeoutException {
-        String url = iComfortWiFiApiCommands.getCommandGetOwnerProfileInfo(username);
-
-        return this.apiAccess.doAuthenticatedGet(url, nullableOwnerProfileInfoClass());
-    }
-
-    @SuppressWarnings("unchecked")
-    private static Class<@Nullable BuildingsInfo> nullableBuildingsInfoClass() {
-        return (Class<@Nullable BuildingsInfo>) (Class<?>) BuildingsInfo.class;
-    }
-
-    private @Nullable BuildingsInfo requestBuildingsInfo(String username) throws TimeoutException {
-        String url = iComfortWiFiApiCommands.getCommandGetBuildingsInfo(username);
-
-        return this.apiAccess.doAuthenticatedGet(url, nullableBuildingsInfoClass());
+    private static Class<@Nullable ZonesStatus> nullableZonesStatusClass() {
+        return (Class<@Nullable ZonesStatus>) (Class<?>) ZonesStatus.class;
     }
 
     @SuppressWarnings("unchecked")
@@ -296,39 +265,9 @@ public class iComfortWiFiApiClient {
         return (Class<@Nullable SystemsInfo>) (Class<?>) SystemsInfo.class;
     }
 
-    private SystemsInfo requestSystemsInfo(String username) throws TimeoutException {
-        String url = iComfortWiFiApiCommands.getCommandGetSystemsInfo(username);
-
-        SystemsInfo status = this.apiAccess.doAuthenticatedGet(url, nullableSystemsInfoClass());
-
-        if (status == null) {
-            throw new IllegalStateException("SystemsInfo could not be retrieved.");
-        }
-
-        return status;
-    }
-
-    private @Nullable ZonesStatus requestZonesStatus(String gatewaySN, CustomTypes.TempUnits tempUnit)
-            throws TimeoutException {
-
-        String url = iComfortWiFiApiCommands.getCommandGetTStatInfoList(gatewaySN,
-                Objects.requireNonNull(tempUnit.getTempUnitsValue()));
-
-        return this.apiAccess.doAuthenticatedGet(url, nullableZonesStatusClass());
-    }
-
     @SuppressWarnings("unchecked")
     private static Class<@Nullable GatewayInfo> nullableGatewayInfoClass() {
         return (Class<@Nullable GatewayInfo>) (Class<?>) GatewayInfo.class;
-    }
-
-    private @Nullable GatewayInfo requestGatewayInfo(String gatewaySN, CustomTypes.TempUnits tempUnit)
-            throws TimeoutException {
-
-        String url = iComfortWiFiApiCommands.getCommandGetGatewayInfo(gatewaySN,
-                Objects.requireNonNull(tempUnit.getTempUnitsValue()));
-
-        return this.apiAccess.doAuthenticatedGet(url, nullableGatewayInfoClass());
     }
 
     @SuppressWarnings("unchecked")
@@ -336,48 +275,63 @@ public class iComfortWiFiApiClient {
         return (Class<@Nullable GatewaysAlerts>) (Class<?>) GatewaysAlerts.class;
     }
 
-    private @Nullable GatewaysAlerts requestGatewaysAlerts(String gatewaySN, CustomTypes.PreferredLanguage languageNbr,
-            Integer count) throws TimeoutException {
-
-        String langStr = Objects.requireNonNull(String.valueOf(languageNbr.getPreferredLanguageValue()));
-
-        String countStr = Objects.requireNonNull(String.valueOf(count));
-
-        String url = iComfortWiFiApiCommands.getCommandGetGatewaysAlerts(gatewaySN, langStr, countStr);
-
-        return this.apiAccess.doAuthenticatedGet(url, nullableGatewaysAlertsClass());
-    }
-
     @SuppressWarnings("unchecked")
     private static Class<@Nullable UserValidation> nullableUserValidationClass() {
         return (Class<@Nullable UserValidation>) (Class<?>) UserValidation.class;
     }
 
-    private boolean validateUsername() { // Changed to camelCase
+    private SystemsInfo requestSystemsInfo(String username) throws TimeoutException {
+        String url = iComfortWiFiApiCommands.getCommandGetSystemsInfo(username);
+        SystemsInfo status = this.apiAccess.doAuthenticatedGet(url, nullableSystemsInfoClass());
+        if (status == null) {
+            throw new IllegalStateException("SystemsInfo could not be retrieved.");
+        }
+        return status;
+    }
+
+    private @Nullable ZonesStatus requestZonesStatus(String gatewaySN, TempUnits tempUnit) throws TimeoutException {
+        String url = iComfortWiFiApiCommands.getCommandGetTStatInfoList(gatewaySN,
+                Objects.requireNonNull(tempUnit.getTempUnitsValue()));
+        return this.apiAccess.doAuthenticatedGet(url, nullableZonesStatusClass());
+    }
+
+    private @Nullable GatewayInfo requestGatewayInfo(String gatewaySN, TempUnits tempUnit) throws TimeoutException {
+        String url = iComfortWiFiApiCommands.getCommandGetGatewayInfo(gatewaySN,
+                Objects.requireNonNull(tempUnit.getTempUnitsValue()));
+        return this.apiAccess.doAuthenticatedGet(url, nullableGatewayInfoClass());
+    }
+
+    private @Nullable GatewaysAlerts requestGatewaysAlerts(String gatewaySN, PreferredLanguage languageNbr,
+            Integer count) throws TimeoutException {
+        String langStr = Objects.requireNonNull(String.valueOf(languageNbr.getPreferredLanguageValue()));
+        String countStr = Objects.requireNonNull(String.valueOf(count));
+        String url = iComfortWiFiApiCommands.getCommandGetGatewaysAlerts(gatewaySN, langStr, countStr);
+        return this.apiAccess.doAuthenticatedGet(url, nullableGatewaysAlertsClass());
+    }
+
+    // ---------------------------------------------------------------------
+    // Authentication
+    // ---------------------------------------------------------------------
+
+    private boolean validateUsername() {
         UserValidation validation = null;
         String basicAuthentication = "";
 
         try {
-            // Ensure these match your configuration field names exactly
             String user = this.configuration.username;
             String pass = this.configuration.password;
-
             String rawAuthEncoded = Checks.requireNonNull(URLEncoder.encode(user, StandardCharsets.UTF_8));
             String authString = !user.contains(" ") && !user.contains(":") ? user : rawAuthEncoded;
             authString = authString + ":" + pass;
-
             String encoded = Checks
                     .requireNonNull(Base64.getEncoder().encodeToString(authString.getBytes(StandardCharsets.UTF_8)));
 
             basicAuthentication = "Basic " + encoded;
-
             Map<String, String> headers = new HashMap<>();
             headers.put("Authorization", basicAuthentication);
             headers.put("Accept", "application/json, text/json");
 
-            // Standardized to lowercase 'n' for the local variable
             String encodedUsername = Checks.requireNonNull(URLEncoder.encode(user, StandardCharsets.UTF_8));
-
             validation = this.apiAccess.doRequest(HttpMethod.PUT,
                     iComfortWiFiApiCommands.getCommandValidateUser(encodedUsername, 0), headers, "",
                     "application/x-www-form-urlencoded", nullableUserValidationClass());
@@ -393,19 +347,5 @@ public class iComfortWiFiApiClient {
             this.apiAccess.setUserCredentials("");
             return false;
         }
-    }
-
-    @SuppressWarnings("unused")
-    public @Nullable OwnerProfileInfo getOwnerProfileInfo() {
-        return this.ownerProfileInfo;
-    }
-
-    @SuppressWarnings("unused")
-    public @Nullable BuildingsInfo getBuildingsInfo() {
-        return this.buildingsInfo;
-    }
-
-    public SystemsInfo getSystemsInfo() {
-        return this.systemsInfo;
     }
 }

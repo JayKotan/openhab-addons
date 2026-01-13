@@ -9,11 +9,11 @@ This [iComfort WiFi binding](https://www.myicomfort.com/Default.aspx) integrates
 
 ## Supported Things
 
-| Thing Type | ID         | Description                                      |
-|------------|------------|--------------------------------------------------|
-| bridge     | account    | Connection to the Lennox iComfort Wi‑Fi API.     |
-| thing      | thermostat | The physical control display (alerts/status).    |
-| thing      | zone       | A specific climate zone (temperature & modes).   |
+| Thing Type | ID         | Description                                    |
+|------------|------------|------------------------------------------------|
+| bridge     | account    | Connection to the Lennox iComfort Wi‑Fi API.   |
+| thing      | thermostat | Displays the last alert (even if cleared).     |
+| thing      | zone       | A specific climate zone (temperature & modes). |
 
 
 Next paragraph starts here…
@@ -77,7 +77,7 @@ Number Alarm_Code "Alarm Code [%s]" <alarm> (gWholeHouse) {channel="icomfortwifi
 String Alarm_Type "Alarm Type [%s]" <alarm> (gWholeHouse) {channel="icomfortwifi:thermostat:demoaccount:thermostat_1:alertsAndReminders#AlarmType"}
 String Alarm_Status "Alarm Status [%s]" <alarm> (gWholeHouse) {channel="icomfortwifi:thermostat:demoaccount:thermostat_1:alertsAndReminders#AlarmStatus"}
 String Alarm_DateTimeSet "Alarm Date Time Set [%s]" <alarm> (gWholeHouse) {channel="icomfortwifi:thermostat:demoaccount:thermostat_1:alertsAndReminders#DateTimeSet"}
-Number Alarm_Number "Alarm Number [%s]" <alarm> (gWholeHouse) {channel="icomfortwifi:thermostat:demoaccount:thermostat_1:alertsAndReminders#AlertNumber"}
+String Alarm_DateTimeReset "Alarm Date Time Reset [%s]" <alarm> (gWholeHouse) {channel="icomfortwifi:thermostat:demoaccount:thermostat_1:alertsAndReminders#DateTimeReset"}
 
 ### icomfort.sitemap
 

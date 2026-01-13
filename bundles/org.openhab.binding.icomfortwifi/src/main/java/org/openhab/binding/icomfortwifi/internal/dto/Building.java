@@ -17,13 +17,16 @@ import org.eclipse.jdt.annotation.Nullable;
 import com.google.gson.annotations.SerializedName;
 
 /**
- * Response model for the building info
+ * Building DTO for iComfort Wi‑Fi API.
  *
- * @author Konstantin Panchenko - Initial contribution
- * @author Jason Kota - Updated for openHAB 5.x compliance
+ * Represents metadata about a user's building/home.
  */
 @SuppressWarnings("unused")
-public class Building {
+public final class Building {
+
+    // ---------------------------------------------------------------------
+    // JSON‑mapped fields
+    // ---------------------------------------------------------------------
 
     @SerializedName("Addr1")
     public @Nullable String address_1;
@@ -109,6 +112,243 @@ public class Building {
     @SerializedName("ZIP_PC")
     public @Nullable String zipOrPostalCode;
 
+    // ---------------------------------------------------------------------
+    // Constructor
+    // ---------------------------------------------------------------------
+
     public Building() {
+        // Gson populates fields; constructor ensures instantiability
+    }
+
+    // ---------------------------------------------------------------------
+    // Getters
+    // ---------------------------------------------------------------------
+
+    public @Nullable String getAddress1() {
+        return this.address_1;
+    }
+
+    public @Nullable String getAddress2() {
+        return this.address_2;
+    }
+
+    public @Nullable Integer getBuildingAge() {
+        return this.buildingAge;
+    }
+
+    public @Nullable Boolean getBuildingAlert() {
+        return this.buildingAlert;
+    }
+
+    public @Nullable Integer getBuildingID() {
+        return this.buildingID;
+    }
+
+    public @Nullable Boolean getBuildingReminder() {
+        return this.buildingReminder;
+    }
+
+    public @Nullable Integer getBuildingSize() {
+        return this.buildingSize;
+    }
+
+    public @Nullable Integer getBuildingStyle() {
+        return this.buildingStyle;
+    }
+
+    public @Nullable String getBuildingName() {
+        return this.buildingName;
+    }
+
+    public @Nullable String getCity() {
+        return this.city;
+    }
+
+    public @Nullable String getCountry() {
+        return this.country;
+    }
+
+    public @Nullable Boolean getDealerAlertsDlrWants() {
+        return this.dealerAlertsDlrWants;
+    }
+
+    public @Nullable Boolean getDealerAlertsOwnerAllow() {
+        return this.dealerAlertsOwnerAllow;
+    }
+
+    public @Nullable Integer getDealerID() {
+        return this.dealerID;
+    }
+
+    public @Nullable Boolean getDealoerReminderDlrWants() {
+        return this.dealoerReminderDlrWants;
+    }
+
+    public @Nullable Boolean getDealerReminderOwnerAllow() {
+        return this.dealerReminderOwnerAllow;
+    }
+
+    public @Nullable Boolean getDealerTStatView() {
+        return this.dealerTStatView;
+    }
+
+    public @Nullable Boolean getDefaultBuilding() {
+        return this.defaultBuilding;
+    }
+
+    public @Nullable Double getLatitude() {
+        return this.latitude;
+    }
+
+    public @Nullable Double getLongitude() {
+        return this.longitude;
+    }
+
+    public @Nullable String getNotificationEmail() {
+        return this.notificationEmail;
+    }
+
+    public @Nullable Integer getNumberOfBedrooms() {
+        return this.numberOfBedrooms;
+    }
+
+    public @Nullable Integer getNumberOfFloors() {
+        return this.numberOfFloors;
+    }
+
+    public @Nullable Integer getNumberOfOccupants() {
+        return this.numberOfOccupants;
+    }
+
+    public @Nullable String getStateOrProvince() {
+        return this.stateOrProvince;
+    }
+
+    public @Nullable String getUserID() {
+        return this.userID;
+    }
+
+    public @Nullable String getUtilityCompany() {
+        return this.utilityCompany;
+    }
+
+    public @Nullable String getZipOrPostalCode() {
+        return this.zipOrPostalCode;
+    }
+
+    // ---------------------------------------------------------------------
+    // Setters
+    // ---------------------------------------------------------------------
+
+    public void setAddress1(@Nullable String value) {
+        this.address_1 = value;
+    }
+
+    public void setAddress2(@Nullable String value) {
+        this.address_2 = value;
+    }
+
+    public void setBuildingAge(@Nullable Integer value) {
+        this.buildingAge = value;
+    }
+
+    public void setBuildingAlert(@Nullable Boolean value) {
+        this.buildingAlert = value;
+    }
+
+    public void setBuildingID(@Nullable Integer value) {
+        this.buildingID = value;
+    }
+
+    public void setBuildingReminder(@Nullable Boolean value) {
+        this.buildingReminder = value;
+    }
+
+    public void setBuildingSize(@Nullable Integer value) {
+        this.buildingSize = value;
+    }
+
+    public void setBuildingStyle(@Nullable Integer value) {
+        this.buildingStyle = value;
+    }
+
+    public void setBuildingName(@Nullable String value) {
+        this.buildingName = value;
+    }
+
+    public void setCity(@Nullable String value) {
+        this.city = value;
+    }
+
+    public void setCountry(@Nullable String value) {
+        this.country = value;
+    }
+
+    public void setDealerAlertsDlrWants(@Nullable Boolean value) {
+        this.dealerAlertsDlrWants = value;
+    }
+
+    public void setDealerAlertsOwnerAllow(@Nullable Boolean value) {
+        this.dealerAlertsOwnerAllow = value;
+    }
+
+    public void setDealerID(@Nullable Integer value) {
+        this.dealerID = value;
+    }
+
+    public void setDealoerReminderDlrWants(@Nullable Boolean value) {
+        this.dealoerReminderDlrWants = value;
+    }
+
+    public void setDealerReminderOwnerAllow(@Nullable Boolean value) {
+        this.dealerReminderOwnerAllow = value;
+    }
+
+    public void setDealerTStatView(@Nullable Boolean value) {
+        this.dealerTStatView = value;
+    }
+
+    public void setDefaultBuilding(@Nullable Boolean value) {
+        this.defaultBuilding = value;
+    }
+
+    public void setLatitude(@Nullable Double value) {
+        this.latitude = value;
+    }
+
+    public void setLongitude(@Nullable Double value) {
+        this.longitude = value;
+    }
+
+    public void setNotificationEmail(@Nullable String value) {
+        this.notificationEmail = value;
+    }
+
+    public void setNumberOfBedrooms(@Nullable Integer value) {
+        this.numberOfBedrooms = value;
+    }
+
+    public void setNumberOfFloors(@Nullable Integer value) {
+        this.numberOfFloors = value;
+    }
+
+    public void setNumberOfOccupants(@Nullable Integer value) {
+        this.numberOfOccupants = value;
+    }
+
+    public void setStateOrProvince(@Nullable String value) {
+        this.stateOrProvince = value;
+    }
+
+    public void setUserID(@Nullable String value) {
+        this.userID = value;
+    }
+
+    public void setUtilityCompany(@Nullable String value) {
+        this.utilityCompany = value;
+    }
+
+    public void setZipOrPostalCode(@Nullable String value) {
+        this.zipOrPostalCode = value;
     }
 }

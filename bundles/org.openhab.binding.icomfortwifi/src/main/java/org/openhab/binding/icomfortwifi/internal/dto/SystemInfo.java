@@ -20,21 +20,29 @@ import org.eclipse.jdt.annotation.Nullable;
 import com.google.gson.annotations.SerializedName;
 
 /**
- * 
+ * SystemInfo DTO for iComfort Wi‑Fi API.
  *
- * @author Konstantin Panchenko - Initial contribution
- * @author Jason Kota - Updated for openHAB 5.x compliance
+ * Fields map directly to the JSON returned by the cloud API.
  */
 @SuppressWarnings("unused")
-public class SystemInfo {
+public final class SystemInfo {
+
+    // ---------------------------------------------------------------------
+    // JSON‑mapped fields
+    // ---------------------------------------------------------------------
+
     @SerializedName("BuildingID")
     public @Nullable Integer buildingID;
+
     @SerializedName("Firmware_Ver")
     public @NonNull String firmwareVersion = "";
+
     @SerializedName("Gateway_SN")
     public String gatewaySN = "";
+
     @SerializedName("RegistrationCompleteFlag")
     public @Nullable Boolean registrationCompleteFlag;
+
     @SerializedName("Status")
     public @Nullable String status;
 
@@ -46,43 +54,56 @@ public class SystemInfo {
 
     @SerializedName("ZonesStatus")
     private @Nullable ZonesStatus zonesStatus;
+
     @SerializedName("GatewayInfo")
     private @Nullable GatewayInfo gatewayInfo;
+
     @SerializedName("GatewaysAlerts")
     private GatewaysAlerts gatewaysAlerts = new GatewaysAlerts();
+
+    // ---------------------------------------------------------------------
+    // Constructors
+    // ---------------------------------------------------------------------
 
     public SystemInfo(String systemName, String gatewaySN /* other args */) {
         this.systemName = Objects.requireNonNull(systemName);
         this.gatewaySN = Objects.requireNonNull(gatewaySN);
     }
 
+    // ---------------------------------------------------------------------
+    // Getters
+    // ---------------------------------------------------------------------
+
     public ZonesStatus getZonesStatus() {
         ZonesStatus status = this.zonesStatus;
         if (status == null) {
             throw new IllegalStateException("ZonesStatus is required but was null in the API response");
-        } else {
-            return status;
         }
+        return status;
     }
 
     public @Nullable ZonesStatus getZonesStatusOrNull() {
         return this.zonesStatus;
     }
 
-    public void setZonesStatus(@Nullable ZonesStatus zonesStatus) {
-        this.zonesStatus = zonesStatus;
-    }
-
     public @Nullable GatewayInfo getGatewayInfo() {
         return this.gatewayInfo;
     }
 
-    public void setGatewayInfo(@Nullable GatewayInfo gatewayInfo) {
-        this.gatewayInfo = gatewayInfo;
-    }
-
     public GatewaysAlerts getGatewaysAlerts() {
         return this.gatewaysAlerts;
+    }
+
+    // ---------------------------------------------------------------------
+    // Setters
+    // ---------------------------------------------------------------------
+
+    public void setZonesStatus(@Nullable ZonesStatus zonesStatus) {
+        this.zonesStatus = zonesStatus;
+    }
+
+    public void setGatewayInfo(@Nullable GatewayInfo gatewayInfo) {
+        this.gatewayInfo = gatewayInfo;
     }
 
     public void setGatewaysAlerts(GatewaysAlerts gatewaysAlerts) {

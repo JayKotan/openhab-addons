@@ -13,6 +13,7 @@
 package org.openhab.binding.icomfortwifi.internal.discovery;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
@@ -96,30 +97,46 @@ public class iComfortWiFiDiscoveryService extends AbstractDiscoveryService
             return;
         }
 
-        int systemCount = bridge.getiComfortWiFiSystemsInfo().systemInfo.size();
-        logger.debug("DISCOVERY: systems returned by API = {}", systemCount);
+        // Defensive: read nullable systems info into a local variable
+        var systemsInfo = bridge.getiComfortWiFiSystemsInfo();
 
-        for (SystemInfo systemInfo : bridge.getiComfortWiFiSystemsInfo().systemInfo) {
-            logger.debug("DISCOVERY: Found system {} ({})", systemInfo.gatewaySN, systemInfo.systemName);
+        List<SystemInfo> systems = systemsInfo.getSystems();
+        if (systems.isEmpty()) {
+            logger.debug("DISCOVERY: No systems returned by API, aborting scan");
+            stopScan();
+            return;
+        }
+
+        logger.debug("DISCOVERY: systems returned by API = {}", systems.size());
+
+        for (SystemInfo systemInfo : systems) {
+            String gatewaySN = Objects.requireNonNullElse(systemInfo.gatewaySN, "UNKNOWN");
+            String systemName = Objects.requireNonNullElse(systemInfo.systemName, "UNKNOWN");
+            logger.debug("DISCOVERY: Found system {} ({})", gatewaySN, systemName);
 
             addSystemDiscoveryResult(systemInfo);
 
-            String systemName = systemInfo.systemName;
-
             ZonesStatus zonesStatus = systemInfo.getZonesStatusOrNull();
-            if (zonesStatus == null || zonesStatus.zoneStatus.isEmpty()) {
-                logger.debug("DISCOVERY: No zones returned for system {}, skipping zone discovery",
-                        systemInfo.gatewaySN);
+            if (zonesStatus == null) {
+                logger.debug("DISCOVERY: No zones object for system {}, skipping zone discovery", gatewaySN);
                 continue;
             }
 
-            for (ZoneStatus zone : zonesStatus.zoneStatus) {
-                logger.debug("DISCOVERY: Found zone {} ({})", zone.getZoneID(), zone.zoneName);
-                addZoneDiscoveryResult(systemName, zone);
+            List<ZoneStatus> zoneList = zonesStatus.zoneStatus;
+            if (zoneList == null || zoneList.isEmpty()) {
+                logger.debug("DISCOVERY: No zones returned for system {}, skipping zone discovery", gatewaySN);
+                continue;
             }
 
-            stopScan();
+            for (ZoneStatus zone : zoneList) {
+                String zoneId = Objects.requireNonNullElse(zone.getZoneID(), "UNKNOWN");
+                String zoneName = Objects.requireNonNullElse(zone.zoneName, "UNKNOWN");
+                logger.debug("DISCOVERY: Found zone {} ({})", zoneId, zoneName);
+                addZoneDiscoveryResult(systemName, zone);
+            }
         }
+
+        stopScan();
     }
 
     public void addSystemDiscoveryResult(SystemInfo systemInfo) {
@@ -142,7 +159,6 @@ public class iComfortWiFiDiscoveryService extends AbstractDiscoveryService
         // Bridge the gap between the Lennox API model and openHAB's @NonNull requirements
 
         String zoneID = zone.getZoneID();
-
         String name = zone.zoneName + " (" + systemName + ")";
 
         ThingUID thingUID = new ThingUID(iComfortWiFiBindingConstants.THING_TYPE_ICOMFORT_ZONE, bridgeUID, zoneID);

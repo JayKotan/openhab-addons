@@ -20,20 +20,52 @@ import org.openhab.binding.icomfortwifi.internal.dto.CustomTypes.RequestStatus;
 import com.google.gson.annotations.SerializedName;
 
 /**
- * Alias for a list of locations
+ * BuildingsInfo DTO for iComfort Wi‑Fi API.
  *
- * @author Konstantin Panchenko - Initial contribution
- * @author Jason Kotan - Updated for openHAB 5.x compliance
+ * Represents the list of buildings associated with the authenticated user.
  */
 @SuppressWarnings("unused")
-public class BuildingsInfo {
+public final class BuildingsInfo {
+
+    // ---------------------------------------------------------------------
+    // JSON‑mapped fields
+    // ---------------------------------------------------------------------
 
     @SerializedName("ReturnStatus")
     public RequestStatus returnStatus = RequestStatus.SUCCESS;
 
     @SerializedName("Buildings")
-    public List<Building> buildingInfo = new ArrayList<>();
+    public List<Building> buildings = new ArrayList<>();
+
+    // ---------------------------------------------------------------------
+    // Constructor
+    // ---------------------------------------------------------------------
 
     public BuildingsInfo() {
+        // Gson overwrites defaults; constructor ensures non-null list
+    }
+
+    // ---------------------------------------------------------------------
+    // Getters
+    // ---------------------------------------------------------------------
+
+    public RequestStatus getReturnStatus() {
+        return this.returnStatus;
+    }
+
+    public List<Building> getBuildings() {
+        return this.buildings;
+    }
+
+    // ---------------------------------------------------------------------
+    // Setters
+    // ---------------------------------------------------------------------
+
+    public void setReturnStatus(RequestStatus status) {
+        this.returnStatus = status;
+    }
+
+    public void setBuildings(List<Building> buildings) {
+        this.buildings = buildings;
     }
 }

@@ -23,22 +23,24 @@ import org.openhab.core.library.unit.SIUnits;
 import com.google.gson.annotations.SerializedName;
 
 /**
- * 
- * @author Konstantin Panchenko - Initial contribution
- * @author Jason Kota - Updated for openHAB 5.x compliance
+ * Collection of custom enumerations used by the iComfort Wi‑Fi API.
+ *
+ * Each enum maps directly to the API’s numeric or string‑encoded values.
  */
-
 @SuppressWarnings("unused")
-public class CustomTypes {
+public final class CustomTypes {
 
     // ---------------------------------------------------------------------
     // AlertStatus
     // ---------------------------------------------------------------------
+
     public enum AlertStatus {
         @SerializedName("0")
         CLEARED(0),
+
         @SerializedName("1")
         ACTIVE(1),
+
         UNKNOWN(-1);
 
         private final int alertValue;
@@ -65,13 +67,16 @@ public class CustomTypes {
     }
 
     // ---------------------------------------------------------------------
-    // AwayStatus (already corrected)
+    // AwayStatus
     // ---------------------------------------------------------------------
+
     public enum AwayStatus {
         @SerializedName("0")
         AWAY_OFF(0),
+
         @SerializedName("1")
         AWAY_ON(1),
+
         UNKNOWN(-1);
 
         private final int awayValue;
@@ -98,26 +103,33 @@ public class CustomTypes {
     }
 
     // ---------------------------------------------------------------------
-    // ConnectionStatus (already clean)
+    // ConnectionStatus
     // ---------------------------------------------------------------------
+
     public enum ConnectionStatus {
         @SerializedName("GOOD")
         GOOD,
+
         @SerializedName("BAD")
         BAD,
+
         UNKNOWN
     }
 
     // ---------------------------------------------------------------------
-    // FanMode (already corrected)
+    // FanMode
     // ---------------------------------------------------------------------
+
     public enum FanMode {
         @SerializedName("0")
         AUTO(0),
+
         @SerializedName("1")
         ON(1),
+
         @SerializedName("2")
         CIRCULATE(2),
+
         UNKNOWN(-1);
 
         private final int fanModeValue;
@@ -144,17 +156,22 @@ public class CustomTypes {
     }
 
     // ---------------------------------------------------------------------
-    // OperationMode (already corrected)
+    // OperationMode
     // ---------------------------------------------------------------------
+
     public enum OperationMode {
         @SerializedName("0")
         OFF(0),
+
         @SerializedName("1")
         HEAT_ONLY(1),
+
         @SerializedName("2")
         COOL_ONLY(2),
+
         @SerializedName("3")
         HEAT_OR_COOL(3),
+
         UNKNOWN(-1);
 
         private final int operationModeValue;
@@ -183,13 +200,17 @@ public class CustomTypes {
     // ---------------------------------------------------------------------
     // PreferredLanguage
     // ---------------------------------------------------------------------
+
     public enum PreferredLanguage {
         @SerializedName("0")
         ENGLISH(0),
+
         @SerializedName("1")
         FRENCH(1),
+
         @SerializedName("2")
         SPANISH(2),
+
         UNKNOWN(-1);
 
         private final int preferredLanguage;
@@ -216,30 +237,39 @@ public class CustomTypes {
     }
 
     // ---------------------------------------------------------------------
-    // RequestStatus (already clean)
+    // RequestStatus
     // ---------------------------------------------------------------------
+
     public enum RequestStatus {
         @SerializedName("SUCCESS")
         SUCCESS,
+
         @SerializedName("FAILURE")
         FAILURE,
+
         UNKNOWN
     }
 
     // ---------------------------------------------------------------------
     // SystemStatus
     // ---------------------------------------------------------------------
+
     public enum SystemStatus {
         @SerializedName("0")
         IDLE(0),
+
         @SerializedName("1")
         HEATING(1),
+
         @SerializedName("2")
         COOLING(2),
+
         @SerializedName("3")
         WAITING(3),
+
         @SerializedName("4")
         EMERGENCY_HEAT(4),
+
         UNKNOWN(-1);
 
         private final int systemStatusValue;
@@ -266,13 +296,16 @@ public class CustomTypes {
     }
 
     // ---------------------------------------------------------------------
-    // TempUnits (string-based, already fine)
+    // TempUnits
     // ---------------------------------------------------------------------
+
     public enum TempUnits {
         @SerializedName("0")
         FAHRENHEIT("0"),
+
         @SerializedName("1")
         CELSIUS("1"),
+
         UNKNOWN("unknown");
 
         private final String tempUnitsValue;
@@ -302,19 +335,26 @@ public class CustomTypes {
     // ---------------------------------------------------------------------
     // UnifiedOperationMode
     // ---------------------------------------------------------------------
+
     public enum UnifiedOperationMode {
         @SerializedName("0")
         OFF("off"),
+
         @SerializedName("1")
         HEAT("heat"),
+
         @SerializedName("2")
         COOL("cool"),
+
         @SerializedName("3")
         HEAT_COOL("heatcool"),
+
         @SerializedName("6")
         FAN_ONLY("fan-only"),
+
         @SerializedName("13")
         ECO("eco"),
+
         UNKNOWN("-1");
 
         private final String unifiedOperationModeValue;

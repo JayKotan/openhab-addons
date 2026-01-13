@@ -35,7 +35,6 @@ public class iComfortWiFiBindingConstants {
     public static final ThingTypeUID THING_TYPE_ICOMFORT_THERMOSTAT = new ThingTypeUID("icomfortwifi", "thermostat");
     public static final ThingTypeUID THING_TYPE_ICOMFORT_ZONE = new ThingTypeUID("icomfortwifi", "zone");
 
-    // Updated to kebab-case
     public static final String ZONE_TEMPERATURE_CHANNEL = "temperature";
     public static final String ZONE_HUMIDITY_CHANNEL = "humidity";
     public static final String ZONE_SYSTEM_STATUS_CHANNEL = "system-status";
@@ -49,13 +48,11 @@ public class iComfortWiFiBindingConstants {
     public static final String DISPLAY_SYSTEM_MODE_CHANNEL = "system-mode";
     public static final String ZONE_SET_POINT_STATUS_CHANNEL = "set-point-status";
 
-    // Updated Alerts and Reminders to kebab-case
     public static final String TCS_ALARM_DESCRIPTION_CHANNEL = "alerts-and-reminders#alarm-description";
     public static final String TCS_ALARM_NBR_CHANNEL = "alerts-and-reminders#alarm-nbr";
     public static final String TCS_ALARM_TYPE_CHANNEL = "alerts-and-reminders#alarm-type";
     public static final String TCS_ALARM_STATUS_CHANNEL = "alerts-and-reminders#alarm-status";
     public static final String TCS_ALARM_DATE_TIME_SET_CHANNEL = "alerts-and-reminders#date-time-set";
-    public static final String TCS_ALARM_ALERT_NUMBER = "alerts-and-reminders#alert-number";
 
     public static final String TCS_PROPERTY_SYSTEM_NAME = "systemName";
     public static final String TCS_PROPERTY_GATEWAY_SN = "gatewaySerialNumber";

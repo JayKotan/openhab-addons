@@ -10,7 +10,6 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-// Source code is decompiled from a .class file using FernFlower decompiler (from Intellij IDEA).
 package org.openhab.binding.icomfortwifi.internal.api;
 
 import java.util.Objects;
@@ -19,76 +18,104 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.icomfortwifi.internal.dto.ReqSetAwayMode;
 
 /**
- * *
- * 
- * @author Konstantin Panchenko - Initial contribution
- * @author Jason Kotan - Added @nullByDefault- updated Import section
+ * Canonical API command builder for the Lennox iComfort Wi‑Fi service.
  *
+ * All endpoints are grouped alphabetically and follow a consistent structure.
+ *
+ * @author Konstantin Panchenko - Initial contribution
+ * @author Jason Kota - Clean rewrite for openHAB 5.x
  */
-@SuppressWarnings("unused")
 @NonNullByDefault
 public final class iComfortWiFiApiCommands {
-    public iComfortWiFiApiCommands() {
+
+    private iComfortWiFiApiCommands() {
+        // Utility class
     }
 
-    public static String getCommandValidateUser(String username, Integer lngNumber) {
-        String uri = new iComfortServiceURI().getURI();
-        String url = uri + "/ValidateUser" + "?username=" + username + "&lang_nbr=" + lngNumber;
+    // ---------------------------------------------------------------------
+    // Base URI
+    // ---------------------------------------------------------------------
 
-        return Objects.requireNonNull(url);
+    public static final class iComfortServiceURI {
+        public static final String BASE_PATH = "/DBAcessService.svc";
+
+        private iComfortServiceURI() {
+        }
+
+        public String getURI() {
+            return "https://services.myicomfort.com:443" + BASE_PATH;
+        }
+
+        public static final class URI {
+            public static final String HOST = "services.myicomfort.com";
+            public static final String PORT = "443";
+            public static final String PROTOCOL = "https:";
+
+            private URI() {
+            }
+        }
     }
 
-    public static String getCommandGetOwnerProfileInfo(String username) {
-        String base = new iComfortServiceURI().getURI();
-        String url = base + "/GetOwnerProfileInfo" + "?userid=" + username;
-        return Objects.requireNonNull(url);
-    }
+    // ---------------------------------------------------------------------
+    // Command Builders
+    // ---------------------------------------------------------------------
 
     public static String getCommandGetBuildingsInfo(String username) {
         String base = new iComfortServiceURI().getURI();
-        String url = base + "/GetBuildingsInfo" + "?userid=" + username;
-        return Objects.requireNonNull(url);
-    }
-
-    public static String getCommandGetSystemsInfo(String username) {
-        String base = new iComfortServiceURI().getURI();
-        String url = base + "/GetSystemsInfo" + "?userid=" + username;
-        return Objects.requireNonNull(url);
+        return Objects.requireNonNull(base + "/GetBuildingsInfo?userid=" + username);
     }
 
     public static String getCommandGetGatewayInfo(String gatewaySN, String tempUnit) {
         String base = new iComfortServiceURI().getURI();
-        String url = base + "/GetGatewayInfo" + "?gatewaysn=" + gatewaySN + "&tempunit=" + tempUnit;
-        return Objects.requireNonNull(url);
-    }
-
-    public static String getCommandGetTStatInfoList(String gatewaySN, String tempUnit) {
-        String base = new iComfortServiceURI().getURI();
-        String url = base + "/GetTStatInfoList" + "?gatewaysn=" + gatewaySN + "&tempunit=" + tempUnit;
-        return Objects.requireNonNull(url);
-    }
-
-    public static String getCommandSetAwayModeNew(ReqSetAwayMode reqSetAway) {
-        String base = new iComfortServiceURI().getURI();
-        String url = base + "/SetAwayModeNew" + "?gatewaysn=" + reqSetAway.gatewaySN + "&zonenumber="
-                + reqSetAway.zoneNumber + "&awaymode=" + reqSetAway.awayMode + "&heatsetpoint="
-                + reqSetAway.heatSetPoint + "&coolsetpoint=" + reqSetAway.coolSetPoint + "&fanmode="
-                + reqSetAway.fanMode + "&tempscale=" + reqSetAway.preferredTemperatureUnit;
-        return Objects.requireNonNull(url);
-    }
-
-    public static String getCommandSetTStatInfo() {
-        String base = new iComfortServiceURI().getURI();
-        String url = base + "/SetTStatInfo";
-        return Objects.requireNonNull(url);
+        return Objects.requireNonNull(base + "/GetGatewayInfo?gatewaysn=" + gatewaySN + "&tempunit=" + tempUnit);
     }
 
     public static String getCommandGetGatewaysAlerts(String gatewaySN, String languageNbr, String count) {
         String base = new iComfortServiceURI().getURI();
-        String url = base + "/GetGatewaysAlerts" + "?gatewaysn=" + gatewaySN + "&lang_nbr=" + languageNbr + "&count="
-                + count;
-        return Objects.requireNonNull(url);
+        return Objects.requireNonNull(
+                base + "/GetGatewaysAlerts?gatewaysn=" + gatewaySN + "&lang_nbr=" + languageNbr + "&count=" + count);
     }
+
+    public static String getCommandGetOwnerProfileInfo(String username) {
+        String base = new iComfortServiceURI().getURI();
+        return Objects.requireNonNull(base + "/GetOwnerProfileInfo?userid=" + username);
+    }
+
+    public static String getCommandGetSystemsInfo(String username) {
+        String base = new iComfortServiceURI().getURI();
+        return Objects.requireNonNull(base + "/GetSystemsInfo?userid=" + username);
+    }
+
+    public static String getCommandGetTStatAlerts(String gatewaySN, String count) {
+        String base = new iComfortServiceURI().getURI();
+        return Objects.requireNonNull(base + "/GetTStatAlerts?gatewaysn=" + gatewaySN + "&count=" + count);
+    }
+
+    public static String getCommandGetTStatInfoList(String gatewaySN, String tempUnit) {
+        String base = new iComfortServiceURI().getURI();
+        return Objects.requireNonNull(base + "/GetTStatInfoList?gatewaysn=" + gatewaySN + "&tempunit=" + tempUnit);
+    }
+
+    public static String getCommandSetAwayModeNew(ReqSetAwayMode req) {
+        String base = new iComfortServiceURI().getURI();
+        return Objects.requireNonNull(base + "/SetAwayModeNew" + "?gatewaysn=" + req.gatewaySN + "&zonenumber="
+                + req.zoneNumber + "&awaymode=" + req.awayMode + "&heatsetpoint=" + req.heatSetPoint + "&coolsetpoint="
+                + req.coolSetPoint + "&fanmode=" + req.fanMode + "&tempscale=" + req.preferredTemperatureUnit);
+    }
+
+    public static String getCommandSetTStatInfo() {
+        String base = new iComfortServiceURI().getURI();
+        return Objects.requireNonNull(base + "/SetTStatInfo");
+    }
+
+    public static String getCommandValidateUser(String username, Integer langNbr) {
+        String base = new iComfortServiceURI().getURI();
+        return Objects.requireNonNull(base + "/ValidateUser?username=" + username + "&lang_nbr=" + langNbr);
+    }
+
+    // ---------------------------------------------------------------------
+    // Endpoint Metadata (Optional, for documentation)
+    // ---------------------------------------------------------------------
 
     public static final class getBuildingsInfo {
         public static final String PATH = "/GetBuildingsInfo";
@@ -97,7 +124,7 @@ public final class iComfortWiFiApiCommands {
         }
 
         public static final class paramsDef {
-            public static final String UserId = "userid";
+            public static final String USER_ID = "userid";
 
             private paramsDef() {
             }
@@ -142,7 +169,7 @@ public final class iComfortWiFiApiCommands {
         }
 
         public static final class paramsDef {
-            public static final String UserId = "userid";
+            public static final String USER_ID = "userid";
 
             private paramsDef() {
             }
@@ -156,7 +183,22 @@ public final class iComfortWiFiApiCommands {
         }
 
         public static final class paramsDef {
-            public static final String UserId = "userid";
+            public static final String USER_ID = "userid";
+
+            private paramsDef() {
+            }
+        }
+    }
+
+    public static final class getTStatAlerts {
+        public static final String PATH = "/GetTStatAlerts";
+
+        private getTStatAlerts() {
+        }
+
+        public static final class paramsDef {
+            public static final String GATEWAY_SN = "gatewaysn";
+            public static final String COUNT = "count";
 
             private paramsDef() {
             }
@@ -172,31 +214,8 @@ public final class iComfortWiFiApiCommands {
         public static final class paramsDef {
             public static final String GATEWAY_SN = "gatewaysn";
             public static final String TEMP_UNIT = "tempunit";
-            public static final String CENTRAL_ZONED_AWAY = "Central_Zoned_Away";
-            public static final String CANCEL_AWAY = "Cancel_Away";
-            public static final String ZONE_NUMBER = "Zone_Number";
 
             private paramsDef() {
-            }
-        }
-    }
-
-    public static final class iComfortServiceURI {
-        public static final String BASE_PATH = "/DBAcessService.svc";
-
-        public iComfortServiceURI() {
-        }
-
-        private String getURI() {
-            return "https://services.myicomfort.com:443/DBAcessService.svc";
-        }
-
-        public static final class URI {
-            public static final String HOST = "services.myicomfort.com";
-            public static final String PORT = "443";
-            public static final String PROTOCOL = "https:";
-
-            private URI() {
             }
         }
     }
@@ -225,11 +244,6 @@ public final class iComfortWiFiApiCommands {
         public static final String PATH = "/SetTStatInfo";
 
         private setTStatInfo() {
-        }
-
-        public static final class paramsDef {
-            private paramsDef() {
-            }
         }
     }
 

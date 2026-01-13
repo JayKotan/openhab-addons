@@ -9,7 +9,7 @@
 		<label>Operation Mode</label>
 		<description>Current system mode</description>
 		<category>heating</category>
-		<state pattern="%s" readOnly="false">
+		<state pattern="%s">
 			<options>
 				<option value="COOL_ONLY">System is cooling only</option>
 				<option value="HEAT_ONLY">System is heating only</option>
@@ -24,7 +24,7 @@
 		<label>Unified Operation Mode</label>
 		<description>Current system mode including Away Mode</description>
 		<category>heating</category>
-		<state pattern="%s" readOnly="false">
+		<state pattern="%s">
 			<options>
 				<option value="off">off</option>
 				<option value="heat">heat</option>
@@ -57,7 +57,7 @@
 		<label>Away Mode Status</label>
 		<description>Current away mode status</description>
 		<category>heating</category>
-		<state pattern="%s" readOnly="false">
+		<state pattern="%s">
 			<options>
 				<option value="AWAY_ON">System is in away mode</option>
 				<option value="AWAY_OFF">System is not in away mode</option>
@@ -70,7 +70,7 @@
 		<label>Fan Mode Status</label>
 		<description>Current fan mode status</description>
 		<category>heating</category>
-		<state pattern="%s" readOnly="false">
+		<state pattern="%s">
 			<options>
 				<option value="AUTO">System fan is in auto mode</option>
 				<option value="ON">System fan is on</option>
@@ -104,7 +104,7 @@
 			<tag>Setpoint</tag>
 			<tag>Temperature</tag>
 		</tags>
-		<state step="1" pattern="%.1f %unit%" readOnly="false"/>
+		<state step="1" pattern="%.1f %unit%"/>
 	</channel-type>
 
 	<channel-type id="heat-set-point">
@@ -116,7 +116,7 @@
 			<tag>Setpoint</tag>
 			<tag>Temperature</tag>
 		</tags>
-		<state step="1" pattern="%.1f %unit%" readOnly="false"/>
+		<state step="1" pattern="%.1f %unit%"/>
 	</channel-type>
 
 	<channel-type id="alarm-description">
@@ -164,12 +164,25 @@
 		<state readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="alert-number">
-		<item-type>Number</item-type>
-		<label>Alert Number</label>
-		<description>Display alert with specified number (up to 20).</description>
-		<category>number</category>
-		<state readOnly="false" min="0" max="20"/>
+	<channel-type id="date-time-reset">
+		<item-type>DateTime</item-type>
+		<label>Alarm Date Reset</label>
+		<description>Date and Time when alarm was cleared/reset.</description>
+		<category>datetime</category>
+		<state readOnly="true"/>
 	</channel-type>
+
+	<channel-group-type id="thermostatAlerts">
+		<label>Thermostat Alerts</label>
+		<channels>
+			<channel id="active" typeId="switch"/>
+			<channel id="count" typeId="number"/>
+			<channel id="firstDescription" typeId="string"/>
+			<channel id="firstCode" typeId="string"/>
+			<channel id="firstType" typeId="string"/>
+			<channel id="firstStatus" typeId="string"/>
+			<channel id="firstDate" typeId="string"/>
+		</channels>
+	</channel-group-type>
 
 </thing:thing-descriptions>

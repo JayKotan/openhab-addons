@@ -20,58 +20,133 @@ import org.openhab.binding.icomfortwifi.internal.dto.CustomTypes.TempUnits;
 import com.google.gson.annotations.SerializedName;
 
 /**
- * 
+ * ReqSetTStatInfo DTO for iComfort Wi‑Fi API.
  *
- * @author Konstantin Panchenko - Initial contribution
- * @author Jason Kota - Updated for openHAB 5.x compliance
+ * Represents the payload sent to update thermostat settings for a zone.
  */
 @SuppressWarnings("unused")
-public class ReqSetTStatInfo {
+public final class ReqSetTStatInfo {
+
+    // ---------------------------------------------------------------------
+    // JSON‑mapped fields
+    // ---------------------------------------------------------------------
+
     @SerializedName("Cool_Set_Point")
     public @Nullable Double coolSetPoint;
+
     @SerializedName("Heat_Set_Point")
     public @Nullable Double heatSetPoint;
+
     @SerializedName("Fan_Mode")
     public @Nullable Integer fanMode;
+
     @SerializedName("Operation_Mode")
     public @Nullable Integer operationMode;
+
     @SerializedName("Pref_Temp_Units")
     public @Nullable String prefTempUnits;
+
     @SerializedName("Zone_Number")
     public @Nullable Integer zoneNumber;
+
     @SerializedName("GatewaySN")
     public @Nullable String gatewaySN;
 
+    // ---------------------------------------------------------------------
+    // Constructors
+    // ---------------------------------------------------------------------
+
     public ReqSetTStatInfo() {
+        // Default constructor for manual construction or Gson
     }
 
     public ReqSetTStatInfo(@Nullable ZoneStatus zoneStatus) {
-        // 1. Guard against the entire object
         if (zoneStatus == null) {
             return;
         }
 
-        // 2. Simple Fields - Anchor and Assign
+        // Anchor simple fields
         Integer localZone = zoneStatus.zoneNumber;
         this.zoneNumber = (localZone != null) ? localZone : 0;
 
         this.gatewaySN = zoneStatus.gatewaySN;
 
-        // 3. Complex Objects - Anchor locally to prove safety to the compiler
-        // "FanMode"
+        // Anchor complex fields
         FanMode fm = zoneStatus.fanMode;
         this.fanMode = (fm != null) ? fm.getFanModeValue() : null;
 
-        // "OperationMode"
         OperationMode om = zoneStatus.operationMode;
         this.operationMode = (om != null) ? om.getOperationModeValue() : null;
 
-        // "TempUnits" (This fixes your specific error)
         TempUnits ptu = zoneStatus.preferredTemperatureUnit;
         this.prefTempUnits = (ptu != null) ? ptu.getTempUnitsValue() : null;
 
-        // 4. Setpoints (Direct assignment is safe as fields are @Nullable)
+        // Direct assignment for nullable setpoints
         this.coolSetPoint = zoneStatus.coolSetPoint;
         this.heatSetPoint = zoneStatus.heatSetPoint;
+    }
+
+    // ---------------------------------------------------------------------
+    // Getters
+    // ---------------------------------------------------------------------
+
+    public @Nullable Double getCoolSetPoint() {
+        return this.coolSetPoint;
+    }
+
+    public @Nullable Double getHeatSetPoint() {
+        return this.heatSetPoint;
+    }
+
+    public @Nullable Integer getFanMode() {
+        return this.fanMode;
+    }
+
+    public @Nullable Integer getOperationMode() {
+        return this.operationMode;
+    }
+
+    public @Nullable String getPrefTempUnits() {
+        return this.prefTempUnits;
+    }
+
+    public @Nullable Integer getZoneNumber() {
+        return this.zoneNumber;
+    }
+
+    public @Nullable String getGatewaySN() {
+        return this.gatewaySN;
+    }
+
+    // ---------------------------------------------------------------------
+    // Setters
+    // ---------------------------------------------------------------------
+
+    public void setCoolSetPoint(@Nullable Double value) {
+        this.coolSetPoint = value;
+    }
+
+    public void setHeatSetPoint(@Nullable Double value) {
+        this.heatSetPoint = value;
+    }
+
+    public void setFanMode(@Nullable Integer value) {
+        this.fanMode = value;
+    }
+
+    public void setOperationMode(@Nullable Integer value) {
+        this.operationMode = value;
+    }
+
+    public void setPrefTempUnits(@Nullable String value) {
+        this.prefTempUnits = value;
+    }
+
+    public void setZoneNumber(@Nullable Integer value) {
+        this.zoneNumber = value;
+    }
+
+    public void setGatewaySN(@Nullable String value) {
+        this.gatewaySN = value;
     }
 }

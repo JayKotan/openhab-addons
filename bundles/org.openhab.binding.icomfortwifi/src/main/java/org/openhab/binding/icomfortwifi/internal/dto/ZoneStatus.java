@@ -30,60 +30,86 @@ import org.openhab.core.library.unit.SIUnits;
 import com.google.gson.annotations.SerializedName;
 
 /**
- * 
- * @author Konstantin Panchenko - Initial contribution
- * @author Jason Kota - Updated for openHAB 5.x compliance
+ * ZoneStatus DTO for iComfort Wi‑Fi API.
+ *
+ * Represents the state of a single HVAC zone.
  */
 @SuppressWarnings("unused")
-public class ZoneStatus {
+public final class ZoneStatus {
+
+    // ---------------------------------------------------------------------
+    // JSON‑mapped fields
+    // ---------------------------------------------------------------------
+
     @SerializedName("Away_Mode")
     public @Nullable String awayMode = "AWAY_OFF";
+
     @SerializedName("ConnectionStatus")
     public @Nullable String connectionStatus = "UNKNOWN";
+
     @SerializedName("Central_Zoned_Away")
     public Integer centralZonedAway = 0;
+
     @SerializedName("Cool_Set_Point")
     public Double coolSetPoint = 0.0;
+
     @SerializedName("DateTime_Mark")
     public @Nullable Date dateTimeMark;
+
     @SerializedName("Fan_Mode")
-    public CustomTypes.FanMode fanMode;
+    public FanMode fanMode;
+
     @SerializedName("GMT_To_Local")
     public Integer gmtToLocal;
+
     @SerializedName("GatewaySN")
     public @NonNull String gatewaySN;
 
     @SerializedName("Golden_Table_Updated")
     public Boolean goldenTableUpdated;
+
     @SerializedName("Heat_Set_Point")
     public Double heatSetPoint;
+
     @SerializedName("Indoor_Humidity")
     public Integer indoorHumidity;
+
     @SerializedName("Indoor_Temp")
     public Double indoorTemp;
+
     @SerializedName("Operation_Mode")
-    public CustomTypes.OperationMode operationMode;
+    public OperationMode operationMode;
+
     @SerializedName("Pref_Temp_Units")
+    public @Nullable TempUnits preferredTemperatureUnit;
 
-    public CustomTypes.@Nullable TempUnits preferredTemperatureUnit;
     @SerializedName("Program_Schedule_Mode")
-
     public @Nullable String programScheduleMode;
+
     @SerializedName("Program_Schedule_Selection")
     public Integer programScheduleSelection;
+
     @SerializedName("System_Status")
-    public CustomTypes.@Nullable SystemStatus systemStatus;
+    public @Nullable SystemStatus systemStatus;
+
     @SerializedName("Zone_Enabled")
     public Integer zoneEnabled;
+
     @SerializedName("Zone_Name")
     public @NonNull String zoneName;
+
     @SerializedName("Zone_Number")
     public Integer zoneNumber;
+
     @SerializedName("Zones_Installed")
     public Integer zonesInstalled;
 
     @SerializedName("ActiveFaults")
     public @Nullable List<String> activeFaults;
+
+    // ---------------------------------------------------------------------
+    // Constructor
+    // ---------------------------------------------------------------------
 
     public ZoneStatus() {
         this.fanMode = FanMode.AUTO;
@@ -103,13 +129,12 @@ public class ZoneStatus {
         this.zonesInstalled = 0;
     }
 
-    // ...
+    // ---------------------------------------------------------------------
+    // Getters
+    // ---------------------------------------------------------------------
 
     public @NonNull Unit<@NonNull Temperature> getTemperatureUnit() {
-        // Use a local variable to anchor the nullable field
         TempUnits units = this.preferredTemperatureUnit;
-
-        // Return the non-null units, defaulting to Celsius if units is null or not Fahrenheit
         return (units == TempUnits.FAHRENHEIT) ? ImperialUnits.FAHRENHEIT : SIUnits.CELSIUS;
     }
 
@@ -117,19 +142,17 @@ public class ZoneStatus {
         return this.gatewaySN + "_" + this.zoneNumber;
     }
 
-    public boolean hasActiveFaults() {
-        // 1. Anchor the nullable field to a local variable
-        List<String> faults = this.activeFaults;
+    // ---------------------------------------------------------------------
+    // Utility Methods
+    // ---------------------------------------------------------------------
 
-        // 2. Perform the null check and the size check on the local variable
+    public boolean hasActiveFaults() {
+        List<String> faults = this.activeFaults;
         return faults != null && !faults.isEmpty();
     }
 
     public String getActiveFault() {
-        // 1. Anchor again
         List<String> faults = this.activeFaults;
-
-        // 2. Safely access the first element
         if (faults != null && !faults.isEmpty()) {
             return faults.get(0);
         }

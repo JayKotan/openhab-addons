@@ -21,13 +21,17 @@ import org.openhab.binding.icomfortwifi.internal.dto.CustomTypes.TempUnits;
 import com.google.gson.annotations.SerializedName;
 
 /**
- * 
+ * ReqSetAwayMode DTO for iComfort Wi‑Fi API.
  *
- * @author Konstantin Panchenko - Initial contribution
- * @author Jason Kota - Updated for openHAB 5.x compliance
+ * Represents the payload sent to update Away Mode for a specific zone.
  */
 @SuppressWarnings("unused")
-public class ReqSetAwayMode {
+public final class ReqSetAwayMode {
+
+    // ---------------------------------------------------------------------
+    // JSON‑mapped fields
+    // ---------------------------------------------------------------------
+
     @SerializedName("GatewaySN")
     public String gatewaySN = "";
 
@@ -49,7 +53,12 @@ public class ReqSetAwayMode {
     @SerializedName("TempScale")
     public String preferredTemperatureUnit = "";
 
+    // ---------------------------------------------------------------------
+    // Constructors
+    // ---------------------------------------------------------------------
+
     public ReqSetAwayMode() {
+        // Default constructor for manual construction or Gson
     }
 
     public ReqSetAwayMode(@Nullable ZoneStatus zoneStatus) {
@@ -69,15 +78,74 @@ public class ReqSetAwayMode {
         this.heatSetPoint = zoneStatus.heatSetPoint;
         this.coolSetPoint = zoneStatus.coolSetPoint;
 
-        // Using Method References (ClassName::MethodName) often satisfies JDT
-        // because it avoids the creation of an intermediate lambda parameter
+        // Using method references avoids intermediate lambda parameters
         this.fanMode = Optional.ofNullable(zoneStatus.fanMode).map(FanMode::getFanModeValue).orElse(0);
 
         TempUnits tempUnits = zoneStatus.preferredTemperatureUnit;
-        if (tempUnits != null) {
-            this.preferredTemperatureUnit = tempUnits.getTempUnitsValue();
-        } else {
-            this.preferredTemperatureUnit = "";
-        }
+        this.preferredTemperatureUnit = (tempUnits != null) ? tempUnits.getTempUnitsValue() : "";
+    }
+
+    // ---------------------------------------------------------------------
+    // Getters
+    // ---------------------------------------------------------------------
+
+    public String getGatewaySN() {
+        return this.gatewaySN;
+    }
+
+    public Integer getZoneNumber() {
+        return this.zoneNumber;
+    }
+
+    public Integer getAwayMode() {
+        return this.awayMode;
+    }
+
+    public @Nullable Double getHeatSetPoint() {
+        return this.heatSetPoint;
+    }
+
+    public @Nullable Double getCoolSetPoint() {
+        return this.coolSetPoint;
+    }
+
+    public Integer getFanMode() {
+        return this.fanMode;
+    }
+
+    public String getPreferredTemperatureUnit() {
+        return this.preferredTemperatureUnit;
+    }
+
+    // ---------------------------------------------------------------------
+    // Setters
+    // ---------------------------------------------------------------------
+
+    public void setGatewaySN(String value) {
+        this.gatewaySN = value;
+    }
+
+    public void setZoneNumber(Integer value) {
+        this.zoneNumber = value;
+    }
+
+    public void setAwayMode(Integer value) {
+        this.awayMode = value;
+    }
+
+    public void setHeatSetPoint(@Nullable Double value) {
+        this.heatSetPoint = value;
+    }
+
+    public void setCoolSetPoint(@Nullable Double value) {
+        this.coolSetPoint = value;
+    }
+
+    public void setFanMode(Integer value) {
+        this.fanMode = value;
+    }
+
+    public void setPreferredTemperatureUnit(String value) {
+        this.preferredTemperatureUnit = value;
     }
 }

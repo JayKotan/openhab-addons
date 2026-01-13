@@ -18,17 +18,52 @@ import org.openhab.binding.icomfortwifi.internal.dto.CustomTypes.RequestStatus;
 import com.google.gson.annotations.SerializedName;
 
 /**
- * Response model for the authentication
+ * UserValidation DTO for iComfort Wi‑Fi API.
  *
- * @author Konstantin Panchenko - Initial contribution
- * @author Jason Kota - Updated for openHAB 5.x compliance
+ * Represents the response returned by the ValidateUser endpoint.
  */
 @SuppressWarnings("unused")
-public class UserValidation {
+public final class UserValidation {
+
+    // ---------------------------------------------------------------------
+    // JSON‑mapped fields
+    // ---------------------------------------------------------------------
 
     @SerializedName("msg_code")
     public @Nullable RequestStatus msgCode;
 
     @SerializedName("msg_desc")
     public @Nullable String msgDesc = "";
+
+    // ---------------------------------------------------------------------
+    // Constructor
+    // ---------------------------------------------------------------------
+
+    public UserValidation() {
+        // Gson populates fields; constructor ensures instantiability
+    }
+
+    // ---------------------------------------------------------------------
+    // Getters
+    // ---------------------------------------------------------------------
+
+    public @Nullable RequestStatus getMsgCode() {
+        return this.msgCode;
+    }
+
+    public @Nullable String getMsgDesc() {
+        return this.msgDesc;
+    }
+
+    // ---------------------------------------------------------------------
+    // Setters
+    // ---------------------------------------------------------------------
+
+    public void setMsgCode(@Nullable RequestStatus code) {
+        this.msgCode = code;
+    }
+
+    public void setMsgDesc(@Nullable String desc) {
+        this.msgDesc = desc;
+    }
 }

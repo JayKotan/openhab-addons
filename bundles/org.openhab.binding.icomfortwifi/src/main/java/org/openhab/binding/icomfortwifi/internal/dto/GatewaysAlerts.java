@@ -12,30 +12,57 @@
  */
 package org.openhab.binding.icomfortwifi.internal.dto;
 
-import java.util.ArrayList;
 import java.util.List;
 
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.icomfortwifi.internal.dto.CustomTypes.RequestStatus;
 
 import com.google.gson.annotations.SerializedName;
 
 /**
- * Response model for the zone status
+ * GatewaysAlerts DTO for iComfort Wi‑Fi API.
  *
- * @author Konstantin Panchenko - Initial contribution
- * @author Jason Kota - Updated for openHAB 5.x compliance
+ * Represents the list of system-level alerts returned by the gateway.
  */
 @SuppressWarnings("unused")
-public class GatewaysAlerts {
+public final class GatewaysAlerts {
+
+    // ---------------------------------------------------------------------
+    // JSON‑mapped fields
+    // ---------------------------------------------------------------------
 
     @SerializedName("ReturnStatus")
     public @Nullable RequestStatus returnStatus;
-
     @SerializedName("Alerts")
-    public @NonNull List<@NonNull GatewayAlert> systemAlert = new ArrayList<>();
+    public @Nullable List<GatewayAlert> alerts;
+    // ---------------------------------------------------------------------
+    // Constructor
+    // ---------------------------------------------------------------------
 
     public GatewaysAlerts() {
+        // Gson will populate fields; constructor ensures non-null list
+    }
+
+    // ---------------------------------------------------------------------
+    // Getters
+    // ---------------------------------------------------------------------
+
+    public @Nullable RequestStatus getReturnStatus() {
+        return this.returnStatus;
+    }
+
+    public @Nullable List<GatewayAlert> getAlerts() {
+        return this.alerts;
+    }
+    // ---------------------------------------------------------------------
+    // Setters
+    // ---------------------------------------------------------------------
+
+    public void setReturnStatus(@Nullable RequestStatus status) {
+        this.returnStatus = status;
+    }
+
+    public void setAlerts(@Nullable List<GatewayAlert> alerts) {
+        this.alerts = alerts;
     }
 }

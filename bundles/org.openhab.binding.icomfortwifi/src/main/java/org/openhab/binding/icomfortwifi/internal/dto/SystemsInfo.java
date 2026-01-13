@@ -21,21 +21,52 @@ import org.openhab.binding.icomfortwifi.internal.dto.CustomTypes.RequestStatus;
 import com.google.gson.annotations.SerializedName;
 
 /**
+ * SystemsInfo DTO for iComfort Wi‑Fi API.
  *
- *
- * @author Konstantin Panchenko - Initial contribution
- * @author Jason Kota - Updated for openHAB 5.x compliance
+ * Represents the list of HVAC systems associated with the authenticated user.
  */
 @SuppressWarnings("unused")
-public class SystemsInfo {
+public final class SystemsInfo {
+
+    // ---------------------------------------------------------------------
+    // JSON‑mapped fields
+    // ---------------------------------------------------------------------
 
     @SerializedName("ReturnStatus")
     public @NonNull RequestStatus returnStatus = RequestStatus.SUCCESS;
 
     @SerializedName("Systems")
-    public @NonNull List<@NonNull SystemInfo> systemInfo = new ArrayList<>();
+    public @NonNull List<@NonNull SystemInfo> systems = new ArrayList<>();
+
+    // ---------------------------------------------------------------------
+    // Constructor
+    // ---------------------------------------------------------------------
 
     public SystemsInfo() {
-        // Gson will overwrite defaults during deserialization
+        // Gson overwrites defaults; constructor ensures non-null list
+    }
+
+    // ---------------------------------------------------------------------
+    // Getters
+    // ---------------------------------------------------------------------
+
+    public @NonNull RequestStatus getReturnStatus() {
+        return this.returnStatus;
+    }
+
+    public @NonNull List<@NonNull SystemInfo> getSystems() {
+        return this.systems;
+    }
+
+    // ---------------------------------------------------------------------
+    // Setters
+    // ---------------------------------------------------------------------
+
+    public void setReturnStatus(@NonNull RequestStatus status) {
+        this.returnStatus = status;
+    }
+
+    public void setSystems(@NonNull List<@NonNull SystemInfo> systems) {
+        this.systems = systems;
     }
 }

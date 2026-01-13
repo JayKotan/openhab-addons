@@ -29,6 +29,7 @@ import org.openhab.binding.icomfortwifi.internal.api.iComfortWiFiApiClient;
 import org.openhab.binding.icomfortwifi.internal.configuration.iComfortWiFiBridgeConfiguration;
 import org.openhab.binding.icomfortwifi.internal.dto.CustomTypes;
 import org.openhab.binding.icomfortwifi.internal.dto.GatewayInfo;
+import org.openhab.binding.icomfortwifi.internal.dto.GatewaysAlerts;
 import org.openhab.binding.icomfortwifi.internal.dto.SystemInfo;
 import org.openhab.binding.icomfortwifi.internal.dto.SystemsInfo;
 import org.openhab.binding.icomfortwifi.internal.dto.ZoneStatus;
@@ -105,9 +106,6 @@ public class iComfortWiFiBridgeHandler extends BaseBridgeHandler {
         }
     }
 
-    /**
-     * Required for Discovery Service to monitor bridge state
-     */
     public void addAccountStatusListener(iComfortWiFiAccountStatusListener listener) {
         listeners.add(listener);
         listener.accountStatusChanged(getThing().getStatus());
@@ -185,7 +183,8 @@ public class iComfortWiFiBridgeHandler extends BaseBridgeHandler {
             return;
         }
 
-        var systems = client.getSystemsInfo().systemInfo;
+        var systems = client.getSystemsInfo().getSystems();
+
         GatewayInfo info = findGatewayInfoForZone(systems, zoneStatus.gatewaySN);
 
         if (info == null) {
@@ -213,7 +212,8 @@ public class iComfortWiFiBridgeHandler extends BaseBridgeHandler {
             return;
         }
 
-        for (SystemInfo systemInfo : client.getSystemsInfo().systemInfo) {
+        for (SystemInfo systemInfo : client.getSystemsInfo().getSystems()) {
+
             if (Objects.equals(systemInfo.gatewaySN, zoneStatus.gatewaySN)) {
                 GatewayInfo info = systemInfo.getGatewayInfo();
                 if (info == null) {
@@ -247,40 +247,63 @@ public class iComfortWiFiBridgeHandler extends BaseBridgeHandler {
             return;
         }
 
-        List<SystemInfo> localSystemInfos = client.getSystemsInfo().systemInfo;
+        List<SystemInfo> localSystemInfos = client.getSystemsInfo().getSystems();
 
         Map<String, @Nullable ZoneStatus> idToZoneMap = new HashMap<>();
         Map<String, @Nullable GatewayInfo> idToGatewayMap = new HashMap<>();
 
-        // 1. Build lookup maps
+        // Build lookup maps for zones and gateway info
         for (SystemInfo sys : localSystemInfos) {
-            GatewayInfo gatewayInfo = sys.getGatewayInfo();
-            ZonesStatus zStatusContainer = sys.getZonesStatus();
+            GatewayInfo gInfo = sys.getGatewayInfo();
+            ZonesStatus zStatusContainer = sys.getZonesStatusOrNull();
 
-            if (zStatusContainer != null && !zStatusContainer.zoneStatus.isEmpty()) {
-                for (ZoneStatus zStat : zStatusContainer.zoneStatus) {
-                    String zoneId = zStat.getZoneID();
-                    idToZoneMap.put(zoneId, zStat);
+            if (zStatusContainer != null) {
+                List<ZoneStatus> list = zStatusContainer.getZoneStatus();
+                if (list != null) {
+                    for (ZoneStatus zStat : list) {
+                        String zoneId = zStat.getZoneID();
+                        idToZoneMap.put(zoneId, zStat);
 
-                    if (gatewayInfo != null) {
-                        idToGatewayMap.put(zoneId, gatewayInfo);
+                        if (gInfo != null) {
+                            idToGatewayMap.put(zoneId, gInfo);
+                        }
                     }
                 }
             }
         }
 
-        // 2. Update handlers using populated maps
-        ThingStatus thingStatus = getThing().getStatus();
-
+        // Push updates to handlers
         for (Thing thing : getThing().getThings()) {
             ThingHandler handler = thing.getHandler();
+
+            // ZONE HANDLER
             if (handler instanceof iComfortWiFiHeatingZoneHandler zoneHandler) {
                 String zoneId = zoneHandler.getId();
                 ZoneStatus zStatus = idToZoneMap.get(zoneId);
-                final GatewayInfo gw = idToGatewayMap.get(zoneId);
+                GatewayInfo gInfo = idToGatewayMap.get(zoneId);
 
                 if (zStatus != null) {
-                    zoneHandler.update(thingStatus, zStatus, gw);
+                    zoneHandler.update(getThing().getStatus(), zStatus, gInfo);
+                }
+            }
+
+            // THERMOSTAT HANDLER (Gateway Alerts + Thermostat Alerts)
+            if (handler instanceof iComfortWiFiTemperatureControlSystemHandler tcsHandler) {
+
+                // Find the SystemInfo that matches this thermostat Thing
+                for (SystemInfo sys : localSystemInfos) {
+                    if (thing.getUID().getId().equals(sys.gatewaySN)) {
+
+                        // GATEWAY ALERTS
+                        GatewaysAlerts gwAlerts = sys.getGatewaysAlerts();
+                        if (gwAlerts != null) {
+                            tcsHandler.updateGatewayAlerts(gwAlerts);
+                        }
+
+                        // THERMOSTAT ALERTS
+
+                        break;
+                    }
                 }
             }
         }
@@ -357,4 +380,4 @@ public class iComfortWiFiBridgeHandler extends BaseBridgeHandler {
             updateAccountStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "API Timeout");
         }
     }
-}
+} // Final closing brace for the class

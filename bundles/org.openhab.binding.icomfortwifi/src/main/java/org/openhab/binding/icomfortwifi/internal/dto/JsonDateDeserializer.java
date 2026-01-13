@@ -23,14 +23,24 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonParseException;
 
 /**
- * Response model for the System Alert
+ * Custom Gson deserializer for iComfort's Microsoft-style date format.
  *
- * @author Konstantin Panchenko - Initial contribution
- * @author Jason Kota - Updated for openHAB 5.x compliance
+ * Example format: "/Date(1758754260000+0000)/"
  */
-// Changed from JsonDateDeserializer to match the filename
 @SuppressWarnings("unused")
-public class JsonDateDeserializer implements JsonDeserializer<Date> {
+public final class JsonDateDeserializer implements JsonDeserializer<Date> {
+
+    // ---------------------------------------------------------------------
+    // Constructor (prevent instantiation)
+    // ---------------------------------------------------------------------
+
+    public JsonDateDeserializer() {
+        // Default constructor required by Gson
+    }
+
+    // ---------------------------------------------------------------------
+    // Deserialization Logic
+    // ---------------------------------------------------------------------
 
     @Override
     public @Nullable Date deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context)
@@ -43,7 +53,7 @@ public class JsonDateDeserializer implements JsonDeserializer<Date> {
         String raw = json.getAsString(); // e.g. "/Date(1758754260000+0000)/"
 
         try {
-            // Extract the content inside the parentheses
+            // Extract the content inside parentheses
             int start = raw.indexOf('(') + 1;
             int end = raw.indexOf(')');
             String inner = raw.substring(start, end); // "1758754260000+0000"
@@ -51,7 +61,7 @@ public class JsonDateDeserializer implements JsonDeserializer<Date> {
             // Strip timezone if present
             int plusIndex = inner.indexOf('+');
             if (plusIndex > 0) {
-                inner = inner.substring(0, plusIndex); // "1758754260000"
+                inner = inner.substring(0, plusIndex);
             }
 
             long millis = Long.parseLong(inner);

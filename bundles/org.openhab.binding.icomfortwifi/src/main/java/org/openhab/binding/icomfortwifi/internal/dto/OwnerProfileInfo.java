@@ -12,52 +12,157 @@
  */
 package org.openhab.binding.icomfortwifi.internal.dto;
 
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.icomfortwifi.internal.dto.CustomTypes.RequestStatus;
 
 import com.google.gson.annotations.SerializedName;
 
 /**
- * Response model for the user profile
+ * OwnerProfileInfo DTO for iComfort Wi‑Fi API.
  *
- * @author Konstantin Panchenko - Initial contribution
- * @author Jason Kota - Updated for openHAB 5.x compliance
+ * Represents the authenticated user's profile information.
  */
 @SuppressWarnings("unused")
-public class OwnerProfileInfo {
+public final class OwnerProfileInfo {
+
+    // ---------------------------------------------------------------------
+    // JSON‑mapped fields
+    // ---------------------------------------------------------------------
 
     @SerializedName("FirstName")
-    public String firstName = "";
+    public @Nullable String firstName = "";
 
     @SerializedName("LastName")
-    public String lastName = "";
+    public @Nullable String lastName = "";
 
     @SerializedName("MobilePhone")
-    public String mobilePhone = "";
+    public @Nullable String mobilePhone = "";
 
     @SerializedName("NewGatewayPending")
-    public Boolean newGatewayPending = false;
+    public @Nullable Boolean newGatewayPending = false;
 
     @SerializedName("Phone")
-    public String phone = "";
+    public @Nullable String phone = "";
 
     @SerializedName("PwdFlag")
-    public Boolean pwdFlag = false;
+    public @Nullable Boolean pwdFlag = false;
 
     @SerializedName("RegistrationComplete")
-    public Boolean registrationComplete = false;
+    public @Nullable Boolean registrationComplete = false;
 
     @SerializedName("ReturnStatus")
-    public RequestStatus returnStatus = RequestStatus.SUCCESS;
+    public @Nullable RequestStatus returnStatus = RequestStatus.SUCCESS;
 
     @SerializedName("TCInComplete")
-    public Boolean tcInComplete = false;
+    public @Nullable Boolean tcInComplete = false;
 
     @SerializedName("UserID")
-    public String userID = "";
+    public @Nullable String userID = "";
 
     @SerializedName("eMail")
-    public String eMail = "";
+    public @Nullable String eMail = "";
+
+    // ---------------------------------------------------------------------
+    // Constructor
+    // ---------------------------------------------------------------------
 
     public OwnerProfileInfo() {
+        // Gson populates fields; constructor ensures instantiability
+    }
+
+    // ---------------------------------------------------------------------
+    // Getters
+    // ---------------------------------------------------------------------
+
+    public @Nullable String getFirstName() {
+        return this.firstName;
+    }
+
+    public @Nullable String getLastName() {
+        return this.lastName;
+    }
+
+    public @Nullable String getMobilePhone() {
+        return this.mobilePhone;
+    }
+
+    public @Nullable Boolean getNewGatewayPending() {
+        return this.newGatewayPending;
+    }
+
+    public @Nullable String getPhone() {
+        return this.phone;
+    }
+
+    public @Nullable Boolean getPwdFlag() {
+        return this.pwdFlag;
+    }
+
+    public @Nullable Boolean getRegistrationComplete() {
+        return this.registrationComplete;
+    }
+
+    public @Nullable RequestStatus getReturnStatus() {
+        return this.returnStatus;
+    }
+
+    public @Nullable Boolean getTcInComplete() {
+        return this.tcInComplete;
+    }
+
+    public @Nullable String getUserID() {
+        return this.userID;
+    }
+
+    public @Nullable String getEmail() {
+        return this.eMail;
+    }
+
+    // ---------------------------------------------------------------------
+    // Setters
+    // ---------------------------------------------------------------------
+
+    public void setFirstName(@Nullable String value) {
+        this.firstName = value;
+    }
+
+    public void setLastName(@Nullable String value) {
+        this.lastName = value;
+    }
+
+    public void setMobilePhone(@Nullable String value) {
+        this.mobilePhone = value;
+    }
+
+    public void setNewGatewayPending(@Nullable Boolean value) {
+        this.newGatewayPending = value;
+    }
+
+    public void setPhone(@Nullable String value) {
+        this.phone = value;
+    }
+
+    public void setPwdFlag(@Nullable Boolean value) {
+        this.pwdFlag = value;
+    }
+
+    public void setRegistrationComplete(@Nullable Boolean value) {
+        this.registrationComplete = value;
+    }
+
+    public void setReturnStatus(@Nullable RequestStatus value) {
+        this.returnStatus = value;
+    }
+
+    public void setTcInComplete(@Nullable Boolean value) {
+        this.tcInComplete = value;
+    }
+
+    public void setUserID(@Nullable String value) {
+        this.userID = value;
+    }
+
+    public void setEmail(@Nullable String value) {
+        this.eMail = value;
     }
 }

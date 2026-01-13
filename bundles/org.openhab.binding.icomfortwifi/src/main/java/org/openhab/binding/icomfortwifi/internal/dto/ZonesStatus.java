@@ -12,29 +12,61 @@
  */
 package org.openhab.binding.icomfortwifi.internal.dto;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.icomfortwifi.internal.dto.CustomTypes.RequestStatus;
 
 import com.google.gson.annotations.SerializedName;
 
 /**
- * 
+ * ZonesStatus DTO for iComfort Wi‑Fi API.
  *
- * @author Konstantin Panchenko - Initial contribution
- * @author Jason Kota - Updated for openHAB 5.x compliance
+ * Represents the list of zone thermostat information returned by the cloud API.
  */
 @SuppressWarnings("unused")
-public class ZonesStatus {
+public final class ZonesStatus {
+
+    // ---------------------------------------------------------------------
+    // JSON‑mapped fields
+    // ---------------------------------------------------------------------
+
     @SerializedName("ReturnStatus")
     public @NonNull RequestStatus returnStatus = RequestStatus.SUCCESS;
 
     @SerializedName("tStatInfo")
-    public @NonNull List<@NonNull ZoneStatus> zoneStatus = new ArrayList<>();
+    public @Nullable List<ZoneStatus> zoneStatus;
+
+    // ---------------------------------------------------------------------
+    // Constructor
+    // ---------------------------------------------------------------------
 
     public ZonesStatus() {
-        // Gson will overwrite defaults; constructor just ensures null-safety
+        // Gson overwrites defaults; constructor ensures non-null collections
+    }
+
+    // ---------------------------------------------------------------------
+    // Getters
+    // ---------------------------------------------------------------------
+
+    public @NonNull RequestStatus getReturnStatus() {
+        return this.returnStatus;
+    }
+
+    public @Nullable List<ZoneStatus> getZoneStatus() {
+        return this.zoneStatus;
+    }
+
+    // ---------------------------------------------------------------------
+    // Setters
+    // ---------------------------------------------------------------------
+
+    public void setReturnStatus(@NonNull RequestStatus status) {
+        this.returnStatus = status;
+    }
+
+    public void setZoneStatus(@Nullable List<ZoneStatus> zoneStatus) {
+        this.zoneStatus = zoneStatus;
     }
 }
