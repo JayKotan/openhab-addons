@@ -11,8 +11,8 @@
 			<bridge-type-ref id="account"/>
 		</supported-bridge-type-refs>
 
-		<label>iComfort Wi-Fi Thermostat</label>
-		<description>This represents the iComfort Wi-Fi Thermostat control display.</description>
+		<label>iComfort Wi-Fi Thermostat Alerts</label>
+		<description>This Displays information about the last iComfort Wi-Fi Thermostat Alert.</description>
 
 		<channel-groups>
 			<channel-group id="alerts-and-reminders" typeId="alert-01"/>

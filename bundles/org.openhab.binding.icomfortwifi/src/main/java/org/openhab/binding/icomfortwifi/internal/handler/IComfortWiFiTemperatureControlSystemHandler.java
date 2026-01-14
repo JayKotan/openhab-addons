@@ -42,15 +42,15 @@ import org.slf4j.LoggerFactory;
  * - Parses TStatAlert date strings locally and delegates to BaseiComfortWiFiHandler's Date overload
  */
 @NonNullByDefault
-public class iComfortWiFiTemperatureControlSystemHandler extends BaseiComfortWiFiHandler {
+public class IComfortWiFiTemperatureControlSystemHandler extends BaseIComfortWiFiHandler {
 
     private final Logger logger = Objects
-            .requireNonNull(LoggerFactory.getLogger(iComfortWiFiTemperatureControlSystemHandler.class));
+            .requireNonNull(LoggerFactory.getLogger(IComfortWiFiTemperatureControlSystemHandler.class));
 
     public @Nullable SystemInfo systemInfo;
     public Integer alertNumber = 0;
 
-    public iComfortWiFiTemperatureControlSystemHandler(Thing thing) {
+    public IComfortWiFiTemperatureControlSystemHandler(Thing thing) {
         super(thing);
     }
 

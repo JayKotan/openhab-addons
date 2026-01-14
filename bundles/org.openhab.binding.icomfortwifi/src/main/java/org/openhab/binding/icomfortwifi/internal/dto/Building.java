@@ -28,11 +28,11 @@ public final class Building {
     // JSON‑mapped fields
     // ---------------------------------------------------------------------
 
-    @SerializedName("Addr1")
-    public @Nullable String address_1;
+    @SerializedName("address_1")
+    private @Nullable String address1;
 
-    @SerializedName("Addr2")
-    public @Nullable String address_2;
+    @SerializedName("address_2")
+    private @Nullable String address2;
 
     @SerializedName("Age_of_Building")
     public @Nullable Integer buildingAge;
@@ -125,11 +125,11 @@ public final class Building {
     // ---------------------------------------------------------------------
 
     public @Nullable String getAddress1() {
-        return this.address_1;
+        return this.address1;
     }
 
     public @Nullable String getAddress2() {
-        return this.address_2;
+        return this.address2;
     }
 
     public @Nullable Integer getBuildingAge() {
@@ -241,11 +241,11 @@ public final class Building {
     // ---------------------------------------------------------------------
 
     public void setAddress1(@Nullable String value) {
-        this.address_1 = value;
+        this.address1 = value;
     }
 
     public void setAddress2(@Nullable String value) {
-        this.address_2 = value;
+        this.address2 = value;
     }
 
     public void setBuildingAge(@Nullable Integer value) {

@@ -20,10 +20,10 @@ import java.util.Objects;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
-import org.openhab.binding.icomfortwifi.internal.discovery.iComfortWiFiDiscoveryService;
-import org.openhab.binding.icomfortwifi.internal.handler.iComfortWiFiBridgeHandler;
-import org.openhab.binding.icomfortwifi.internal.handler.iComfortWiFiHeatingZoneHandler;
-import org.openhab.binding.icomfortwifi.internal.handler.iComfortWiFiTemperatureControlSystemHandler;
+import org.openhab.binding.icomfortwifi.internal.discovery.IComfortWiFiDiscoveryService;
+import org.openhab.binding.icomfortwifi.internal.handler.IComfortWiFiBridgeHandler;
+import org.openhab.binding.icomfortwifi.internal.handler.IComfortWiFiHeatingZoneHandler;
+import org.openhab.binding.icomfortwifi.internal.handler.IComfortWiFiTemperatureControlSystemHandler;
 import org.openhab.core.config.discovery.DiscoveryService;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.Bridge;
@@ -49,7 +49,7 @@ import org.osgi.service.component.annotations.Reference;
  */
 @Component(service = { ThingHandlerFactory.class })
 @NonNullByDefault
-public class iComfortWiFiHandlerFactory extends BaseThingHandlerFactory {
+public class IComfortWiFiHandlerFactory extends BaseThingHandlerFactory {
 
     private final Map<ThingUID, @Nullable ServiceRegistration<?>> discoveryServiceRegs = new HashMap<>();
 
@@ -78,34 +78,34 @@ public class iComfortWiFiHandlerFactory extends BaseThingHandlerFactory {
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
-        return iComfortWiFiBindingConstants.SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID);
+        return IComfortWiFiBindingConstants.SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID);
     }
 
     @Override
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
-        if (thingTypeUID.equals(iComfortWiFiBindingConstants.THING_TYPE_ICOMFORT_ACCOUNT)) {
+        if (thingTypeUID.equals(IComfortWiFiBindingConstants.THING_TYPE_ICOMFORT_ACCOUNT)) {
             HttpClient client = Objects.requireNonNull(this.httpClient);
-            iComfortWiFiBridgeHandler bridge = new iComfortWiFiBridgeHandler((Bridge) thing, client);
+            IComfortWiFiBridgeHandler bridge = new IComfortWiFiBridgeHandler((Bridge) thing, client);
             registeriComfortWiFiDiscoveryService(bridge);
             return bridge;
         }
 
-        if (thingTypeUID.equals(iComfortWiFiBindingConstants.THING_TYPE_ICOMFORT_THERMOSTAT)) {
-            return new iComfortWiFiTemperatureControlSystemHandler(thing);
+        if (thingTypeUID.equals(IComfortWiFiBindingConstants.THING_TYPE_ICOMFORT_THERMOSTAT)) {
+            return new IComfortWiFiTemperatureControlSystemHandler(thing);
         }
 
-        if (thingTypeUID.equals(iComfortWiFiBindingConstants.THING_TYPE_ICOMFORT_ZONE)) {
-            return new iComfortWiFiHeatingZoneHandler(thing);
+        if (thingTypeUID.equals(IComfortWiFiBindingConstants.THING_TYPE_ICOMFORT_ZONE)) {
+            return new IComfortWiFiHeatingZoneHandler(thing);
         }
 
         return null;
     }
 
-    public void registeriComfortWiFiDiscoveryService(iComfortWiFiBridgeHandler bridge) {
+    public void registeriComfortWiFiDiscoveryService(IComfortWiFiBridgeHandler bridge) {
         BundleContext ctx = Objects.requireNonNull(this.bundleContext);
-        iComfortWiFiDiscoveryService discoveryService = new iComfortWiFiDiscoveryService(bridge);
+        IComfortWiFiDiscoveryService discoveryService = new IComfortWiFiDiscoveryService(bridge);
         ServiceRegistration<?> reg = ctx.registerService(DiscoveryService.class.getName(), discoveryService,
                 new Hashtable<>());
         discoveryServiceRegs.put(bridge.getThing().getUID(), reg);
@@ -113,7 +113,7 @@ public class iComfortWiFiHandlerFactory extends BaseThingHandlerFactory {
 
     @Override
     protected void removeHandler(ThingHandler thingHandler) {
-        if (thingHandler instanceof iComfortWiFiBridgeHandler) {
+        if (thingHandler instanceof IComfortWiFiBridgeHandler) {
             ThingUID uid = thingHandler.getThing().getUID();
             ServiceRegistration<?> reg = discoveryServiceRegs.get(uid);
 
@@ -121,7 +121,7 @@ public class iComfortWiFiHandlerFactory extends BaseThingHandlerFactory {
                 BundleContext ctx = this.bundleContext;
                 if (ctx != null) {
                     Object svc = ctx.getService(reg.getReference());
-                    if (svc instanceof iComfortWiFiDiscoveryService discoveryService) {
+                    if (svc instanceof IComfortWiFiDiscoveryService discoveryService) {
                         discoveryService.deactivate();
                     }
                 }

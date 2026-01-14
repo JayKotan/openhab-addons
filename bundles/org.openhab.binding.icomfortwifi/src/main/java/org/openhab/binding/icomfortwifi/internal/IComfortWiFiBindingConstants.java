@@ -24,7 +24,7 @@ import org.openhab.core.thing.ThingTypeUID;
  * @author Jason Kota - Updated for openHAB 5.x compliance
  */
 @NonNullByDefault
-public class iComfortWiFiBindingConstants {
+public class IComfortWiFiBindingConstants {
     public static final String BINDING_ID = "icomfortwifi";
     public static final String JSON_CONTENT_TYPE = "application/json";
     public static final String URL_V2_BASE = "https://services.myicomfort.com/DBAcessService.svc";
@@ -64,6 +64,6 @@ public class iComfortWiFiBindingConstants {
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Checks.requireNonNull(Set
             .<ThingTypeUID> of(THING_TYPE_ICOMFORT_ACCOUNT, THING_TYPE_ICOMFORT_THERMOSTAT, THING_TYPE_ICOMFORT_ZONE));
 
-    public iComfortWiFiBindingConstants() {
+    public IComfortWiFiBindingConstants() {
     }
 }

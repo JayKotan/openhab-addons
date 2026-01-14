@@ -45,7 +45,6 @@ public final class JsonDateDeserializer implements JsonDeserializer<Date> {
     @Override
     public @Nullable Date deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context)
             throws JsonParseException {
-
         if (json.isJsonNull()) {
             return null;
         }
@@ -53,7 +52,6 @@ public final class JsonDateDeserializer implements JsonDeserializer<Date> {
         String raw = json.getAsString(); // e.g. "/Date(1758754260000+0000)/"
 
         try {
-            // Extract the content inside parentheses
             int start = raw.indexOf('(') + 1;
             int end = raw.indexOf(')');
             String inner = raw.substring(start, end); // "1758754260000+0000"
@@ -63,10 +61,8 @@ public final class JsonDateDeserializer implements JsonDeserializer<Date> {
             if (plusIndex > 0) {
                 inner = inner.substring(0, plusIndex);
             }
-
             long millis = Long.parseLong(inner);
             return new Date(millis);
-
         } catch (Exception e) {
             throw new JsonParseException("Invalid date format: " + raw, e);
         }

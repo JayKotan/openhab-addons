@@ -10,24 +10,26 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.icomfortwifi.internal.handler;
+package org.openhab.binding.icomfortwifi.internal.configuration;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.core.thing.ThingStatus;
 
 /**
- * Interface for a listener of the iComfortWiFi account status
- *
+ * *
+ * 
  * @author Konstantin Panchenko - Initial contribution
- * @author Jason Kotan - Made NonNullByDefault. Updated
+ * @author Jason Kotan - Added @nullByDefault- updated Import section
+ *
  */
 @NonNullByDefault
-public interface iComfortWiFiAccountStatusListener {
+public class IComfortWiFiBridgeConfiguration {
+    public static final Integer DEFAULT_REFRESH = 30;
 
-    /**
-     * Notifies the client that the status has changed.
-     *
-     * @param status The new status of the account thing
-     */
-    void accountStatusChanged(ThingStatus status);
+    public String username = "";
+    public String password = "";
+    public Integer refreshInterval;
+
+    public IComfortWiFiBridgeConfiguration() {
+        this.refreshInterval = DEFAULT_REFRESH;
+    }
 }

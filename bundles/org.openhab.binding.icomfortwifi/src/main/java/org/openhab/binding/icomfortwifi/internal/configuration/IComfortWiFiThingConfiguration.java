@@ -23,10 +23,10 @@ import org.eclipse.jdt.annotation.Nullable;
  *
  */
 @NonNullByDefault
-public class iComfortWiFiThingConfiguration {
+public class IComfortWiFiThingConfiguration {
     public @Nullable String id;
     public @Nullable String name;
 
-    public iComfortWiFiThingConfiguration() {
+    public IComfortWiFiThingConfiguration() {
     }
 }

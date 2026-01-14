@@ -18,12 +18,12 @@ import java.util.Map;
 import java.util.Objects;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.icomfortwifi.internal.IComfortWiFiBindingConstants;
 import org.openhab.binding.icomfortwifi.internal.dto.SystemInfo;
 import org.openhab.binding.icomfortwifi.internal.dto.ZoneStatus;
 import org.openhab.binding.icomfortwifi.internal.dto.ZonesStatus;
-import org.openhab.binding.icomfortwifi.internal.handler.iComfortWiFiAccountStatusListener;
-import org.openhab.binding.icomfortwifi.internal.handler.iComfortWiFiBridgeHandler;
-import org.openhab.binding.icomfortwifi.internal.iComfortWiFiBindingConstants;
+import org.openhab.binding.icomfortwifi.internal.handler.IComfortWiFiAccountStatusListener;
+import org.openhab.binding.icomfortwifi.internal.handler.IComfortWiFiBridgeHandler;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
@@ -41,16 +41,16 @@ import org.slf4j.LoggerFactory;
  */
 
 @NonNullByDefault
-public class iComfortWiFiDiscoveryService extends AbstractDiscoveryService
-        implements iComfortWiFiAccountStatusListener {
+public class IComfortWiFiDiscoveryService extends AbstractDiscoveryService
+        implements IComfortWiFiAccountStatusListener {
     @SuppressWarnings("null")
-    private final Logger logger = LoggerFactory.getLogger(iComfortWiFiDiscoveryService.class);
+    private final Logger logger = LoggerFactory.getLogger(IComfortWiFiDiscoveryService.class);
     private static final int TIMEOUT = 5;
-    private final iComfortWiFiBridgeHandler bridge;
+    private final IComfortWiFiBridgeHandler bridge;
     private final ThingUID bridgeUID;
 
-    public iComfortWiFiDiscoveryService(iComfortWiFiBridgeHandler bridge) {
-        super(iComfortWiFiBindingConstants.SUPPORTED_THING_TYPES_UIDS, TIMEOUT);
+    public IComfortWiFiDiscoveryService(IComfortWiFiBridgeHandler bridge) {
+        super(IComfortWiFiBindingConstants.SUPPORTED_THING_TYPES_UIDS, TIMEOUT);
 
         this.bridge = bridge;
         this.bridgeUID = this.bridge.getThing().getUID();
@@ -146,11 +146,11 @@ public class iComfortWiFiDiscoveryService extends AbstractDiscoveryService
 
         String name = systemInfo.systemName;
 
-        ThingUID thingUID = new ThingUID(iComfortWiFiBindingConstants.THING_TYPE_ICOMFORT_THERMOSTAT, bridgeUID, id);
+        ThingUID thingUID = new ThingUID(IComfortWiFiBindingConstants.THING_TYPE_ICOMFORT_THERMOSTAT, bridgeUID, id);
 
         Map<String, Object> properties = new HashMap<>(2);
-        properties.put(iComfortWiFiBindingConstants.PROPERTY_ID, id);
-        properties.put(iComfortWiFiBindingConstants.PROPERTY_NAME, name);
+        properties.put(IComfortWiFiBindingConstants.PROPERTY_ID, id);
+        properties.put(IComfortWiFiBindingConstants.PROPERTY_NAME, name);
 
         addDiscoveredThing(thingUID, properties, name);
     }
@@ -161,11 +161,11 @@ public class iComfortWiFiDiscoveryService extends AbstractDiscoveryService
         String zoneID = zone.getZoneID();
         String name = zone.zoneName + " (" + systemName + ")";
 
-        ThingUID thingUID = new ThingUID(iComfortWiFiBindingConstants.THING_TYPE_ICOMFORT_ZONE, bridgeUID, zoneID);
+        ThingUID thingUID = new ThingUID(IComfortWiFiBindingConstants.THING_TYPE_ICOMFORT_ZONE, bridgeUID, zoneID);
 
         Map<String, Object> properties = new HashMap<>(2);
-        properties.put(iComfortWiFiBindingConstants.PROPERTY_ID, zoneID);
-        properties.put(iComfortWiFiBindingConstants.PROPERTY_NAME, name);
+        properties.put(IComfortWiFiBindingConstants.PROPERTY_ID, zoneID);
+        properties.put(IComfortWiFiBindingConstants.PROPERTY_NAME, name);
 
         addDiscoveredThing(thingUID, properties, name);
     }

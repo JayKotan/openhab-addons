@@ -20,7 +20,7 @@ import java.util.TimeZone;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.icomfortwifi.internal.configuration.iComfortWiFiThingConfiguration;
+import org.openhab.binding.icomfortwifi.internal.configuration.IComfortWiFiThingConfiguration;
 import org.openhab.binding.icomfortwifi.internal.dto.CustomTypes;
 import org.openhab.binding.icomfortwifi.internal.dto.GatewayInfo;
 import org.openhab.binding.icomfortwifi.internal.dto.SystemInfo;
@@ -40,15 +40,15 @@ import org.openhab.core.types.UnDefType;
  * @author Jason Kota - Updated for openHAB 5.x compliance
  */
 @NonNullByDefault
-public abstract class BaseiComfortWiFiHandler extends BaseThingHandler {
-    private iComfortWiFiThingConfiguration configuration = new iComfortWiFiThingConfiguration();
+public abstract class BaseIComfortWiFiHandler extends BaseThingHandler {
+    private IComfortWiFiThingConfiguration configuration = new IComfortWiFiThingConfiguration();
 
-    public BaseiComfortWiFiHandler(Thing thing) {
+    public BaseIComfortWiFiHandler(Thing thing) {
         super(thing);
     }
 
     public void initialize() {
-        this.configuration = getConfigAs(iComfortWiFiThingConfiguration.class);
+        this.configuration = getConfigAs(IComfortWiFiThingConfiguration.class);
         checkConfig();
     }
 
@@ -62,24 +62,24 @@ public abstract class BaseiComfortWiFiHandler extends BaseThingHandler {
         return id == null ? "" : id;
     }
 
-    protected iComfortWiFiThingConfiguration getiComfortWiFiThingConfig() {
+    protected IComfortWiFiThingConfiguration getiComfortWiFiThingConfig() {
         return this.configuration;
     }
 
-    protected @Nullable iComfortWiFiBridgeHandler getiComfortWiFiBridge() {
+    protected @Nullable IComfortWiFiBridgeHandler getiComfortWiFiBridge() {
         Bridge bridge = this.getBridge();
-        return bridge != null ? (iComfortWiFiBridgeHandler) bridge.getHandler() : null;
+        return bridge != null ? (IComfortWiFiBridgeHandler) bridge.getHandler() : null;
     }
 
     protected @Nullable SystemsInfo getiComfortWiFiSystemsInfo() {
-        iComfortWiFiBridgeHandler bridge = this.getiComfortWiFiBridge();
+        IComfortWiFiBridgeHandler bridge = this.getiComfortWiFiBridge();
         return bridge != null ? bridge.getiComfortWiFiSystemsInfo() : null;
     }
 
     protected void requestUpdate() {
         Bridge bridge = this.getBridge();
         if (bridge != null) {
-            ((iComfortWiFiBridgeHandler) bridge).getiComfortWiFiSystemsInfo();
+            ((IComfortWiFiBridgeHandler) bridge).getiComfortWiFiSystemsInfo();
         }
     }
 

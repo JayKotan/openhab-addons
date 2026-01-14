@@ -38,15 +38,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @NonNullByDefault
-public class iComfortWiFiHeatingZoneHandler extends BaseiComfortWiFiHandler {
+public class IComfortWiFiHeatingZoneHandler extends BaseIComfortWiFiHandler {
 
-    private final Logger logger = Checks.requireNonNull(LoggerFactory.getLogger(iComfortWiFiHeatingZoneHandler.class));
+    private final Logger logger = Checks.requireNonNull(LoggerFactory.getLogger(IComfortWiFiHeatingZoneHandler.class));
 
     private @Nullable ThingStatus tcsStatus;
     private @Nullable ZoneStatus zoneStatus;
     private @Nullable GatewayInfo gatewayInfo;
 
-    public iComfortWiFiHeatingZoneHandler(Thing thing) {
+    public IComfortWiFiHeatingZoneHandler(Thing thing) {
         super(thing);
     }
 
@@ -57,13 +57,11 @@ public class iComfortWiFiHeatingZoneHandler extends BaseiComfortWiFiHandler {
 
     public void update(@Nullable ThingStatus tcsStatus, @Nullable ZoneStatus zoneStatus,
             @Nullable GatewayInfo gatewayInfo) {
-
         this.tcsStatus = tcsStatus;
         this.zoneStatus = zoneStatus;
         this.gatewayInfo = gatewayInfo;
 
         if (this.zoneStatus != null && this.gatewayInfo != null) {
-
             this.updateiComfortWiFiThingStatus(ThingStatus.ONLINE);
 
             ThingStatus safeStatus = tcsStatus != null ? tcsStatus : ThingStatus.UNKNOWN;
@@ -76,7 +74,6 @@ public class iComfortWiFiHeatingZoneHandler extends BaseiComfortWiFiHandler {
             ZoneStatus localStatus = Checks.requireNonNull(zoneStatus);
 
             if (!this.handleActiveFaults(localStatus)) {
-
                 Unit<Temperature> rawUnit = localStatus.getTemperatureUnit();
                 Unit<Temperature> prefUnit = Checks.requireNonNull(rawUnit);
 
@@ -121,12 +118,10 @@ public class iComfortWiFiHeatingZoneHandler extends BaseiComfortWiFiHandler {
                     };
                     this.updateState("unified-operation-mode", new StringType(modeString));
                 }
-
                 // Away mode and fan mode
                 this.updateState("away-mode", new StringType(awayModeStr));
                 this.updateState("fan-mode", new StringType(fanMode.toString()));
             }
-
         } else {
             this.updateiComfortWiFiThingStatus(ThingStatus.INITIALIZING);
         }
@@ -134,7 +129,6 @@ public class iComfortWiFiHeatingZoneHandler extends BaseiComfortWiFiHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, @Nullable Command command) {
-
         ZoneStatus currentStatus = this.zoneStatus;
         if (currentStatus == null || command == null) {
             return;
@@ -147,7 +141,7 @@ public class iComfortWiFiHeatingZoneHandler extends BaseiComfortWiFiHandler {
             return;
         }
 
-        iComfortWiFiBridgeHandler bridge = this.getiComfortWiFiBridge();
+        IComfortWiFiBridgeHandler bridge = this.getiComfortWiFiBridge();
         if (bridge == null) {
             return;
         }
@@ -170,7 +164,6 @@ public class iComfortWiFiHeatingZoneHandler extends BaseiComfortWiFiHandler {
                 boolean isAwayOff = !"AWAY_ON".equals(away != null ? away : "AWAY_OFF");
 
                 this.handleUnifiedMode(bridge, currentStatus, mode, isAwayOff);
-
             } catch (Exception e) {
                 logger.warn("Error handling unified mode command: {}", command);
             }
@@ -181,7 +174,6 @@ public class iComfortWiFiHeatingZoneHandler extends BaseiComfortWiFiHandler {
         QuantityType<Temperature> tempCommand = this.castToQuantityTypeTemperature(command);
 
         if (tempCommand != null && ("heat-set-point".equals(channelId) || "cool-set-point".equals(channelId))) {
-
             boolean isHeat = "heat-set-point".equals(channelId);
 
             // Preserve existing behavior: convert to the zone's reported unit (no forced conversion)
@@ -199,19 +191,14 @@ public class iComfortWiFiHeatingZoneHandler extends BaseiComfortWiFiHandler {
 
             return;
         }
-
         // Other Modes
         try {
             switch (channelId) {
                 case "away-mode" -> bridge.setZoneAwayMode(currentStatus, AwayStatus.valueOf(cmdString).getAwayValue());
-
                 case "operation-mode" -> bridge.setZoneOperationMode(currentStatus,
                         OperationMode.valueOf(cmdString).getOperationModeValue());
-
                 case "fan-mode" -> bridge.setZoneFanMode(currentStatus, FanMode.valueOf(cmdString).getFanModeValue());
-
                 default -> {
-                    // No action for other channels
                 }
             }
         } catch (IllegalArgumentException e) {
@@ -219,9 +206,8 @@ public class iComfortWiFiHeatingZoneHandler extends BaseiComfortWiFiHandler {
         }
     }
 
-    private void handleUnifiedMode(iComfortWiFiBridgeHandler bridge, ZoneStatus currentStatus,
+    private void handleUnifiedMode(IComfortWiFiBridgeHandler bridge, ZoneStatus currentStatus,
             UnifiedOperationMode mode, boolean isAwayOff) {
-
         switch (mode) {
             case OFF:
                 bridge.setZoneAwayMode(currentStatus, AwayStatus.AWAY_OFF.getAwayValue());

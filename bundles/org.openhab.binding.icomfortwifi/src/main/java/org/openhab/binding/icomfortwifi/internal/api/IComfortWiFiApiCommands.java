@@ -18,17 +18,17 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.icomfortwifi.internal.dto.ReqSetAwayMode;
 
 /**
- * Canonical API command builder for the Lennox iComfort Wi‑Fi service.
+ * Canonical API command builder for the Lennox iComfort WiFi service.
  *
  * All endpoints are grouped alphabetically and follow a consistent structure.
  *
  * @author Konstantin Panchenko - Initial contribution
- * @author Jason Kota - Clean rewrite for openHAB 5.x
+ * @author Jason Kota - Clean rewrite for openHAB 5.2
  */
 @NonNullByDefault
-public final class iComfortWiFiApiCommands {
+public final class IComfortWiFiApiCommands {
 
-    private iComfortWiFiApiCommands() {
+    private IComfortWiFiApiCommands() {
         // Utility class
     }
 
@@ -36,22 +36,22 @@ public final class iComfortWiFiApiCommands {
     // Base URI
     // ---------------------------------------------------------------------
 
-    public static final class iComfortServiceURI {
+    public static final class IComfortServiceUri {
         public static final String BASE_PATH = "/DBAcessService.svc";
 
-        private iComfortServiceURI() {
+        private IComfortServiceUri() {
         }
 
-        public String getURI() {
+        public String getUri() {
             return "https://services.myicomfort.com:443" + BASE_PATH;
         }
 
-        public static final class URI {
+        public static final class Uri {
             public static final String HOST = "services.myicomfort.com";
             public static final String PORT = "443";
             public static final String PROTOCOL = "https:";
 
-            private URI() {
+            private Uri() {
             }
         }
     }
@@ -61,55 +61,55 @@ public final class iComfortWiFiApiCommands {
     // ---------------------------------------------------------------------
 
     public static String getCommandGetBuildingsInfo(String username) {
-        String base = new iComfortServiceURI().getURI();
+        String base = new IComfortServiceUri().getUri();
         return Objects.requireNonNull(base + "/GetBuildingsInfo?userid=" + username);
     }
 
     public static String getCommandGetGatewayInfo(String gatewaySN, String tempUnit) {
-        String base = new iComfortServiceURI().getURI();
+        String base = new IComfortServiceUri().getUri();
         return Objects.requireNonNull(base + "/GetGatewayInfo?gatewaysn=" + gatewaySN + "&tempunit=" + tempUnit);
     }
 
     public static String getCommandGetGatewaysAlerts(String gatewaySN, String languageNbr, String count) {
-        String base = new iComfortServiceURI().getURI();
+        String base = new IComfortServiceUri().getUri();
         return Objects.requireNonNull(
                 base + "/GetGatewaysAlerts?gatewaysn=" + gatewaySN + "&lang_nbr=" + languageNbr + "&count=" + count);
     }
 
     public static String getCommandGetOwnerProfileInfo(String username) {
-        String base = new iComfortServiceURI().getURI();
+        String base = new IComfortServiceUri().getUri();
         return Objects.requireNonNull(base + "/GetOwnerProfileInfo?userid=" + username);
     }
 
     public static String getCommandGetSystemsInfo(String username) {
-        String base = new iComfortServiceURI().getURI();
+        String base = new IComfortServiceUri().getUri();
         return Objects.requireNonNull(base + "/GetSystemsInfo?userid=" + username);
     }
 
     public static String getCommandGetTStatAlerts(String gatewaySN, String count) {
-        String base = new iComfortServiceURI().getURI();
+        String base = new IComfortServiceUri().getUri();
         return Objects.requireNonNull(base + "/GetTStatAlerts?gatewaysn=" + gatewaySN + "&count=" + count);
     }
 
     public static String getCommandGetTStatInfoList(String gatewaySN, String tempUnit) {
-        String base = new iComfortServiceURI().getURI();
+        String base = new IComfortServiceUri().getUri();
         return Objects.requireNonNull(base + "/GetTStatInfoList?gatewaysn=" + gatewaySN + "&tempunit=" + tempUnit);
     }
 
     public static String getCommandSetAwayModeNew(ReqSetAwayMode req) {
-        String base = new iComfortServiceURI().getURI();
+        String base = new IComfortServiceUri().getUri();
         return Objects.requireNonNull(base + "/SetAwayModeNew" + "?gatewaysn=" + req.gatewaySN + "&zonenumber="
                 + req.zoneNumber + "&awaymode=" + req.awayMode + "&heatsetpoint=" + req.heatSetPoint + "&coolsetpoint="
                 + req.coolSetPoint + "&fanmode=" + req.fanMode + "&tempscale=" + req.preferredTemperatureUnit);
     }
 
     public static String getCommandSetTStatInfo() {
-        String base = new iComfortServiceURI().getURI();
+        String base = new IComfortServiceUri().getUri();
         return Objects.requireNonNull(base + "/SetTStatInfo");
     }
 
     public static String getCommandValidateUser(String username, Integer langNbr) {
-        String base = new iComfortServiceURI().getURI();
+        String base = new IComfortServiceUri().getUri();
         return Objects.requireNonNull(base + "/ValidateUser?username=" + username + "&lang_nbr=" + langNbr);
     }
 
@@ -117,116 +117,116 @@ public final class iComfortWiFiApiCommands {
     // Endpoint Metadata (Optional, for documentation)
     // ---------------------------------------------------------------------
 
-    public static final class getBuildingsInfo {
+    public static final class GetBuildingsInfo {
         public static final String PATH = "/GetBuildingsInfo";
 
-        private getBuildingsInfo() {
+        private GetBuildingsInfo() {
         }
 
-        public static final class paramsDef {
+        public static final class ParamsDef {
             public static final String USER_ID = "userid";
 
-            private paramsDef() {
+            private ParamsDef() {
             }
         }
     }
 
-    public static final class getGatewayInfo {
+    public static final class GetGatewayInfo {
         public static final String PATH = "/GetGatewayInfo";
 
-        private getGatewayInfo() {
+        private GetGatewayInfo() {
         }
 
-        public static final class paramsDef {
+        public static final class ParamsDef {
             public static final String GATEWAY_SN = "gatewaysn";
             public static final String TEMP_UNIT = "tempunit";
 
-            private paramsDef() {
+            private ParamsDef() {
             }
         }
     }
 
-    public static final class getGatewaysAlerts {
+    public static final class GetGatewaysAlerts {
         public static final String PATH = "/GetGatewaysAlerts";
 
-        private getGatewaysAlerts() {
+        private GetGatewaysAlerts() {
         }
 
-        public static final class paramsDef {
+        public static final class ParamsDef {
             public static final String GATEWAY_SN = "gatewaysn";
             public static final String LANGUAGE_NBR = "lang_nbr";
             public static final String COUNT = "count";
 
-            private paramsDef() {
+            private ParamsDef() {
             }
         }
     }
 
-    public static final class getOwnerProfileInfo {
+    public static final class GetOwnerProfileInfo {
         public static final String PATH = "/GetOwnerProfileInfo";
 
-        private getOwnerProfileInfo() {
+        private GetOwnerProfileInfo() {
         }
 
-        public static final class paramsDef {
+        public static final class ParamsDef {
             public static final String USER_ID = "userid";
 
-            private paramsDef() {
+            private ParamsDef() {
             }
         }
     }
 
-    public static final class getSystemsInfo {
+    public static final class GetSystemsInfo {
         public static final String PATH = "/GetSystemsInfo";
 
-        private getSystemsInfo() {
+        private GetSystemsInfo() {
         }
 
-        public static final class paramsDef {
+        public static final class ParamsDef {
             public static final String USER_ID = "userid";
 
-            private paramsDef() {
+            private ParamsDef() {
             }
         }
     }
 
-    public static final class getTStatAlerts {
+    public static final class GetTStatAlerts {
         public static final String PATH = "/GetTStatAlerts";
 
-        private getTStatAlerts() {
+        private GetTStatAlerts() {
         }
 
-        public static final class paramsDef {
+        public static final class ParamsDef {
             public static final String GATEWAY_SN = "gatewaysn";
             public static final String COUNT = "count";
 
-            private paramsDef() {
+            private ParamsDef() {
             }
         }
     }
 
-    public static final class getTStatInfoList {
+    public static final class GetTStatInfoList {
         public static final String PATH = "/GetTStatInfoList";
 
-        private getTStatInfoList() {
+        private GetTStatInfoList() {
         }
 
-        public static final class paramsDef {
+        public static final class ParamsDef {
             public static final String GATEWAY_SN = "gatewaysn";
             public static final String TEMP_UNIT = "tempunit";
 
-            private paramsDef() {
+            private ParamsDef() {
             }
         }
     }
 
-    public static final class setAwayModeNew {
+    public static final class SetAwayModeNew {
         public static final String PATH = "/SetAwayModeNew";
 
-        private setAwayModeNew() {
+        private SetAwayModeNew() {
         }
 
-        public static final class paramsDef {
+        public static final class ParamsDef {
             public static final String GATEWAY_SN = "gatewaysn";
             public static final String ZONE_NUMBER = "zonenumber";
             public static final String AWAY_MODE = "awaymode";
@@ -235,30 +235,30 @@ public final class iComfortWiFiApiCommands {
             public static final String FAN_MODE = "fanmode";
             public static final String TEMP_SCALE = "tempscale";
 
-            private paramsDef() {
+            private ParamsDef() {
             }
         }
     }
 
-    public static final class setTStatInfo {
+    public static final class SetTStatInfo {
         public static final String PATH = "/SetTStatInfo";
 
-        private setTStatInfo() {
+        private SetTStatInfo() {
         }
     }
 
-    public static final class validateUser {
+    public static final class ValidateUser {
         public static final String PATH = "/ValidateUser";
 
-        private validateUser() {
+        private ValidateUser() {
         }
 
-        public static final class paramsDef {
+        public static final class ParamsDef {
             public static final String USER_NAME = "username";
             public static final String LANGUAGE_NBR = "lang_nbr";
             public static final String PASSWORD = "password";
 
-            private paramsDef() {
+            private ParamsDef() {
             }
         }
     }

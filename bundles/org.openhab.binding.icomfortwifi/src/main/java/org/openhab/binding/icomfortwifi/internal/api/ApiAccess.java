@@ -73,7 +73,6 @@ public class ApiAccess {
      */
     public <@Nullable TOut> @Nullable TOut doRequest(HttpMethod method, String url, Map<String, String> headers,
             @Nullable String requestData, String contentType, @Nullable Class<TOut> outClass) throws TimeoutException {
-
         this.logger.debug("Requesting: [{}]", url);
         TOut retVal = null;
 
@@ -146,7 +145,6 @@ public class ApiAccess {
     public <@Nullable TOut> @Nullable TOut doAuthenticatedRequest(HttpMethod method, String url,
             @Nullable Object requestContainer, @Nullable Class<TOut> outClass, String contentType)
             throws TimeoutException {
-
         String authCredentials = this.userCredentials;
         if (authCredentials == null) {
             this.logger.warn("User credentials are null. Authentication skipped for URL: {}", url);

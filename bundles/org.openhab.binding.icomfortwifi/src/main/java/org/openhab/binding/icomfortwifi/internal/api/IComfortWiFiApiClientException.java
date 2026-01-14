@@ -18,22 +18,22 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  * Exception for errors from the API Client.
  *
  * @author Konstantin Panchenko - Initial contribution
- * @author Jason Kotan - Added @nullByDefault- updated Import section
+ * @author Jason Kotan - Added @nullByDefault - updated import section
  */
 @NonNullByDefault
 @SuppressWarnings("unused")
-public class iComfortWiFiApiClientException extends Exception {
+public class IComfortWiFiApiClientException extends Exception {
 
     private static final long serialVersionUID = 9991L;
 
-    public iComfortWiFiApiClientException() {
+    public IComfortWiFiApiClientException() {
     }
 
-    public iComfortWiFiApiClientException(String message) {
+    public IComfortWiFiApiClientException(String message) {
         super(message);
     }
 
-    public iComfortWiFiApiClientException(String message, Throwable cause) {
+    public IComfortWiFiApiClientException(String message, Throwable cause) {
         super(message, cause);
     }
 }

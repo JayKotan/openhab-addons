@@ -26,7 +26,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.http.HttpMethod;
-import org.openhab.binding.icomfortwifi.internal.configuration.iComfortWiFiBridgeConfiguration;
+import org.openhab.binding.icomfortwifi.internal.configuration.IComfortWiFiBridgeConfiguration;
 import org.openhab.binding.icomfortwifi.internal.dto.CustomTypes;
 import org.openhab.binding.icomfortwifi.internal.dto.CustomTypes.PreferredLanguage;
 import org.openhab.binding.icomfortwifi.internal.dto.CustomTypes.RequestStatus;
@@ -44,21 +44,21 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * iComfort Wi‑Fi API client.
+ * iComfort WiFi API client.
  *
  * Handles authentication, polling, and write operations against the Lennox
  * iComfort cloud API.
  *
  * @author Konstantin Panchenko - Initial contribution
- * @author Jason Kota - openHAB 5.x cleanup and thermostat alerts
+ * @author Jason Kota - openHAB 5.2 cleanup and thermostat alerts
  */
 @NonNullByDefault
-public class iComfortWiFiApiClient {
+public class IComfortWiFiApiClient {
 
-    private final Logger logger = Objects.requireNonNull(LoggerFactory.getLogger(iComfortWiFiApiClient.class));
+    private final Logger logger = Objects.requireNonNull(LoggerFactory.getLogger(IComfortWiFiApiClient.class));
 
     private final HttpClient httpClient;
-    private final iComfortWiFiBridgeConfiguration configuration;
+    private final IComfortWiFiBridgeConfiguration configuration;
     private final ApiAccess apiAccess;
 
     private SystemsInfo systemsInfo = new SystemsInfo();
@@ -66,7 +66,7 @@ public class iComfortWiFiApiClient {
     // Number of alerts to request for gateway and thermostat
     private final Integer alertsCount = 20;
 
-    public iComfortWiFiApiClient(iComfortWiFiBridgeConfiguration configuration, HttpClient httpClient) {
+    public IComfortWiFiApiClient(IComfortWiFiBridgeConfiguration configuration, HttpClient httpClient) {
         this.configuration = configuration;
         this.httpClient = httpClient;
         this.apiAccess = new ApiAccess(httpClient);
@@ -78,14 +78,11 @@ public class iComfortWiFiApiClient {
 
     public void close() {
         try {
-            // Clear credentials first
             this.apiAccess.setUserCredentials("");
         } catch (Exception e) {
             logger.debug("Error clearing API credentials", e);
         }
-
         try {
-            // Removed the null check to satisfy the compiler
             if (this.httpClient.isStarted()) {
                 this.httpClient.stop();
             }
@@ -103,7 +100,6 @@ public class iComfortWiFiApiClient {
         if (!success) {
             return false;
         }
-
         try {
             String encodedUser = Checks
                     .requireNonNull(URLEncoder.encode(this.configuration.username, StandardCharsets.UTF_8));
@@ -115,7 +111,6 @@ public class iComfortWiFiApiClient {
             this.logger.warn("Unexpected error during login", e);
             success = false;
         }
-
         return success;
     }
 
@@ -139,42 +134,33 @@ public class iComfortWiFiApiClient {
             }
         }
         this.update(unit);
-    } // <--- This brace was missing
+    }
 
     public void update(TempUnits tempUnit) {
         try {
             if (this.systemsInfo.returnStatus != RequestStatus.SUCCESS) {
                 return;
             }
-
             for (SystemInfo system : this.systemsInfo.getSystems()) {
                 String sn = system.gatewaySN;
                 if (sn == null || sn.isEmpty()) {
                     continue;
                 }
-
                 GatewayInfo fetchedInfo = requestGatewayInfo(sn, tempUnit);
                 if (fetchedInfo == null || fetchedInfo.returnStatus != RequestStatus.SUCCESS) {
                     continue;
                 }
-
                 system.setGatewayInfo(fetchedInfo);
-
-                // Fix for Error [164,69]: Explicitly handle PreferredLanguage nullability
                 PreferredLanguage prefLang = fetchedInfo.preferredLanguage;
                 if (prefLang == null) {
                     prefLang = PreferredLanguage.ENGLISH;
                 }
-
                 GatewaysAlerts gwAlerts = requestGatewaysAlerts(sn, prefLang, this.alertsCount);
                 if (gwAlerts != null) {
                     system.setGatewaysAlerts(gwAlerts);
                 }
-
-                // Fix for Error [171,72]: Explicitly handle TempUnits nullability
                 TempUnits preferred = fetchedInfo.preferredTemperatureUnit;
                 TempUnits activeUnit = (preferred != null) ? preferred : tempUnit;
-
                 ZonesStatus zones = requestZonesStatus(sn, activeUnit);
                 if (zones != null && zones.returnStatus == RequestStatus.SUCCESS) {
                     system.setZonesStatus(zones);
@@ -191,10 +177,8 @@ public class iComfortWiFiApiClient {
     public void setZoneAwayMode(ZoneStatus zoneStatus, Integer awayMode) throws TimeoutException {
         ReqSetAwayMode requestSetAway = new ReqSetAwayMode(zoneStatus);
         requestSetAway.awayMode = awayMode;
-
-        String url = iComfortWiFiApiCommands.getCommandSetAwayModeNew(requestSetAway);
+        String url = IComfortWiFiApiCommands.getCommandSetAwayModeNew(requestSetAway);
         ZonesStatus newZonesStatus = this.apiAccess.doAuthenticatedPut(url, requestSetAway, nullableZonesStatusClass());
-
         if (newZonesStatus == null) {
             this.logger.warn("Failed to set Away Mode: API returned null ZonesStatus");
             return;
@@ -203,7 +187,6 @@ public class iComfortWiFiApiClient {
         for (SystemInfo system : this.systemsInfo.getSystems()) {
             ZonesStatus currentZones = system.getZonesStatusOrNull();
             List<ZoneStatus> zones = (currentZones != null) ? currentZones.zoneStatus : null;
-
             if (zones == null || zones.isEmpty()) {
                 continue;
             }
@@ -211,8 +194,6 @@ public class iComfortWiFiApiClient {
             ZoneStatus firstZone = Objects.requireNonNull(zones.get(0));
             String targetSN = zoneStatus.gatewaySN;
             String firstZoneSN = firstZone.gatewaySN;
-
-            // Redundant null check removed; targetSN is assumed NonNull
             if (targetSN.equals(firstZoneSN)) {
                 system.setZonesStatus(newZonesStatus);
             }
@@ -220,7 +201,7 @@ public class iComfortWiFiApiClient {
     }
 
     public void setZoneHeatingPoint(ZoneStatus zoneStatus, Double setPoint) throws TimeoutException {
-        String url = iComfortWiFiApiCommands.getCommandSetTStatInfo();
+        String url = IComfortWiFiApiCommands.getCommandSetTStatInfo();
         ReqSetTStatInfo requestSetInfo = new ReqSetTStatInfo(zoneStatus);
         requestSetInfo.heatSetPoint = setPoint;
         this.apiAccess.doAuthenticatedPut(url, requestSetInfo, "application/json");
@@ -228,7 +209,7 @@ public class iComfortWiFiApiClient {
     }
 
     public void setZoneCoolingPoint(ZoneStatus zoneStatus, Double setPoint) throws TimeoutException {
-        String url = iComfortWiFiApiCommands.getCommandSetTStatInfo();
+        String url = IComfortWiFiApiCommands.getCommandSetTStatInfo();
         ReqSetTStatInfo requestSetInfo = new ReqSetTStatInfo(zoneStatus);
         requestSetInfo.coolSetPoint = setPoint;
         this.apiAccess.doAuthenticatedPut(url, requestSetInfo, "application/json");
@@ -236,7 +217,7 @@ public class iComfortWiFiApiClient {
     }
 
     public void setZoneOperationMode(ZoneStatus zoneStatus, Integer operationMode) throws TimeoutException {
-        String url = iComfortWiFiApiCommands.getCommandSetTStatInfo();
+        String url = IComfortWiFiApiCommands.getCommandSetTStatInfo();
         ReqSetTStatInfo requestSetInfo = new ReqSetTStatInfo(zoneStatus);
         requestSetInfo.operationMode = operationMode;
         this.apiAccess.doAuthenticatedPut(url, requestSetInfo, "application/json");
@@ -244,7 +225,7 @@ public class iComfortWiFiApiClient {
     }
 
     public void setZoneFanMode(ZoneStatus zoneStatus, Integer fanMode) throws TimeoutException {
-        String url = iComfortWiFiApiCommands.getCommandSetTStatInfo();
+        String url = IComfortWiFiApiCommands.getCommandSetTStatInfo();
         ReqSetTStatInfo requestSetInfo = new ReqSetTStatInfo(zoneStatus);
         requestSetInfo.fanMode = fanMode;
         this.apiAccess.doAuthenticatedPut(url, requestSetInfo, "application/json");
@@ -281,7 +262,7 @@ public class iComfortWiFiApiClient {
     }
 
     private SystemsInfo requestSystemsInfo(String username) throws TimeoutException {
-        String url = iComfortWiFiApiCommands.getCommandGetSystemsInfo(username);
+        String url = IComfortWiFiApiCommands.getCommandGetSystemsInfo(username);
         SystemsInfo status = this.apiAccess.doAuthenticatedGet(url, nullableSystemsInfoClass());
         if (status == null) {
             throw new IllegalStateException("SystemsInfo could not be retrieved.");
@@ -290,13 +271,13 @@ public class iComfortWiFiApiClient {
     }
 
     private @Nullable ZonesStatus requestZonesStatus(String gatewaySN, TempUnits tempUnit) throws TimeoutException {
-        String url = iComfortWiFiApiCommands.getCommandGetTStatInfoList(gatewaySN,
+        String url = IComfortWiFiApiCommands.getCommandGetTStatInfoList(gatewaySN,
                 Objects.requireNonNull(tempUnit.getTempUnitsValue()));
         return this.apiAccess.doAuthenticatedGet(url, nullableZonesStatusClass());
     }
 
     private @Nullable GatewayInfo requestGatewayInfo(String gatewaySN, TempUnits tempUnit) throws TimeoutException {
-        String url = iComfortWiFiApiCommands.getCommandGetGatewayInfo(gatewaySN,
+        String url = IComfortWiFiApiCommands.getCommandGetGatewayInfo(gatewaySN,
                 Objects.requireNonNull(tempUnit.getTempUnitsValue()));
         return this.apiAccess.doAuthenticatedGet(url, nullableGatewayInfoClass());
     }
@@ -305,7 +286,7 @@ public class iComfortWiFiApiClient {
             Integer count) throws TimeoutException {
         String langStr = Objects.requireNonNull(String.valueOf(languageNbr.getPreferredLanguageValue()));
         String countStr = Objects.requireNonNull(String.valueOf(count));
-        String url = iComfortWiFiApiCommands.getCommandGetGatewaysAlerts(gatewaySN, langStr, countStr);
+        String url = IComfortWiFiApiCommands.getCommandGetGatewaysAlerts(gatewaySN, langStr, countStr);
         return this.apiAccess.doAuthenticatedGet(url, nullableGatewaysAlertsClass());
     }
 
@@ -316,7 +297,6 @@ public class iComfortWiFiApiClient {
     private boolean validateUsername() {
         UserValidation validation = null;
         String basicAuthentication = "";
-
         try {
             String user = this.configuration.username;
             String pass = this.configuration.password;
@@ -325,21 +305,17 @@ public class iComfortWiFiApiClient {
             authString = authString + ":" + pass;
             String encoded = Checks
                     .requireNonNull(Base64.getEncoder().encodeToString(authString.getBytes(StandardCharsets.UTF_8)));
-
             basicAuthentication = "Basic " + encoded;
             Map<String, String> headers = new HashMap<>();
             headers.put("Authorization", basicAuthentication);
             headers.put("Accept", "application/json, text/json");
-
             String encodedUsername = Checks.requireNonNull(URLEncoder.encode(user, StandardCharsets.UTF_8));
             validation = this.apiAccess.doRequest(HttpMethod.PUT,
-                    iComfortWiFiApiCommands.getCommandValidateUser(encodedUsername, 0), headers, "",
+                    IComfortWiFiApiCommands.getCommandValidateUser(encodedUsername, 0), headers, "",
                     "application/x-www-form-urlencoded", nullableUserValidationClass());
-
         } catch (TimeoutException ex) {
             this.logger.error("Error during user validation", ex);
         }
-
         if (validation != null && validation.msgCode == RequestStatus.SUCCESS) {
             this.apiAccess.setUserCredentials(basicAuthentication);
             return true;

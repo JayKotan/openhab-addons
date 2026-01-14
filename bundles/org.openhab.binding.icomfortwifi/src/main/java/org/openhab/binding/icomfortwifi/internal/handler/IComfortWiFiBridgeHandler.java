@@ -25,8 +25,8 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.icomfortwifi.internal.RunnableWithTimeout;
-import org.openhab.binding.icomfortwifi.internal.api.iComfortWiFiApiClient;
-import org.openhab.binding.icomfortwifi.internal.configuration.iComfortWiFiBridgeConfiguration;
+import org.openhab.binding.icomfortwifi.internal.api.IComfortWiFiApiClient;
+import org.openhab.binding.icomfortwifi.internal.configuration.IComfortWiFiBridgeConfiguration;
 import org.openhab.binding.icomfortwifi.internal.dto.CustomTypes;
 import org.openhab.binding.icomfortwifi.internal.dto.GatewayInfo;
 import org.openhab.binding.icomfortwifi.internal.dto.GatewaysAlerts;
@@ -51,19 +51,19 @@ import org.slf4j.LoggerFactory;
  * @author Jason Kota - Updated for openHAB 5.x compliance
  */
 @NonNullByDefault
-public class iComfortWiFiBridgeHandler extends BaseBridgeHandler {
+public class IComfortWiFiBridgeHandler extends BaseBridgeHandler {
 
-    private final Logger logger = Objects.requireNonNull(LoggerFactory.getLogger(iComfortWiFiBridgeHandler.class));
+    private final Logger logger = Objects.requireNonNull(LoggerFactory.getLogger(IComfortWiFiBridgeHandler.class));
     private final HttpClient httpClient;
 
-    private @Nullable iComfortWiFiBridgeConfiguration configuration;
-    private @Nullable iComfortWiFiApiClient apiClient;
+    private @Nullable IComfortWiFiBridgeConfiguration configuration;
+    private @Nullable IComfortWiFiApiClient apiClient;
 
-    private final List<iComfortWiFiAccountStatusListener> listeners = new CopyOnWriteArrayList<>();
+    private final List<IComfortWiFiAccountStatusListener> listeners = new CopyOnWriteArrayList<>();
 
     protected @Nullable ScheduledFuture<?> refreshTask;
 
-    public iComfortWiFiBridgeHandler(Bridge thing, HttpClient httpClient) {
+    public IComfortWiFiBridgeHandler(Bridge thing, HttpClient httpClient) {
         super(thing);
         this.httpClient = httpClient;
     }
@@ -79,14 +79,13 @@ public class iComfortWiFiBridgeHandler extends BaseBridgeHandler {
             return;
         }
 
-        iComfortWiFiBridgeConfiguration config = getConfigAs(iComfortWiFiBridgeConfiguration.class);
+        IComfortWiFiBridgeConfiguration config = getConfigAs(IComfortWiFiBridgeConfiguration.class);
         this.configuration = config;
 
         if (checkConfig(config)) {
             try {
-                apiClient = new iComfortWiFiApiClient(config, this.httpClient);
-                final iComfortWiFiApiClient client = Objects.requireNonNull(apiClient);
-
+                apiClient = new IComfortWiFiApiClient(config, this.httpClient);
+                final IComfortWiFiApiClient client = Objects.requireNonNull(apiClient);
                 scheduler.schedule(() -> {
                     if (client.login()) {
                         client.update();
@@ -97,7 +96,6 @@ public class iComfortWiFiBridgeHandler extends BaseBridgeHandler {
                                 "Authentication failed");
                     }
                 }, 0, TimeUnit.SECONDS);
-
             } catch (Exception e) {
                 logger.error("Failed to initialize iComfort API Client: {}", e.getMessage());
                 updateAccountStatus(ThingStatus.OFFLINE, ThingStatusDetail.HANDLER_REGISTERING_ERROR,
@@ -106,12 +104,12 @@ public class iComfortWiFiBridgeHandler extends BaseBridgeHandler {
         }
     }
 
-    public void addAccountStatusListener(iComfortWiFiAccountStatusListener listener) {
+    public void addAccountStatusListener(IComfortWiFiAccountStatusListener listener) {
         listeners.add(listener);
         listener.accountStatusChanged(getThing().getStatus());
     }
 
-    public void removeAccountStatusListener(iComfortWiFiAccountStatusListener listener) {
+    public void removeAccountStatusListener(IComfortWiFiAccountStatusListener listener) {
         listeners.remove(listener);
     }
 
@@ -127,44 +125,40 @@ public class iComfortWiFiBridgeHandler extends BaseBridgeHandler {
     }
 
     public SystemsInfo getiComfortWiFiSystemsInfo() {
-        iComfortWiFiApiClient client = apiClient;
+        IComfortWiFiApiClient client = apiClient;
         return (client != null) ? client.getSystemsInfo() : new SystemsInfo();
     }
 
     // --- Action Methods ---
 
     public void setZoneOperationMode(ZoneStatus zoneStatus, Integer mode) {
-        final iComfortWiFiApiClient client = this.apiClient;
+        final IComfortWiFiApiClient client = this.apiClient;
         if (client != null) {
             tryToCall(() -> client.setZoneOperationMode(zoneStatus, mode));
             client.update(); // force fresh API read
             updateThings(); // push new values to handlers
-
         }
     }
 
     public void setZoneFanMode(ZoneStatus zoneStatus, Integer mode) {
-        final iComfortWiFiApiClient client = this.apiClient;
+        final IComfortWiFiApiClient client = this.apiClient;
         if (client != null) {
             tryToCall(() -> client.setZoneFanMode(zoneStatus, mode));
             client.update(); // force fresh API read
             updateThings(); // push new values to handlers
-
         }
     }
 
     public void setZoneAwayMode(ZoneStatus zoneStatus, Integer mode) {
-        final iComfortWiFiApiClient client = this.apiClient;
+        final IComfortWiFiApiClient client = this.apiClient;
         if (client != null) {
             tryToCall(() -> client.setZoneAwayMode(zoneStatus, mode));
             client.update(); // force fresh API read
             updateThings(); // push new values to handlers
-
         }
     }
 
     public @Nullable GatewayInfo findGatewayInfoForZone(List<SystemInfo> systems, String gatewaySN) {
-
         for (SystemInfo system : systems) {
             if (Objects.equals(system.gatewaySN, gatewaySN)) {
                 return system.getGatewayInfo();
@@ -178,7 +172,7 @@ public class iComfortWiFiBridgeHandler extends BaseBridgeHandler {
     }
 
     public void setZoneCoolingPoint(ZoneStatus zoneStatus, double doubleValue) {
-        final iComfortWiFiApiClient client = this.apiClient;
+        final IComfortWiFiApiClient client = this.apiClient;
         if (client == null) {
             return;
         }
@@ -202,18 +196,16 @@ public class iComfortWiFiBridgeHandler extends BaseBridgeHandler {
         if (low != null && high != null && checkValue >= low && checkValue <= high) {
             tryToCall(() -> client.setZoneCoolingPoint(zoneStatus, doubleValue));
         }
-
         updateThings();
     }
 
     public void setZoneHeatingPoint(ZoneStatus zoneStatus, double doubleValue) {
-        final iComfortWiFiApiClient client = this.apiClient;
+        final IComfortWiFiApiClient client = this.apiClient;
         if (client == null) {
             return;
         }
 
         for (SystemInfo systemInfo : client.getSystemsInfo().getSystems()) {
-
             if (Objects.equals(systemInfo.gatewaySN, zoneStatus.gatewaySN)) {
                 GatewayInfo info = systemInfo.getGatewayInfo();
                 if (info == null) {
@@ -242,7 +234,7 @@ public class iComfortWiFiBridgeHandler extends BaseBridgeHandler {
     }
 
     private void updateThings() {
-        final iComfortWiFiApiClient client = this.apiClient;
+        final IComfortWiFiApiClient client = this.apiClient;
         if (client == null) {
             return;
         }
@@ -277,7 +269,7 @@ public class iComfortWiFiBridgeHandler extends BaseBridgeHandler {
             ThingHandler handler = thing.getHandler();
 
             // ZONE HANDLER
-            if (handler instanceof iComfortWiFiHeatingZoneHandler zoneHandler) {
+            if (handler instanceof IComfortWiFiHeatingZoneHandler zoneHandler) {
                 String zoneId = zoneHandler.getId();
                 ZoneStatus zStatus = idToZoneMap.get(zoneId);
                 GatewayInfo gInfo = idToGatewayMap.get(zoneId);
@@ -288,20 +280,13 @@ public class iComfortWiFiBridgeHandler extends BaseBridgeHandler {
             }
 
             // THERMOSTAT HANDLER (Gateway Alerts + Thermostat Alerts)
-            if (handler instanceof iComfortWiFiTemperatureControlSystemHandler tcsHandler) {
-
-                // Find the SystemInfo that matches this thermostat Thing
+            if (handler instanceof IComfortWiFiTemperatureControlSystemHandler tcsHandler) {
                 for (SystemInfo sys : localSystemInfos) {
                     if (thing.getUID().getId().equals(sys.gatewaySN)) {
-
-                        // GATEWAY ALERTS
                         GatewaysAlerts gwAlerts = sys.getGatewaysAlerts();
                         if (gwAlerts != null) {
                             tcsHandler.updateGatewayAlerts(gwAlerts);
                         }
-
-                        // THERMOSTAT ALERTS
-
                         break;
                     }
                 }
@@ -312,7 +297,7 @@ public class iComfortWiFiBridgeHandler extends BaseBridgeHandler {
     public void startRefreshTask() {
         disposeRefreshTask();
 
-        final iComfortWiFiBridgeConfiguration config = this.configuration;
+        final IComfortWiFiBridgeConfiguration config = this.configuration;
         if (config == null) {
             return;
         }
@@ -321,7 +306,7 @@ public class iComfortWiFiBridgeHandler extends BaseBridgeHandler {
     }
 
     private void update() {
-        final iComfortWiFiApiClient client = this.apiClient;
+        final IComfortWiFiApiClient client = this.apiClient;
         if (client == null) {
             return;
         }
@@ -343,13 +328,13 @@ public class iComfortWiFiBridgeHandler extends BaseBridgeHandler {
         if (!newStatus.equals(getThing().getStatus())) {
             updateStatus(newStatus, detail, message);
             // This loop now works perfectly with the public interface
-            for (iComfortWiFiAccountStatusListener l : listeners) {
+            for (IComfortWiFiAccountStatusListener l : listeners) {
                 l.accountStatusChanged(newStatus);
             }
         }
     }
 
-    private boolean checkConfig(iComfortWiFiBridgeConfiguration config) {
+    private boolean checkConfig(IComfortWiFiBridgeConfiguration config) {
         if (config.username.isEmpty() || config.password.isEmpty()) {
             updateAccountStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Credentials missing");
             return false;
@@ -358,7 +343,7 @@ public class iComfortWiFiBridgeHandler extends BaseBridgeHandler {
     }
 
     private void disposeApiClient() {
-        final iComfortWiFiApiClient client = this.apiClient;
+        final IComfortWiFiApiClient client = this.apiClient;
         if (client != null) {
             client.logout();
             this.apiClient = null;
