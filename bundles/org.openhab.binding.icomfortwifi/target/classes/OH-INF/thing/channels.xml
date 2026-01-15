@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="icomfortwifi"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<channel-type id="operation-mode">
+		<item-type>String</item-type>
+		<label>Operation Mode</label>
+		<description>Current system mode</description>
+		<category>heating</category>
+		<state pattern="%s">
+			<options>
+				<option value="COOL_ONLY">System is cooling only</option>
+				<option value="HEAT_ONLY">System is heating only</option>
+				<option value="HEAT_OR_COOL">System is heating or cooling</option>
+				<option value="OFF">System is off</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="system-status">
+		<item-type>String</item-type>
+		<label>System Status</label>
+		<description>Current system status</description>
+		<category>heating</category>
+		<state pattern="%s" readOnly="true">
+			<options>
+				<option value="IDLE">System is idle</option>
+				<option value="HEATING">System is heating</option>
+				<option value="COOLING">System is cooling</option>
+				<option value="WAITING">System is waiting</option>
+				<option value="EMERGENCY_HEAT">System is emergency heating</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="away-mode">
+		<item-type>Switch</item-type>
+		<label>Away Mode</label>
+		<description>Enable or disable Away Mode for this zone</description>
+		<category>switch</category>
+		<state readOnly="false"/>
+	</channel-type>
+
+
+	<channel-type id="fan-mode">
+		<item-type>String</item-type>
+		<label>Fan Mode Status</label>
+		<description>Current fan mode status</description>
+		<category>heating</category>
+		<state pattern="%s">
+			<options>
+				<option value="AUTO">System fan is in auto mode</option>
+				<option value="ON">System fan is on</option>
+				<option value="CIRCULATE">System fan is in circulate mode</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="temperature">
+		<item-type>Number:Temperature</item-type>
+		<label>Temperature</label>
+		<description>Current zone temperature</description>
+		<category>temperature</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="humidity">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Humidity</label>
+		<description>Current zone humidity</description>
+		<category>humidity</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="cool-set-point">
+		<item-type>Number:Temperature</item-type>
+		<label>Cool Set Point</label>
+		<description>Gets or sets the cool set point of this zone.</description>
+		<category>temperature</category>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
+		<state step="1" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="heat-set-point">
+		<item-type>Number:Temperature</item-type>
+		<label>Heat Set Point</label>
+		<description>Gets or sets the heat set point of this zone.</description>
+		<category>temperature</category>
+		<tags>
+			<tag>Setpoint</tag>
+			<tag>Temperature</tag>
+		</tags>
+		<state step="1" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="programSchedule">
+		<item-type>String</item-type>
+		<label>Program Schedule</label>
+		<description>Current program schedule selection (read-only)</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="alarm-description">
+		<item-type>String</item-type>
+		<label>Alarm Description</label>
+		<description>Description of alarm being raised.</description>
+		<category>text</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="alarm-nbr">
+		<item-type>Number</item-type>
+		<label>Alarm Code</label>
+		<description>Code of alarm being raised.</description>
+		<category>number</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="program-schedule">
+		<item-type>String</item-type>
+		<label>Program Schedule</label>
+		<description>Active program schedule for this zone</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="alarm-type">
+		<item-type>String</item-type>
+		<label>Alarm Type</label>
+		<description>Type of alarm being raised.</description>
+		<category>text</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="alarm-status">
+		<item-type>String</item-type>
+		<label>Alarm Status</label>
+		<description>Status of the alarm.</description>
+		<category>text</category>
+		<state pattern="%s" readOnly="true">
+			<options>
+				<option value="ALERT_CLEARED">Alert has been cleared</option>
+				<option value="ALERT_RAISED">Alert is active</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="date-time-set">
+		<item-type>DateTime</item-type>
+		<label>Alarm Date Set</label>
+		<description>Date and Time when alarm was raised.</description>
+		<category>datetime</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="date-time-reset">
+		<item-type>DateTime</item-type>
+		<label>Alarm Date Reset</label>
+		<description>Date and Time when alarm was cleared/reset.</description>
+		<category>datetime</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-group-type id="thermostatAlerts">
+		<label>Thermostat Alerts</label>
+		<channels>
+			<channel id="active" typeId="switch"/>
+			<channel id="count" typeId="number"/>
+			<channel id="firstDescription" typeId="string"/>
+			<channel id="firstCode" typeId="string"/>
+			<channel id="firstType" typeId="string"/>
+			<channel id="firstStatus" typeId="string"/>
+			<channel id="firstDate" typeId="string"/>
+		</channels>
+	</channel-group-type>
+
+</thing:thing-descriptions>

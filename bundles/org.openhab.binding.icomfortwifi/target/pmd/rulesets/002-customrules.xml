@@ -1,0 +1,22 @@
+<ruleset name="Default Ruleset" xmlns="http://pmd.sourceforge.net/ruleset/2.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://pmd.sourceforge.net/ruleset/2.0.0 https://pmd.sourceforge.net/ruleset_2_0_0.xsd">
+	<description>Rule set that contains custom rules created for checking all bundles</description>
+	<rule class="org.openhab.tools.analysis.pmd.UseSLF4JLoggerRule" name="UseSLF4J" language="java">
+		<priority>3</priority>
+	</rule>
+	<rule class="org.openhab.tools.analysis.pmd.ImplicitDefaultLocaleRule" name="ImplicitDefaultLocale"
+		language="java">
+		<priority>3</priority>
+	</rule>
+	<rule class="org.openhab.tools.analysis.pmd.ImplicitDefaultTimeZoneRule" name="ImplicitDefaultTimeZone"
+		language="java">
+		<priority>3</priority>
+	</rule>
+	<rule class="org.openhab.tools.analysis.pmd.SetDefaultLocaleRule" name="SetDefaultLocale" language="java">
+		<priority>1</priority>
+	</rule>
+	<rule class="org.openhab.tools.analysis.pmd.SetDefaultTimeZoneRule" name="SetDefaultTimeZone" language="java">
+		<priority>1</priority>
+	</rule>
+</ruleset>

@@ -1,0 +1,38 @@
+Manifest-Version: 1.0
+Bnd-LastModified: 1768448841837
+Build-Jdk-Spec: 21
+Bundle-Description: This project contains the official add-ons of openHA
+ B
+Bundle-DocURL: https://www.openhab.org
+Bundle-License: https://www.eclipse.org/legal/epl-2.0/
+Bundle-ManifestVersion: 2
+Bundle-Name: openHAB Add-ons :: Bundles :: iComfort WiFi Binding
+Bundle-SymbolicName: org.openhab.addons.bundles.org.openhab.binding.icom
+ fortwifi
+Bundle-Vendor: openHAB.org
+Bundle-Version: 5.2.0.SNAPSHOT
+Created-By: Apache Maven Bundle Plugin 6.0.0
+Import-Package: com.google.gson;version="[2.13,3)",com.google.gson.annot
+ ations;version="[2.13,3)",java.lang,java.lang.invoke,java.lang.reflect,
+ java.net,java.nio.charset,java.time,java.util,java.util.concurrent,java
+ .util.function,javax.measure;version="[2.2,3)",javax.measure.quantity;v
+ ersion="[2.2,3)",org.eclipse.jdt.annotation,org.eclipse.jetty.client;ve
+ rsion="[9.4,10)",org.eclipse.jetty.client.api;version="[9.4,10)",org.ec
+ lipse.jetty.client.util;version="[9.4,10)",org.eclipse.jetty.http;versi
+ on="[9.4,10)",org.openhab.core.config.discovery;version="[5.2,6)",org.o
+ penhab.core.io.net.http;version="[5.2,6)",org.openhab.core.library.type
+ s;version="[5.2,6)",org.openhab.core.library.unit;version="[5.2,6)",org
+ .openhab.core.thing;version="[5.2,6)",org.openhab.core.thing.binding;ve
+ rsion="[5.2,6)",org.openhab.core.types;version="[5.2,6)",org.osgi.frame
+ work;version="[1.10,2)",org.osgi.service.component;version="[1.5,2)",or
+ g.slf4j;version="[2.0,3)"
+Provide-Capability: osgi.service;objectClass:List<String>="org.openhab.c
+ ore.thing.binding.ThingHandlerFactory";uses:="org.openhab.core.thing.bi
+ nding"
+Require-Capability: osgi.service;filter:="(objectClass=org.openhab.core.
+ io.net.http.HttpClientFactory)";effective:=active,osgi.extender;filter:
+ ="(&(osgi.extender=osgi.component)(version>=1.5.0)(!(version>=2.0.0)))"
+ ,osgi.ee;filter:="(&(osgi.ee=JavaSE)(version=21))"
+Service-Component: OSGI-INF/org.openhab.binding.icomfortwifi.internal.IC
+ omfortWiFiHandlerFactory.xml
+Tool: Bnd-7.0.0.202310060912

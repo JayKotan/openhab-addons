@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<checkstyle version="10.26.1">
+<file name="C:\Projects\openhab\openhab-addons\bundles\org.openhab.binding.icomfortwifi\.classpath">
+</file>
+<file name="C:\Projects\openhab\openhab-addons\bundles\org.openhab.binding.icomfortwifi\pom.xml">
+</file>
+<file name="C:\Projects\openhab\openhab-addons\bundles\org.openhab.binding.icomfortwifi\pom.xml">
+</file>
+<file name="C:\Projects\openhab\openhab-addons\bundles\org.openhab.binding.icomfortwifi\README.md">
+</file>
+<file name="C:\Projects\openhab\openhab-addons\bundles\org.openhab.binding.icomfortwifi\src\main\feature\feature.xml">
+</file>
+<file name="C:\Projects\openhab\openhab-addons\bundles\org.openhab.binding.icomfortwifi\src\main\java\org\openhab\binding\icomfortwifi\internal\api\ApiAccess.java">
+</file>
+<file name="C:\Projects\openhab\openhab-addons\bundles\org.openhab.binding.icomfortwifi\src\main\java\org\openhab\binding\icomfortwifi\internal\api\IComfortWiFiApiClient.java">
+</file>
+<file name="C:\Projects\openhab\openhab-addons\bundles\org.openhab.binding.icomfortwifi\src\main\java\org\openhab\binding\icomfortwifi\internal\api\IComfortWiFiApiClientException.java">
+</file>
+<file name="C:\Projects\openhab\openhab-addons\bundles\org.openhab.binding.icomfortwifi\src\main\java\org\openhab\binding\icomfortwifi\internal\api\IComfortWiFiApiCommands.java">
+</file>
+<file name="C:\Projects\openhab\openhab-addons\bundles\org.openhab.binding.icomfortwifi\src\main\java\org\openhab\binding\icomfortwifi\internal\configuration\IComfortWiFiBridgeConfiguration.java">
+</file>
+<file name="C:\Projects\openhab\openhab-addons\bundles\org.openhab.binding.icomfortwifi\src\main\java\org\openhab\binding\icomfortwifi\internal\configuration\IComfortWiFiThingConfiguration.java">
+</file>
+<file name="C:\Projects\openhab\openhab-addons\bundles\org.openhab.binding.icomfortwifi\src\main\java\org\openhab\binding\icomfortwifi\internal\discovery\IComfortWiFiDiscoveryService.java">
+</file>
+<file name="C:\Projects\openhab\openhab-addons\bundles\org.openhab.binding.icomfortwifi\src\main\java\org\openhab\binding\icomfortwifi\internal\dto\Building.java">
+</file>
+<file name="C:\Projects\openhab\openhab-addons\bundles\org.openhab.binding.icomfortwifi\src\main\java\org\openhab\binding\icomfortwifi\internal\dto\BuildingsInfo.java">
+</file>
+<file name="C:\Projects\openhab\openhab-addons\bundles\org.openhab.binding.icomfortwifi\src\main\java\org\openhab\binding\icomfortwifi\internal\dto\CustomTypes.java">
+</file>
+<file name="C:\Projects\openhab\openhab-addons\bundles\org.openhab.binding.icomfortwifi\src\main\java\org\openhab\binding\icomfortwifi\internal\dto\GatewayAlert.java">
+</file>
+<file name="C:\Projects\openhab\openhab-addons\bundles\org.openhab.binding.icomfortwifi\src\main\java\org\openhab\binding\icomfortwifi\internal\dto\GatewayInfo.java">
+</file>
+<file name="C:\Projects\openhab\openhab-addons\bundles\org.openhab.binding.icomfortwifi\src\main\java\org\openhab\binding\icomfortwifi\internal\dto\GatewaysAlerts.java">
+</file>
+<file name="C:\Projects\openhab\openhab-addons\bundles\org.openhab.binding.icomfortwifi\src\main\java\org\openhab\binding\icomfortwifi\internal\dto\JsonDateDeserializer.java">
+</file>
+<file name="C:\Projects\openhab\openhab-addons\bundles\org.openhab.binding.icomfortwifi\src\main\java\org\openhab\binding\icomfortwifi\internal\dto\OwnerProfileInfo.java">
+</file>
+<file name="C:\Projects\openhab\openhab-addons\bundles\org.openhab.binding.icomfortwifi\src\main\java\org\openhab\binding\icomfortwifi\internal\dto\ReqSetAwayMode.java">
+</file>
+<file name="C:\Projects\openhab\openhab-addons\bundles\org.openhab.binding.icomfortwifi\src\main\java\org\openhab\binding\icomfortwifi\internal\dto\ReqSetTStatInfo.java">
+</file>
+<file name="C:\Projects\openhab\openhab-addons\bundles\org.openhab.binding.icomfortwifi\src\main\java\org\openhab\binding\icomfortwifi\internal\dto\SystemInfo.java">
+</file>
+<file name="C:\Projects\openhab\openhab-addons\bundles\org.openhab.binding.icomfortwifi\src\main\java\org\openhab\binding\icomfortwifi\internal\dto\SystemsInfo.java">
+</file>
+<file name="C:\Projects\openhab\openhab-addons\bundles\org.openhab.binding.icomfortwifi\src\main\java\org\openhab\binding\icomfortwifi\internal\dto\UserValidation.java">
+</file>
+<file name="C:\Projects\openhab\openhab-addons\bundles\org.openhab.binding.icomfortwifi\src\main\java\org\openhab\binding\icomfortwifi\internal\dto\ZonesStatus.java">
+</file>
+<file name="C:\Projects\openhab\openhab-addons\bundles\org.openhab.binding.icomfortwifi\src\main\java\org\openhab\binding\icomfortwifi\internal\dto\ZoneStatus.java">
+</file>
+<file name="C:\Projects\openhab\openhab-addons\bundles\org.openhab.binding.icomfortwifi\src\main\java\org\openhab\binding\icomfortwifi\internal\handler\BaseIComfortWiFiHandler.java">
+</file>
+<file name="C:\Projects\openhab\openhab-addons\bundles\org.openhab.binding.icomfortwifi\src\main\java\org\openhab\binding\icomfortwifi\internal\handler\IComfortWiFiAccountStatusListener.java">
+</file>
+<file name="C:\Projects\openhab\openhab-addons\bundles\org.openhab.binding.icomfortwifi\src\main\java\org\openhab\binding\icomfortwifi\internal\handler\IComfortWiFiBridgeHandler.java">
+</file>
+<file name="C:\Projects\openhab\openhab-addons\bundles\org.openhab.binding.icomfortwifi\src\main\java\org\openhab\binding\icomfortwifi\internal\handler\IComfortWiFiHeatingZoneHandler.java">
+</file>
+<file name="C:\Projects\openhab\openhab-addons\bundles\org.openhab.binding.icomfortwifi\src\main\java\org\openhab\binding\icomfortwifi\internal\handler\IComfortWiFiTemperatureControlSystemHandler.java">
+</file>
+<file name="C:\Projects\openhab\openhab-addons\bundles\org.openhab.binding.icomfortwifi\src\main\java\org\openhab\binding\icomfortwifi\internal\IComfortWiFiBindingConstants.java">
+</file>
+<file name="C:\Projects\openhab\openhab-addons\bundles\org.openhab.binding.icomfortwifi\src\main\java\org\openhab\binding\icomfortwifi\internal\IComfortWiFiHandlerFactory.java">
+</file>
+<file name="C:\Projects\openhab\openhab-addons\bundles\org.openhab.binding.icomfortwifi\src\main\java\org\openhab\binding\icomfortwifi\internal\RunnableWithTimeout.java">
+</file>
+<file name="C:\Projects\openhab\openhab-addons\bundles\org.openhab.binding.icomfortwifi\src\main\resources\OH-INF\addon\addon.xml">
+</file>
+<file name="C:\Projects\openhab\openhab-addons\bundles\org.openhab.binding.icomfortwifi\src\main\resources\OH-INF\binding\binding.xml">
+</file>
+<file name="C:\Projects\openhab\openhab-addons\bundles\org.openhab.binding.icomfortwifi\src\main\resources\OH-INF\i18n\icomfortwifi.properties">
+</file>
+<file name="C:\Projects\openhab\openhab-addons\bundles\org.openhab.binding.icomfortwifi\src\main\resources\OH-INF\thing\bridge.xml">
+</file>
+<file name="C:\Projects\openhab\openhab-addons\bundles\org.openhab.binding.icomfortwifi\src\main\resources\OH-INF\thing\channels.xml">
+</file>
+<file name="C:\Projects\openhab\openhab-addons\bundles\org.openhab.binding.icomfortwifi\src\main\resources\OH-INF\thing\thing-types.xml">
+</file>
+<file name="C:\Projects\openhab\openhab-addons\bundles\org.openhab.binding.icomfortwifi\src\main\resources\OH-INF\thing\thing-types.xml">
+</file>
+<file name="C:\Projects\openhab\openhab-addons\bundles\org.openhab.binding.icomfortwifi\src\main\resources\OH-INF\thing\thing-types.xml">
+</file>
+</checkstyle>
