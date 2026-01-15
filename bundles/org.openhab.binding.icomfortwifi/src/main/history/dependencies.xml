@@ -3,6 +3,7 @@
     <feature version="0.0.0">
         <feature>openhab-runtime-base</feature>
         <feature>wrap</feature>
+        <bundle>mvn:org.eclipse.jdt/org.eclipse.jdt.annotation/2.2.700</bundle>
         <bundle>mvn:org.openhab.addons.bundles/org.openhab.binding.icomfortwifi/5.2.0-SNAPSHOT</bundle>
         <bundle>wrap:mvn:org.lastnpe.eea/eea-all/2.4.0</bundle>
     </feature>

@@ -38,7 +38,7 @@
       <groupId>org.eclipse.jdt</groupId>
       <artifactId>org.eclipse.jdt.annotation</artifactId>
       <version>2.2.700</version>
-      <scope>provided</scope>
+      <scope>compile</scope>
     </dependency>
 
     <dependency>
@@ -47,13 +47,28 @@
       <version>${project.version}</version>
       <scope>provided</scope>
     </dependency>
-
-    <!-- Add your other dependencies here -->
   </dependencies>
+
+  <repositories>
+    <repository>
+      <id>openhab-release</id>
+      <url>https://openhab.jfrog.io/openhab/libs-release</url>
+    </repository>
+
+    <repository>
+      <releases>
+        <enabled>false</enabled>
+      </releases>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+      <id>openhab-snapshot</id>
+      <url>https://openhab.jfrog.io/openhab/libs-snapshot</url>
+    </repository>
+  </repositories>
 
   <build>
     <plugins>
-      <!-- Respect skip flag -->
       <plugin>
         <groupId>org.apache.karaf.tooling</groupId>
         <artifactId>karaf-maven-plugin</artifactId>
@@ -72,5 +87,4 @@
       </plugin>
     </plugins>
   </build>
-
 </project>
