@@ -331,45 +331,4 @@ public final class CustomTypes {
             return null;
         }
     }
-
-    // ---------------------------------------------------------------------
-    // UnifiedOperationMode
-    // ---------------------------------------------------------------------
-
-    public enum UnifiedOperationMode {
-        @SerializedName("0")
-        OFF("off"),
-
-        @SerializedName("1")
-        HEAT("heat"),
-
-        @SerializedName("2")
-        COOL("cool"),
-
-        @SerializedName("3")
-        HEAT_COOL("heatcool"),
-
-        @SerializedName("6")
-        FAN_ONLY("fan-only"),
-
-        @SerializedName("13")
-        ECO("eco"),
-
-        UNKNOWN("-1");
-
-        private final String unifiedOperationModeValue;
-
-        UnifiedOperationMode(String unifiedOperationModeValue) {
-            this.unifiedOperationModeValue = unifiedOperationModeValue;
-        }
-
-        public String getUnifiedOperationModeValue() {
-            return unifiedOperationModeValue;
-        }
-
-        @Override
-        public String toString() {
-            return unifiedOperationModeValue;
-        }
-    }
 }

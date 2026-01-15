@@ -22,9 +22,9 @@ import com.google.gson.annotations.SerializedName;
 /**
  * SystemInfo DTO for iComfort Wi‑Fi API.
  *
- * Fields map directly to the JSON returned by the cloud API.
+ * @author Konstantin Panchenko - Initial contribution
+ * @author Jason Kota - Updated for openHAB 5.x compliance
  */
-@SuppressWarnings("unused")
 public final class SystemInfo {
 
     // ---------------------------------------------------------------------
@@ -109,6 +109,10 @@ public final class SystemInfo {
     public void setGatewaysAlerts(GatewaysAlerts gatewaysAlerts) {
         this.gatewaysAlerts = gatewaysAlerts;
     }
+
+    // ---------------------------------------------------------------------
+    // Fault Logic
+    // ---------------------------------------------------------------------
 
     public boolean hasActiveFaults() {
         String currentStatus = this.status;

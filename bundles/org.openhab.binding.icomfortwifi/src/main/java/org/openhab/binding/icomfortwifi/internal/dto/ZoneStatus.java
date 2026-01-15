@@ -14,6 +14,8 @@ package org.openhab.binding.icomfortwifi.internal.dto;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
 import javax.measure.Unit;
 import javax.measure.quantity.Temperature;
@@ -42,13 +44,10 @@ public final class ZoneStatus {
     // ---------------------------------------------------------------------
 
     @SerializedName("Away_Mode")
-    public @Nullable String awayMode = "AWAY_OFF";
+    public Integer awayMode = 0;
 
     @SerializedName("ConnectionStatus")
     public @Nullable String connectionStatus = "UNKNOWN";
-
-    @SerializedName("Central_Zoned_Away")
-    public Integer centralZonedAway = 0;
 
     @SerializedName("Cool_Set_Point")
     public Double coolSetPoint = 0.0;
@@ -107,6 +106,9 @@ public final class ZoneStatus {
     @SerializedName("ActiveFaults")
     public @Nullable List<String> activeFaults;
 
+    @SerializedName("Schedule_Name")
+    public @Nullable String scheduleName;
+
     // ---------------------------------------------------------------------
     // Constructor
     // ---------------------------------------------------------------------
@@ -142,6 +144,10 @@ public final class ZoneStatus {
         return this.gatewaySN + "_" + this.zoneNumber;
     }
 
+    public @Nullable String getScheduleName() {
+        return this.scheduleName;
+    }
+
     // ---------------------------------------------------------------------
     // Utility Methods
     // ---------------------------------------------------------------------
@@ -157,5 +163,56 @@ public final class ZoneStatus {
             return faults.get(0);
         }
         return "NONE";
+    }
+
+    /**
+     * Return the program schedule selection as a primitive int with a safe default.
+     */
+    public @Nullable Integer getProgramScheduleSelection() {
+        return this.programScheduleSelection;
+    }
+
+    /**
+     * Convenience: return a display string for the schedule selection using the provided map.
+     * If the map contains a label for the index, that label is returned; otherwise the numeric index is returned.
+     */
+    public static String toDisplaySchedule(@Nullable Map<Integer, String> scheduleMap, @Nullable Integer index) {
+        if (index == null) {
+            return "unknown";
+        }
+        if (scheduleMap != null) {
+            String label = scheduleMap.get(index);
+            if (label != null && !label.isEmpty()) {
+                return label;
+            }
+        }
+        return Integer.toString(index);
+    }
+
+    // ---------------------------------------------------------------------
+    // Object helpers
+    // ---------------------------------------------------------------------
+
+    @Override
+    public String toString() {
+        return "ZoneStatus{" + "gatewaySN='" + gatewaySN + '\'' + ", zoneNumber=" + zoneNumber + ", zoneName='"
+                + zoneName + '\'' + ", programScheduleSelection=" + programScheduleSelection + '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof ZoneStatus)) {
+            return false;
+        }
+        ZoneStatus that = (ZoneStatus) o;
+        return Objects.equals(gatewaySN, that.gatewaySN) && Objects.equals(zoneNumber, that.zoneNumber);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(gatewaySN, zoneNumber);
     }
 }

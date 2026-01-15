@@ -72,7 +72,8 @@ public final class ReqSetAwayMode {
         Integer zNum = zoneStatus.zoneNumber;
         this.zoneNumber = (zNum != null) ? zNum : 0;
 
-        this.awayMode = "AWAY_ON".equals(zoneStatus.awayMode) ? 1 : 0;
+        // Correct integer-based Away Mode mapping
+        this.awayMode = (zoneStatus.awayMode != null && zoneStatus.awayMode == 1) ? 1 : 0;
 
         // Explicitly anchor nullable doubles to clear setpoint warnings
         this.heatSetPoint = zoneStatus.heatSetPoint;

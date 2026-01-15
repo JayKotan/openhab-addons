@@ -27,7 +27,7 @@ import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.icomfortwifi.internal.RunnableWithTimeout;
 import org.openhab.binding.icomfortwifi.internal.api.IComfortWiFiApiClient;
 import org.openhab.binding.icomfortwifi.internal.configuration.IComfortWiFiBridgeConfiguration;
-import org.openhab.binding.icomfortwifi.internal.dto.CustomTypes;
+import org.openhab.binding.icomfortwifi.internal.dto.CustomTypes.TempUnits;
 import org.openhab.binding.icomfortwifi.internal.dto.GatewayInfo;
 import org.openhab.binding.icomfortwifi.internal.dto.GatewaysAlerts;
 import org.openhab.binding.icomfortwifi.internal.dto.SystemInfo;
@@ -149,26 +149,16 @@ public class IComfortWiFiBridgeHandler extends BaseBridgeHandler {
         }
     }
 
-    public void setZoneAwayMode(ZoneStatus zoneStatus, Integer mode) {
+    public void setZoneAwayMode(ZoneStatus zone, int awayValue) {
         final IComfortWiFiApiClient client = this.apiClient;
         if (client != null) {
-            tryToCall(() -> client.setZoneAwayMode(zoneStatus, mode));
-            client.update(); // force fresh API read
-            updateThings(); // push new values to handlers
-        }
-    }
-
-    public @Nullable GatewayInfo findGatewayInfoForZone(List<SystemInfo> systems, String gatewaySN) {
-        for (SystemInfo system : systems) {
-            if (Objects.equals(system.gatewaySN, gatewaySN)) {
-                return system.getGatewayInfo();
+            try {
+                client.setZoneAwayMode(zone, awayValue);
+                update();
+            } catch (TimeoutException e) {
+                logger.warn("Error setting Away Mode for zone {}: {}", zone.zoneNumber, e.getMessage());
             }
         }
-        return null;
-    }
-
-    private boolean isMetric(CustomTypes.@Nullable TempUnits unit) {
-        return unit != null && unit.ordinal() == 1;
     }
 
     public void setZoneCoolingPoint(ZoneStatus zoneStatus, double doubleValue) {
@@ -177,26 +167,18 @@ public class IComfortWiFiBridgeHandler extends BaseBridgeHandler {
             return;
         }
 
-        var systems = client.getSystemsInfo().getSystems();
-
-        GatewayInfo info = findGatewayInfoForZone(systems, zoneStatus.gatewaySN);
+        // Fix: Use the consistent lookup helper
+        GatewayInfo info = findGatewayInfoForSN(zoneStatus.gatewaySN);
 
         if (info == null) {
             updateThings();
             return;
-        }
+        } // <--- This brace was missing
 
-        boolean isMetric = isMetric(info.preferredTemperatureUnit);
-
-        double checkValue = (isMetric && doubleValue > 40) ? (doubleValue - 32) * 5 / 9 : doubleValue;
-
-        Double low = info.coolSetPointLowLimit;
-        Double high = info.coolSetPointHighLimit;
-
-        if (low != null && high != null && checkValue >= low && checkValue <= high) {
+        if (isWithinLimits(doubleValue, info.coolSetPointLowLimit, info.coolSetPointHighLimit, info)) {
             tryToCall(() -> client.setZoneCoolingPoint(zoneStatus, doubleValue));
         }
-        updateThings();
+        update();
     }
 
     public void setZoneHeatingPoint(ZoneStatus zoneStatus, double doubleValue) {
@@ -205,33 +187,48 @@ public class IComfortWiFiBridgeHandler extends BaseBridgeHandler {
             return;
         }
 
-        for (SystemInfo systemInfo : client.getSystemsInfo().getSystems()) {
-            if (Objects.equals(systemInfo.gatewaySN, zoneStatus.gatewaySN)) {
-                GatewayInfo info = systemInfo.getGatewayInfo();
-                if (info == null) {
-                    continue;
-                }
-                boolean isMetric = false;
-                var unit = info.preferredTemperatureUnit;
-
-                if (unit != null) {
-                    isMetric = (unit.ordinal() == 1);
-                }
-                double checkValue = (isMetric && doubleValue > 40) ? (doubleValue - 32) * 5 / 9 : doubleValue;
-
-                Double low = info.heatSetPointLowLimit;
-                Double high = info.heatSetPointHighLimit;
-
-                if (low != null && high != null && checkValue >= low && checkValue <= high) {
-                    tryToCall(() -> client.setZoneHeatingPoint(zoneStatus, doubleValue));
-                }
-
-                break;
-            }
+        GatewayInfo info = findGatewayInfoForSN(zoneStatus.gatewaySN);
+        if (info == null) {
+            return;
         }
 
-        updateThings();
+        if (isWithinLimits(doubleValue, info.heatSetPointLowLimit, info.heatSetPointHighLimit, info)) {
+            tryToCall(() -> client.setZoneHeatingPoint(zoneStatus, doubleValue));
+        }
+        update();
     }
+
+    /**
+     * Helper to find GatewayInfo by Serial Number
+     */
+    private @Nullable GatewayInfo findGatewayInfoForSN(String gatewaySN) {
+        final IComfortWiFiApiClient client = this.apiClient;
+        if (client == null) {
+            return null;
+        }
+
+        for (SystemInfo system : client.getSystemsInfo().getSystems()) {
+            if (Objects.equals(system.gatewaySN, gatewaySN)) {
+                return system.getGatewayInfo();
+            }
+        }
+        return null;
+    }
+
+    private boolean isWithinLimits(double value, @Nullable Double low, @Nullable Double high, GatewayInfo info) {
+        if (low == null || high == null) {
+            return false;
+        }
+
+        TempUnits unit = info.getPreferredTemperatureUnit();
+        boolean isMetric = (unit == TempUnits.CELSIUS);
+
+        double checkValue = (isMetric && value > 40) ? (value - 32) * 5 / 9 : value;
+
+        return checkValue >= low && checkValue <= high;
+    }
+
+    // --- Update Logic ---
 
     private void updateThings() {
         final IComfortWiFiApiClient client = this.apiClient;
@@ -327,7 +324,6 @@ public class IComfortWiFiBridgeHandler extends BaseBridgeHandler {
     public void updateAccountStatus(ThingStatus newStatus, ThingStatusDetail detail, @Nullable String message) {
         if (!newStatus.equals(getThing().getStatus())) {
             updateStatus(newStatus, detail, message);
-            // This loop now works perfectly with the public interface
             for (IComfortWiFiAccountStatusListener l : listeners) {
                 l.accountStatusChanged(newStatus);
             }

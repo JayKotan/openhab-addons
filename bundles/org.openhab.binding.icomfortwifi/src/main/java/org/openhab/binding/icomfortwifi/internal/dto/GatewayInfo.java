@@ -58,6 +58,13 @@ public final class GatewayInfo {
     @SerializedName("SystemID")
     public @Nullable Integer systemID;
 
+    /**
+     * Schedule names encoded as a single string from the API, e.g.
+     * "0|summer^1|winter^2|spring fall^3|save energy^4|custom"
+     */
+    @SerializedName("Schedule_Name")
+    public @Nullable String scheduleName;
+
     // ---------------------------------------------------------------------
     // Constructor
     // ---------------------------------------------------------------------

@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.icomfortwifi.internal.handler;
 
+import java.util.Map;
+
 import javax.measure.Unit;
 import javax.measure.quantity.Temperature;
 
@@ -21,9 +23,11 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.icomfortwifi.internal.dto.CustomTypes.AwayStatus;
 import org.openhab.binding.icomfortwifi.internal.dto.CustomTypes.FanMode;
 import org.openhab.binding.icomfortwifi.internal.dto.CustomTypes.OperationMode;
-import org.openhab.binding.icomfortwifi.internal.dto.CustomTypes.UnifiedOperationMode;
+import org.openhab.binding.icomfortwifi.internal.dto.CustomTypes.SystemStatus;
 import org.openhab.binding.icomfortwifi.internal.dto.GatewayInfo;
+import org.openhab.binding.icomfortwifi.internal.dto.SystemsInfo;
 import org.openhab.binding.icomfortwifi.internal.dto.ZoneStatus;
+import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.SIUnits;
@@ -37,10 +41,20 @@ import org.openhab.core.types.RefreshType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * Handler for Lennox iComfort Wi-Fi Heating Zones.
+ * * @author Konstantin Panchenko - Initial contribution
+ * 
+ * @author Jason Kota - Updated for openHAB 5.x compliance
+ */
 @NonNullByDefault
 public class IComfortWiFiHeatingZoneHandler extends BaseIComfortWiFiHandler {
 
     private final Logger logger = Checks.requireNonNull(LoggerFactory.getLogger(IComfortWiFiHeatingZoneHandler.class));
+
+    // Protected fields to support internal logic
+    protected @Nullable SystemsInfo systemsInfo;
+    protected int alertsCount = 20;
 
     private @Nullable ThingStatus tcsStatus;
     private @Nullable ZoneStatus zoneStatus;
@@ -61,70 +75,90 @@ public class IComfortWiFiHeatingZoneHandler extends BaseIComfortWiFiHandler {
         this.zoneStatus = zoneStatus;
         this.gatewayInfo = gatewayInfo;
 
-        if (this.zoneStatus != null && this.gatewayInfo != null) {
-            this.updateiComfortWiFiThingStatus(ThingStatus.ONLINE);
-
-            ThingStatus safeStatus = tcsStatus != null ? tcsStatus : ThingStatus.UNKNOWN;
-            if (ThingStatus.OFFLINE.equals(safeStatus)) {
-                this.updateiComfortWiFiThingStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        "Controller offline");
-                return;
-            }
-
-            ZoneStatus localStatus = Checks.requireNonNull(zoneStatus);
-
-            if (!this.handleActiveFaults(localStatus)) {
-                Unit<Temperature> rawUnit = localStatus.getTemperatureUnit();
-                Unit<Temperature> prefUnit = Checks.requireNonNull(rawUnit);
-
-                boolean isAway = "AWAY_ON".equals(localStatus.awayMode);
-
-                // Promote nullable numeric and enum fields once and reuse
-                Number indoorTemp = Checks.requireNonNull(localStatus.indoorTemp);
-                Number heatSetPoint = Checks.requireNonNull(localStatus.heatSetPoint);
-                Number coolSetPoint = Checks.requireNonNull(localStatus.coolSetPoint);
-                Number indoorHumidity = Checks.requireNonNull(localStatus.indoorHumidity);
-
-                // systemStatus may be null; capture it into a local and convert safely
-                org.openhab.binding.icomfortwifi.internal.dto.CustomTypes.SystemStatus sys = localStatus.systemStatus;
-                String systemStatusStr = sys != null ? sys.toString() : "IDLE";
-                this.updateState("system-status", new StringType(systemStatusStr));
-
-                OperationMode opMode = Checks.requireNonNull(localStatus.operationMode);
-                String awayModeStr = localStatus.awayMode != null ? localStatus.awayMode : "AWAY_OFF";
-                FanMode fanMode = Checks.requireNonNull(localStatus.fanMode);
-
-                // Update basic states
-                this.updateState("temperature", new QuantityType<>(indoorTemp.doubleValue(), prefUnit));
-                this.updateState("heat-set-point", new QuantityType<>(heatSetPoint.doubleValue(), prefUnit));
-                this.updateState("cool-set-point", new QuantityType<>(coolSetPoint.doubleValue(), prefUnit));
-                this.updateState("humidity", new QuantityType<>(indoorHumidity.doubleValue(), Units.PERCENT));
-
-                // Use the promoted systemStatusStr
-                this.updateState("system-status", new StringType(systemStatusStr));
-
-                // Operation mode
-                this.updateState("operation-mode", new StringType(opMode.toString()));
-
-                // Unified Operation Mode
-                if (isAway) {
-                    this.updateState("unified-operation-mode", new StringType("eco"));
-                } else {
-                    String modeString = switch (opMode) {
-                        case HEAT_ONLY -> "heat";
-                        case COOL_ONLY -> "cool";
-                        case HEAT_OR_COOL -> "heatcool";
-                        case OFF, UNKNOWN -> "off";
-                    };
-                    this.updateState("unified-operation-mode", new StringType(modeString));
-                }
-                // Away mode and fan mode
-                this.updateState("away-mode", new StringType(awayModeStr));
-                this.updateState("fan-mode", new StringType(fanMode.toString()));
-            }
-        } else {
-            this.updateiComfortWiFiThingStatus(ThingStatus.INITIALIZING);
+        // If missing data, still initializing
+        if (zoneStatus == null || gatewayInfo == null) {
+            updateiComfortWiFiThingStatus(ThingStatus.INITIALIZING);
+            return;
         }
+
+        // Controller offline?
+        ThingStatus safeStatus = (tcsStatus != null) ? tcsStatus : ThingStatus.UNKNOWN;
+        if (ThingStatus.OFFLINE.equals(safeStatus)) {
+            updateiComfortWiFiThingStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "Controller offline");
+            return;
+        }
+
+        updateiComfortWiFiThingStatus(ThingStatus.ONLINE);
+
+        ZoneStatus localStatus = Checks.requireNonNull(zoneStatus);
+
+        // Handle faults first
+        if (handleActiveFaults(localStatus)) {
+            return;
+        }
+
+        // Temperature units
+        Unit<Temperature> prefUnit = Checks.requireNonNull(localStatus.getTemperatureUnit());
+
+        // Promote numeric fields
+        Number indoorTemp = Checks.requireNonNull(localStatus.indoorTemp);
+        Number heatSetPoint = Checks.requireNonNull(localStatus.heatSetPoint);
+        Number coolSetPoint = Checks.requireNonNull(localStatus.coolSetPoint);
+        Number indoorHumidity = Checks.requireNonNull(localStatus.indoorHumidity);
+
+        // Promote enums
+        OperationMode opMode = Checks.requireNonNull(localStatus.operationMode);
+        FanMode fanMode = Checks.requireNonNull(localStatus.fanMode);
+
+        // System status
+        SystemStatus sys = localStatus.systemStatus;
+        String systemStatusStr = (sys != null) ? sys.toString() : "IDLE";
+
+        // ---------------------------------------------------------------------
+        // Numeric channels
+        // ---------------------------------------------------------------------
+        updateState("temperature", new QuantityType<>(indoorTemp.doubleValue(), prefUnit));
+        updateState("heat-set-point", new QuantityType<>(heatSetPoint.doubleValue(), prefUnit));
+        updateState("cool-set-point", new QuantityType<>(coolSetPoint.doubleValue(), prefUnit));
+        updateState("humidity", new QuantityType<>(indoorHumidity.doubleValue(), Units.PERCENT));
+
+        // ---------------------------------------------------------------------
+        // String channels
+        // ---------------------------------------------------------------------
+        updateState("system-status", new StringType(systemStatusStr));
+        updateState("operation-mode", new StringType(opMode.toString()));
+        updateState("fan-mode", new StringType(fanMode.toString()));
+
+        // ---------------------------------------------------------------------
+        // Program Schedule (friendly name if available)
+        // ---------------------------------------------------------------------
+        Integer scheduleIndex = localStatus.getProgramScheduleSelection();
+        String scheduleState = "unknown";
+
+        if (scheduleIndex != null) {
+            try {
+                String raw = localStatus.getScheduleName();
+                Map<Integer, String> map = java.util.Collections.emptyMap();
+
+                if (raw != null && !raw.trim().isEmpty()) {
+                    map = org.openhab.binding.icomfortwifi.internal.api.IComfortWiFiApiClient
+                            .parseScheduleNameString(raw);
+                }
+                String name = map.get(scheduleIndex);
+                scheduleState = (name != null && !name.isEmpty()) ? name : Integer.toString(scheduleIndex);
+            } catch (Exception e) {
+                scheduleState = Integer.toString(scheduleIndex);
+            }
+        }
+
+        updateState("program-schedule", new StringType(scheduleState));
+
+        // ---------------------------------------------------------------------
+        // Away mode
+        // ---------------------------------------------------------------------
+        boolean isAway = (localStatus.awayMode != null && localStatus.awayMode == 1);
+        updateState("away-mode", isAway ? OnOffType.ON : OnOffType.OFF);
     }
 
     @Override
@@ -148,25 +182,9 @@ public class IComfortWiFiHeatingZoneHandler extends BaseIComfortWiFiHandler {
 
         String channelId = channelUID.getId();
 
-        // Unified Operation Mode
-        if ("unified-operation-mode".equals(channelId)) {
-            try {
-                UnifiedOperationMode mode = switch (cmdString) {
-                    case "heatcool" -> UnifiedOperationMode.HEAT_COOL;
-                    case "eco" -> UnifiedOperationMode.ECO;
-                    case "cool" -> UnifiedOperationMode.COOL;
-                    case "heat" -> UnifiedOperationMode.HEAT;
-                    case "fan-only" -> UnifiedOperationMode.FAN_ONLY;
-                    default -> UnifiedOperationMode.OFF;
-                };
-
-                String away = currentStatus.awayMode;
-                boolean isAwayOff = !"AWAY_ON".equals(away != null ? away : "AWAY_OFF");
-
-                this.handleUnifiedMode(bridge, currentStatus, mode, isAwayOff);
-            } catch (Exception e) {
-                logger.warn("Error handling unified mode command: {}", command);
-            }
+        // Away Mode
+        if ("away-mode".equals(channelId) && command instanceof OnOffType onOff) {
+            bridge.setZoneAwayMode(currentStatus, (onOff == OnOffType.ON ? 1 : 0));
             return;
         }
 
@@ -203,46 +221,6 @@ public class IComfortWiFiHeatingZoneHandler extends BaseIComfortWiFiHandler {
             }
         } catch (IllegalArgumentException e) {
             logger.warn("Invalid command '{}' for channel '{}'", command, channelId);
-        }
-    }
-
-    private void handleUnifiedMode(IComfortWiFiBridgeHandler bridge, ZoneStatus currentStatus,
-            UnifiedOperationMode mode, boolean isAwayOff) {
-        switch (mode) {
-            case OFF:
-                bridge.setZoneAwayMode(currentStatus, AwayStatus.AWAY_OFF.getAwayValue());
-                bridge.setZoneOperationMode(currentStatus, OperationMode.OFF.getOperationModeValue());
-                break;
-
-            case HEAT:
-                bridge.setZoneAwayMode(currentStatus, AwayStatus.AWAY_OFF.getAwayValue());
-                bridge.setZoneOperationMode(currentStatus, OperationMode.HEAT_ONLY.getOperationModeValue());
-                break;
-
-            case COOL:
-                bridge.setZoneAwayMode(currentStatus, AwayStatus.AWAY_OFF.getAwayValue());
-                bridge.setZoneOperationMode(currentStatus, OperationMode.COOL_ONLY.getOperationModeValue());
-                break;
-
-            case HEAT_COOL:
-                bridge.setZoneAwayMode(currentStatus, AwayStatus.AWAY_OFF.getAwayValue());
-                bridge.setZoneOperationMode(currentStatus, OperationMode.HEAT_OR_COOL.getOperationModeValue());
-                break;
-
-            case FAN_ONLY:
-                bridge.setZoneAwayMode(currentStatus, AwayStatus.AWAY_OFF.getAwayValue());
-                bridge.setZoneOperationMode(currentStatus, OperationMode.OFF.getOperationModeValue());
-                bridge.setZoneFanMode(currentStatus, FanMode.CIRCULATE.getFanModeValue());
-                break;
-
-            case ECO:
-                if (isAwayOff) {
-                    bridge.setZoneAwayMode(currentStatus, AwayStatus.AWAY_ON.getAwayValue());
-                }
-                break;
-
-            default:
-                logger.debug("Unified mode is UNKNOWN for zone {}", currentStatus.zoneNumber);
         }
     }
 

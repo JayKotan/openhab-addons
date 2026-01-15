@@ -41,14 +41,36 @@ The account bridge serves as the central connection point to the Lennox API.
 
 The zone thing type supports the following channels:
 
-| Channel ID      | Item Type            | Label          | Description                         |
-|-----------------|----------------------|----------------|-------------------------------------|
-| temperature     | Number:Temperature   | Temperature    | Current room temperature.           |
-| humidity        | Number:Dimensionless | Humidity       | Current room humidity.              |
-| system-status   | String               | System Status  | Activity (HEATING, COOLING, IDLE).  |
-| operation-mode  | String               | Operation Mode | Main system mode.                   |
-| heat-set-point  | Number:Temperature   | Heat Setpoint  | Target heating temperature.         |
-| cool-set-point  | Number:Temperature   | Cool Setpoint  | Target cooling temperature.         |
+## Channels
+
+The zone thing type exposes the following channels:
+
+| Channel ID        | Item Type            | Label            | Description                                                                    |
+|-------------------|----------------------|------------------|--------------------------------------------------------------------------------|
+| temperature       | Number:Temperature   | Temperature      | Current indoor temperature.                                                    |
+| humidity          | Number:Dimensionless | Humidity         | Current indoor humidity.                                                       |
+| system-status     | String               | System Status    | Current HVAC activity (HEATING, COOLING, IDLE, WAITING, EMERGENCY_HEAT).       |
+| operation-mode    | String               | Operation Mode   | Primary system mode (HEAT_ONLY, COOL_ONLY, HEAT_OR_COOL, OFF).                 |
+| fan-mode          | String               | Fan Mode         | Fan behavior (AUTO, ON, CIRCULATE).                                            |
+| away-mode         | String               | Away Mode        | Raw thermostat Away state (AWAY_ON / AWAY_OFF).                                |
+| heat-set-point    | Number:Temperature   | Heat Setpoint    | Target heating temperature.                                                    |
+| cool-set-point    | Number:Temperature   | Cool Setpoint    | Target cooling temperature.                                                    |
+| program-schedule  | String               | Program Schedule | Active schedule name (e.g., summer, winter, spring fall, save energy, custom). |
+
+
+## Full Example
+
+### icomfort.things
+
+```things
+Bridge icomfortwifi:account:myaccount [
+    userName="user@email.com",
+    password="your_password",
+    refreshInterval=60
+] {
+    Thing thermostat my_display [ id="DISPLAY_123" ]
+    Thing zone living_room [ id="ZONE_1", name="Main Living" ]
+}
 
 ## Full Example
 
@@ -64,10 +86,11 @@ Bridge icomfortwifi:account:myaccount [ userName="user@email.com", password="you
 // Zone items
 Number:Temperature Thermostat_Temperature "Temperature [%.1f %unit%]" <temperature> (gWholeHouse) {channel="icomfortwifi:zone:demoaccount:home_zone_1:Temperature"}
 Number:Dimensionless Thermostat_Humidity "Humidity [%.1f %unit%]" <humidity> (gWholeHouse) {channel="icomfortwifi:zone:demoaccount:home_zone_1:Humidity"}
-String Thermostat_Status "System Status [%s]" <heating> (gWholeHouse) {channel="icomfortwifi:zone:demoaccount:home_zone_1:SystemStatus"}
-String Thermostat_Mode "Operation Mode [%s]" <heating> (gWholeHouse) {channel="icomfortwifi:zone:demoaccount:home_zone_1:OperationMode"}
-String Thermostat_Away_Mode "Away Mode [%s]" <heating> (gWholeHouse) {channel="icomfortwifi:zone:demoaccount:home_zone_1:AwayMode"}
-String Thermostat_Fan_Mode "Fan Mode [%s]" <fan> (gWholeHouse) {channel="icomfortwifi:zone:demoaccount:home_zone_1:FanMode"}
+String Living_Thermostat_Status "System Status [%s]" <heating> (gWholeHouse) {channel="icomfortwifi:zone:demoaccount:home_zone_1:SystemStatus"}
+String Living_Thermostat_Mode "Operation Mode [%s]" <heating> (gWholeHouse) {channel="icomfortwifi:zone:demoaccount:home_zone_1:OperationMode"}
+String Living_Thermostat_Away_Mode "Away Mode [%s]" <heating> (gWholeHouse) {channel="icomfortwifi:zone:demoaccount:home_zone_1:AwayMode"}
+Switch Living_Thermostat_EcoMode "Eco Mode" <energy> { channel="icomfortwifi:zone:myaccount:living_room:eco-mode" }
+String Living_Thermostat_Fan_Mode "Fan Mode [%s]" <fan> (gWholeHouse) {channel="icomfortwifi:zone:demoaccount:home_zone_1:FanMode"}
 Number:Temperature Thermostat_Cool_Point "Cool Set Point [%.1f %unit%]" <temperature> (gWholeHouse) {channel="icomfortwifi:zone:demoaccount:home_zone_1:CoolSetPoint"}
 Number:Temperature Thermostat_Heat_Point "Heat Set Point [%.1f %unit%]" <temperature> (gWholeHouse) {channel="icomfortwifi:zone:demoaccount:home_zone_1:HeatSetPoint"}
 

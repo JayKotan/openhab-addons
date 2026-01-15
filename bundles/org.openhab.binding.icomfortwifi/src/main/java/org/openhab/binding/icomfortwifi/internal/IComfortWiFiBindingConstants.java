@@ -40,20 +40,16 @@ public class IComfortWiFiBindingConstants {
     public static final String ZONE_SYSTEM_STATUS_CHANNEL = "system-status";
     public static final String ZONE_OPERATION_MODE_CHANNEL = "operation-mode";
     public static final String ZONE_AWAY_MODE_CHANNEL = "away-mode";
-    public static final String ZONE_UNIFIED_OPERATION_MODE_CHANNEL = "unified-operation-mode";
     public static final String ZONE_FAN_MODE_CHANNEL = "fan-mode";
     public static final String ZONE_COOL_SET_POINT_CHANNEL = "cool-set-point";
     public static final String ZONE_HEAT_SET_POINT_CHANNEL = "heat-set-point";
-    public static final String ZONE_SET_POINT_CHANNEL = "set-point";
     public static final String DISPLAY_SYSTEM_MODE_CHANNEL = "system-mode";
-    public static final String ZONE_SET_POINT_STATUS_CHANNEL = "set-point-status";
-
     public static final String TCS_ALARM_DESCRIPTION_CHANNEL = "alerts-and-reminders#alarm-description";
     public static final String TCS_ALARM_NBR_CHANNEL = "alerts-and-reminders#alarm-nbr";
     public static final String TCS_ALARM_TYPE_CHANNEL = "alerts-and-reminders#alarm-type";
     public static final String TCS_ALARM_STATUS_CHANNEL = "alerts-and-reminders#alarm-status";
     public static final String TCS_ALARM_DATE_TIME_SET_CHANNEL = "alerts-and-reminders#date-time-set";
-
+    public static final String CHANNEL_PROGRAM_SCHEDULE = "program-schedule";
     public static final String TCS_PROPERTY_SYSTEM_NAME = "systemName";
     public static final String TCS_PROPERTY_GATEWAY_SN = "gatewaySerialNumber";
     public static final String TCS_PROPERTY_FIRMWARE_VERSION = "firmwareVersion";

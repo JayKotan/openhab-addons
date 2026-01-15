@@ -16,6 +16,7 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -56,7 +57,6 @@ import org.slf4j.LoggerFactory;
 public class IComfortWiFiApiClient {
 
     private final Logger logger = Objects.requireNonNull(LoggerFactory.getLogger(IComfortWiFiApiClient.class));
-
     private final HttpClient httpClient;
     private final IComfortWiFiBridgeConfiguration configuration;
     private final ApiAccess apiAccess;
@@ -235,6 +235,34 @@ public class IComfortWiFiApiClient {
     // ---------------------------------------------------------------------
     // Low-level request helpers
     // ---------------------------------------------------------------------
+    @SuppressWarnings("null")
+    public static Map<Integer, String> parseScheduleNameString(String raw) {
+        Map<Integer, String> map = new LinkedHashMap<>();
+        if (raw == null || raw.trim().isEmpty()) {
+            return map;
+        }
+        raw = raw.trim();
+        if (raw.startsWith("\"") && raw.endsWith("\"")) {
+            raw = raw.substring(1, raw.length() - 1);
+        }
+
+        String[] pairs = raw.split("\\^");
+        for (String pair : pairs) {
+            String[] parts = pair.split("\\|", 2);
+            if (parts.length == 2) {
+                try {
+                    int idx = Integer.parseInt(parts[0].trim());
+                    String name = parts[1].trim();
+                    if (!name.isEmpty()) {
+                        map.put(idx, name);
+                    }
+                } catch (NumberFormatException e) {
+                    // ignore malformed entries
+                }
+            }
+        }
+        return map;
+    }
 
     @SuppressWarnings("unchecked")
     private static Class<@Nullable ZonesStatus> nullableZonesStatusClass() {

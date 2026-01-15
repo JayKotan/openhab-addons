@@ -4,7 +4,9 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
-	<!-- Thermostat Thing Type -->
+	<!-- ========================================================= -->
+	<!-- THERMOSTAT THING TYPE -->
+	<!-- ========================================================= -->
 
 	<thing-type id="thermostat">
 		<supported-bridge-type-refs>
@@ -40,7 +42,9 @@
 		</config-description>
 	</thing-type>
 
-	<!-- Zone Thing Type -->
+	<!-- ========================================================= -->
+	<!-- ZONE THING TYPE -->
+	<!-- ========================================================= -->
 
 	<thing-type id="zone">
 		<supported-bridge-type-refs>
@@ -55,11 +59,11 @@
 			<channel id="humidity" typeId="humidity"/>
 			<channel id="system-status" typeId="system-status"/>
 			<channel id="operation-mode" typeId="operation-mode"/>
-			<channel id="unified-operation-mode" typeId="unified-operation-mode"/>
-			<channel id="away-mode" typeId="away-mode"/>
 			<channel id="fan-mode" typeId="fan-mode"/>
 			<channel id="cool-set-point" typeId="cool-set-point"/>
 			<channel id="heat-set-point" typeId="heat-set-point"/>
+			<channel id="away-mode" typeId="away-mode"/>
+			<channel id="program-schedule" typeId="program-schedule"/>
 		</channels>
 
 		<config-description>
@@ -74,12 +78,15 @@
 		</config-description>
 	</thing-type>
 
+	<!-- ========================================================= -->
+	<!-- CHANNEL GROUP TYPES -->
+	<!-- ========================================================= -->
+
 	<!-- Gateway Alerts Group -->
 	<channel-group-type id="alert-01">
 		<label>Gateway Alerts</label>
 		<description>Alerts and reminders</description>
 		<category>hvac</category>
-
 		<channels>
 			<channel id="alarm-description" typeId="alarm-description"/>
 			<channel id="alarm-nbr" typeId="alarm-nbr"/>
@@ -88,6 +95,7 @@
 			<channel id="date-time-set" typeId="date-time-set"/>
 			<channel id="date-time-reset" typeId="date-time-reset"/>
 		</channels>
+
 	</channel-group-type>
 
 	<!-- Thermostat Alerts Group -->
@@ -103,5 +111,13 @@
 			<channel id="firstDate" typeId="string"/>
 		</channels>
 	</channel-group-type>
+
+	<channel-type id="away-mode">
+		<item-type>Switch</item-type>
+		<label>Away Mode</label>
+		<description>Enable or disable Away Mode for this zone</description>
+		<category>switch</category>
+		<state readOnly="false"/>
+	</channel-type>
 
 </thing:thing-descriptions>
